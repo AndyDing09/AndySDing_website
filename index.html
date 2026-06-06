@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Andy S. Ding — Personal Website</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ─── Canvas background ─── -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- ─── Navigation ─── -->
+  <nav id="navbar">
+    <div class="nav-logo">
+      <span class="logo-bracket">[</span>ASD<span class="logo-bracket">]</span>
+    </div>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#home"     class="nav-link active" data-section="home">Home</a></li>
+      <li><a href="#about"    class="nav-link"        data-section="about">About</a></li>
+      <li><a href="#blog"     class="nav-link"        data-section="blog">Blog</a></li>
+      <li><a href="#research" class="nav-link"        data-section="research">Research</a></li>
+      <li><a href="#resume"   class="nav-link"        data-section="resume">Résumé</a></li>
+      <li><a href="#interests" class="nav-link"       data-section="interests">Interests</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <!-- ─── Mobile drawer ─── -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <ul>
+      <li><a href="#home"      class="drawer-link" data-section="home">Home</a></li>
+      <li><a href="#about"     class="drawer-link" data-section="about">About Me</a></li>
+      <li><a href="#blog"      class="drawer-link" data-section="blog">Blog</a></li>
+      <li><a href="#research"  class="drawer-link" data-section="research">Research</a></li>
+      <li><a href="#resume"    class="drawer-link" data-section="resume">Résumé</a></li>
+      <li><a href="#interests" class="drawer-link" data-section="interests">Interests</a></li>
+    </ul>
+  </div>
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <!-- ═══════════════════════════════════════
+       MAIN CONTENT
+  ════════════════════════════════════════ -->
+  <main id="main">
+
+    <!-- ─── HOME ─── -->
+    <section id="home" class="section active">
+      <div class="hero-container">
+        <div class="hero-eyebrow">
+          <span class="dot pulse"></span>
+          <span>Available for opportunities</span>
+        </div>
+        <h1 class="hero-name">
+          Andy S.<br /><em>Ding</em>
+        </h1>
+        <p class="hero-tagline">
+          Computer Scientist &amp; Researcher.<br />
+          Building things that matter at the intersection of<br />
+          <span class="typed-wrapper"><span id="typed"></span><span class="cursor">|</span></span>
+        </p>
+        <div class="hero-cta">
+          <a href="#about" class="btn btn-primary" data-section="about">Explore My Work</a>
+          <a href="#resume" class="btn btn-ghost" data-section="resume">View Résumé</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-number">12+</span>
+            <span class="stat-label">Projects</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <span class="stat-number">3</span>
+            <span class="stat-label">Publications</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <span class="stat-number">4</span>
+            <span class="stat-label">Years Research</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-scroll-hint">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+      </div>
+    </section>
+
+    <!-- ─── ABOUT ─── -->
+    <section id="about" class="section">
+      <div class="section-inner">
+        <div class="section-header">
+          <span class="section-number">01</span>
+          <h2 class="section-title">About Me</h2>
+          <div class="section-line"></div>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-photo-col">
+            <div class="photo-frame">
+              <div class="photo-placeholder">
+                <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="100" cy="80" r="42" fill="rgba(99,102,241,0.3)" stroke="rgba(99,102,241,0.6)" stroke-width="2"/>
+                  <ellipse cx="100" cy="175" rx="68" ry="38" fill="rgba(99,102,241,0.2)" stroke="rgba(99,102,241,0.4)" stroke-width="2"/>
+                </svg>
+                <span>Photo Coming Soon</span>
+              </div>
+              <div class="photo-accent-ring"></div>
+            </div>
+            <div class="social-links">
+              <a href="#" class="social-btn" aria-label="GitHub">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49.99.1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+              </a>
+              <a href="#" class="social-btn" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zm1.78 13.02H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
+              </a>
+              <a href="#" class="social-btn" aria-label="Email">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <div class="about-text-col">
+            <p class="about-bio">
+              Hi! I'm <strong>Andy</strong>, a passionate computer scientist and researcher with a love for solving hard problems. I'm currently studying at [University Name], where I focus on [research area]. My work spans machine learning, systems, and human-computer interaction.
+            </p>
+            <p class="about-bio">
+              When I'm not coding, you'll find me exploring ideas at the intersection of technology and society — writing, reading, and always learning. I believe in building software that is not just functional, but meaningful.
+            </p>
+
+            <div class="skills-section">
+              <h3 class="skills-title">Skills &amp; Technologies</h3>
+              <div class="skills-grid">
+                <div class="skill-category">
+                  <span class="skill-cat-label">Languages</span>
+                  <div class="skill-tags">
+                    <span class="tag">Python</span>
+                    <span class="tag">C++</span>
+                    <span class="tag">JavaScript</span>
+                    <span class="tag">Java</span>
+                    <span class="tag">SQL</span>
+                  </div>
+                </div>
+                <div class="skill-category">
+                  <span class="skill-cat-label">Frameworks</span>
+                  <div class="skill-tags">
+                    <span class="tag">PyTorch</span>
+                    <span class="tag">React</span>
+                    <span class="tag">Node.js</span>
+                    <span class="tag">Flask</span>
+                  </div>
+                </div>
+                <div class="skill-category">
+                  <span class="skill-cat-label">Tools</span>
+                  <div class="skill-tags">
+                    <span class="tag">Git</span>
+                    <span class="tag">Docker</span>
+                    <span class="tag">Linux</span>
+                    <span class="tag">AWS</span>
+                    <span class="tag">LaTeX</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="about-quick-facts">
+              <div class="fact">
+                <span class="fact-icon">🎓</span>
+                <span>[University Name] — B.S. Computer Science, Class of 20XX</span>
+              </div>
+              <div class="fact">
+                <span class="fact-icon">🔬</span>
+                <span>Research focus: [Your Research Area]</span>
+              </div>
+              <div class="fact">
+                <span class="fact-icon">📍</span>
+                <span>[City, State]</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── BLOG ─── -->
+    <section id="blog" class="section">
+      <div class="section-inner">
+        <div class="section-header">
+          <span class="section-number">02</span>
+          <h2 class="section-title">Blog</h2>
+          <div class="section-line"></div>
+        </div>
+        <p class="section-subtitle">Thoughts on technology, research, and everything in between.</p>
+
+        <div class="blog-featured">
+          <article class="blog-card featured">
+            <div class="blog-card-meta">
+              <span class="blog-tag featured-tag">Featured</span>
+              <span class="blog-date">December 15, 2024</span>
+            </div>
+            <h3 class="blog-card-title">The Future of Large Language Models in Scientific Research</h3>
+            <p class="blog-card-excerpt">
+              An exploration of how transformer-based language models are reshaping the way scientists discover, synthesize, and communicate knowledge — and what this means for the next decade of research.
+            </p>
+            <div class="blog-card-footer">
+              <div class="blog-read-time">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                8 min read
+              </div>
+              <a href="#" class="blog-read-link">Read Article →</a>
+            </div>
+          </article>
+        </div>
+
+        <div class="blog-grid">
+          <article class="blog-card">
+            <div class="blog-card-meta">
+              <span class="blog-tag">Machine Learning</span>
+              <span class="blog-date">Nov 30, 2024</span>
+            </div>
+            <h3 class="blog-card-title">Understanding Attention Mechanisms: A Visual Guide</h3>
+            <p class="blog-card-excerpt">Breaking down the self-attention mechanism that powers modern transformers with intuitive visualizations and code examples.</p>
+            <div class="blog-card-footer">
+              <div class="blog-read-time">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                6 min read
+              </div>
+              <a href="#" class="blog-read-link">Read →</a>
+            </div>
+          </article>
+
+          <article class="blog-card">
+            <div class="blog-card-meta">
+              <span class="blog-tag">Career</span>
+              <span class="blog-date">Nov 10, 2024</span>
+            </div>
+            <h3 class="blog-card-title">Navigating Research Internships as an Undergrad</h3>
+            <p class="blog-card-excerpt">Lessons learned from applying to, landing, and making the most of research internships at top institutions.</p>
+            <div class="blog-card-footer">
+              <div class="blog-read-time">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                5 min read
+              </div>
+              <a href="#" class="blog-read-link">Read →</a>
+            </div>
+          </article>
+
+          <article class="blog-card">
+            <div class="blog-card-meta">
+              <span class="blog-tag">Systems</span>
+              <span class="blog-date">Oct 22, 2024</span>
+            </div>
+            <h3 class="blog-card-title">Distributed Systems: Why Consistency is Hard</h3>
+            <p class="blog-card-excerpt">A deep dive into the CAP theorem and the fundamental tradeoffs that every distributed system engineer must understand.</p>
+            <div class="blog-card-footer">
+              <div class="blog-read-time">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                7 min read
+              </div>
+              <a href="#" class="blog-read-link">Read →</a>
+            </div>
+          </article>
+
+          <article class="blog-card">
+            <div class="blog-card-meta">
+              <span class="blog-tag">Reflection</span>
+              <span class="blog-date">Oct 5, 2024</span>
+            </div>
+            <h3 class="blog-card-title">On Learning in Public and Building a Research Identity</h3>
+            <p class="blog-card-excerpt">Why sharing your work openly — even when it's imperfect — is one of the most powerful things a young researcher can do.</p>
+            <div class="blog-card-footer">
+              <div class="blog-read-time">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                4 min read
+              </div>
+              <a href="#" class="blog-read-link">Read →</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── RESEARCH ─── -->
+    <section id="research" class="section">
+      <div class="section-inner">
+        <div class="section-header">
+          <span class="section-number">03</span>
+          <h2 class="section-title">Research</h2>
+          <div class="section-line"></div>
+        </div>
+        <p class="section-subtitle">Exploring problems at the frontier of computer science.</p>
+
+        <div class="research-tabs">
+          <button class="res-tab active" data-tab="projects">Projects</button>
+          <button class="res-tab" data-tab="papers">Publications</button>
+        </div>
+
+        <div class="research-content" id="tab-projects">
+          <div class="research-grid">
+            <div class="research-card">
+              <div class="research-card-header">
+                <span class="research-badge ongoing">Ongoing</span>
+                <span class="research-year">2024–Present</span>
+              </div>
+              <h3 class="research-card-title">Efficient Fine-Tuning of Foundation Models for Low-Resource NLP</h3>
+              <p class="research-card-desc">
+                Investigating parameter-efficient fine-tuning methods (LoRA, prefix tuning, adapters) for adapting large pretrained language models to low-resource domains with limited labeled data. Achieving competitive performance with 10× fewer trainable parameters.
+              </p>
+              <div class="research-card-meta">
+                <span class="research-venue">Advised by Prof. [Advisor Name] · [Lab Name]</span>
+              </div>
+              <div class="research-links">
+                <a href="#" class="res-link">Paper (Draft)</a>
+                <a href="#" class="res-link">Code</a>
+                <a href="#" class="res-link">Slides</a>
+              </div>
+            </div>
+
+            <div class="research-card">
+              <div class="research-card-header">
+                <span class="research-badge completed">Completed</span>
+                <span class="research-year">2023–2024</span>
+              </div>
+              <h3 class="research-card-title">Graph Neural Networks for Molecular Property Prediction</h3>
+              <p class="research-card-desc">
+                Developed a novel graph attention network architecture for predicting molecular properties relevant to drug discovery. The model achieved state-of-the-art results on three benchmark datasets including QM9 and MoleculeNet.
+              </p>
+              <div class="research-card-meta">
+                <span class="research-venue">Published at [Conference Name] 2024</span>
+              </div>
+              <div class="research-links">
+                <a href="#" class="res-link">Paper</a>
+                <a href="#" class="res-link">Code</a>
+                <a href="#" class="res-link">Poster</a>
+              </div>
+            </div>
+
+            <div class="research-card">
+              <div class="research-card-header">
+                <span class="research-badge completed">Completed</span>
+                <span class="research-year">2022–2023</span>
+              </div>
+              <h3 class="research-card-title">Fairness-Aware Recommendation Systems</h3>
+              <p class="research-card-desc">
+                Studied algorithmic bias in collaborative filtering recommender systems. Proposed a post-processing debiasing method that reduces demographic disparity in recommendations without significant loss in accuracy.
+              </p>
+              <div class="research-card-meta">
+                <span class="research-venue">Workshop paper at [Workshop Name] @ [Conference] 2023</span>
+              </div>
+              <div class="research-links">
+                <a href="#" class="res-link">Paper</a>
+                <a href="#" class="res-link">Code</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="research-content hidden" id="tab-papers">
+          <ol class="publications-list">
+            <li class="pub-item">
+              <div class="pub-venue">
+                <span class="pub-badge conf">Conference</span>
+                <span class="pub-conf-name">[Conference Name] 2024</span>
+              </div>
+              <h4 class="pub-title">Graph Attention Networks for Molecular Property Prediction in Drug Discovery</h4>
+              <p class="pub-authors"><strong>Andy S. Ding</strong>, Co-Author One, Co-Author Two, Prof. Advisor Name</p>
+              <div class="pub-links">
+                <a href="#" class="pub-link">[PDF]</a>
+                <a href="#" class="pub-link">[arXiv]</a>
+                <a href="#" class="pub-link">[Code]</a>
+                <a href="#" class="pub-link">[BibTeX]</a>
+              </div>
+            </li>
+            <li class="pub-item">
+              <div class="pub-venue">
+                <span class="pub-badge workshop">Workshop</span>
+                <span class="pub-conf-name">[Workshop] @ [Conference] 2023</span>
+              </div>
+              <h4 class="pub-title">Towards Fair Recommendations: A Post-Processing Debiasing Approach for Collaborative Filtering</h4>
+              <p class="pub-authors"><strong>Andy S. Ding</strong>, Co-Author Name, Prof. Advisor Name</p>
+              <div class="pub-links">
+                <a href="#" class="pub-link">[PDF]</a>
+                <a href="#" class="pub-link">[Poster]</a>
+                <a href="#" class="pub-link">[Code]</a>
+              </div>
+            </li>
+            <li class="pub-item">
+              <div class="pub-venue">
+                <span class="pub-badge preprint">Preprint</span>
+                <span class="pub-conf-name">arXiv 2024</span>
+              </div>
+              <h4 class="pub-title">Parameter-Efficient Adaptation of Foundation Models: A Unified Perspective</h4>
+              <p class="pub-authors"><strong>Andy S. Ding</strong>, Prof. Advisor Name</p>
+              <div class="pub-links">
+                <a href="#" class="pub-link">[arXiv]</a>
+                <a href="#" class="pub-link">[Code]</a>
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── RESUME ─── -->
+    <section id="resume" class="section">
+      <div class="section-inner">
+        <div class="section-header">
+          <span class="section-number">04</span>
+          <h2 class="section-title">Résumé</h2>
+          <div class="section-line"></div>
+        </div>
+
+        <div class="resume-actions">
+          <a href="resume.pdf" download class="btn btn-primary" id="download-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download PDF
+          </a>
+          <span class="resume-updated">Last updated: December 2024</span>
+        </div>
+
+        <div class="resume-layout">
+          <!-- Left column -->
+          <div class="resume-left">
+            <div class="resume-block">
+              <h3 class="resume-block-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                Education
+              </h3>
+              <div class="resume-entry">
+                <div class="resume-entry-header">
+                  <strong>[University Name]</strong>
+                  <span class="resume-date">2021 – 2025</span>
+                </div>
+                <div class="resume-entry-sub">B.S. Computer Science</div>
+                <ul class="resume-bullets">
+                  <li>GPA: X.XX / 4.00 — Dean's List (all semesters)</li>
+                  <li>Relevant coursework: Algorithms, ML, OS, Distributed Systems, NLP</li>
+                  <li>Honors thesis: [Thesis Title]</li>
+                </ul>
+              </div>
+              <div class="resume-entry">
+                <div class="resume-entry-header">
+                  <strong>[High School Name]</strong>
+                  <span class="resume-date">2017 – 2021</span>
+                </div>
+                <div class="resume-entry-sub">High School Diploma — Valedictorian</div>
+              </div>
+            </div>
+
+            <div class="resume-block">
+              <h3 class="resume-block-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                Experience
+              </h3>
+              <div class="resume-entry">
+                <div class="resume-entry-header">
+                  <strong>Research Intern</strong>
+                  <span class="resume-date">Summer 2024</span>
+                </div>
+                <div class="resume-entry-sub">[Company / Institution Name]</div>
+                <ul class="resume-bullets">
+                  <li>Developed [X] achieving [Y% improvement] on [benchmark]</li>
+                  <li>Collaborated with a team of [N] researchers on [topic]</li>
+                  <li>Contributed to [publication / open-source project]</li>
+                </ul>
+              </div>
+              <div class="resume-entry">
+                <div class="resume-entry-header">
+                  <strong>Software Engineering Intern</strong>
+                  <span class="resume-date">Summer 2023</span>
+                </div>
+                <div class="resume-entry-sub">[Company Name]</div>
+                <ul class="resume-bullets">
+                  <li>Built [feature] using [tech stack], serving [N] users</li>
+                  <li>Reduced latency by X% through [optimization approach]</li>
+                  <li>Wrote unit and integration tests achieving 95%+ coverage</li>
+                </ul>
+              </div>
+              <div class="resume-entry">
+                <div class="resume-entry-header">
+                  <strong>Undergraduate Research Assistant</strong>
+                  <span class="resume-date">2022 – Present</span>
+                </div>
+                <div class="resume-entry-sub">[Lab Name], [University Name]</div>
+                <ul class="resume-bullets">
+                  <li>Co-authored [N] papers accepted at top venues</li>
+                  <li>Maintained research codebase with [N]k+ lines of code</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right column -->
+          <div class="resume-right">
+            <div class="resume-block">
+              <h3 class="resume-block-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                Achievements
+              </h3>
+              <ul class="achievements-list">
+                <li class="achievement-item">
+                  <span class="achievement-icon">🏆</span>
+                  <span>[Scholarship / Award Name] — [Awarding Body], 2024</span>
+                </li>
+                <li class="achievement-item">
+                  <span class="achievement-icon">🥇</span>
+                  <span>1st Place — [Hackathon Name], 20XX</span>
+                </li>
+                <li class="achievement-item">
+                  <span class="achievement-icon">📄</span>
+                  <span>Best Paper Award — [Workshop Name], 20XX</span>
+                </li>
+                <li class="achievement-item">
+                  <span class="achievement-icon">🎓</span>
+                  <span>[Fellowship Name] Fellow — [Organization], 20XX</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="resume-block">
+              <h3 class="resume-block-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                Technical Skills
+              </h3>
+              <div class="skill-bars">
+                <div class="skill-bar-item">
+                  <span class="skill-bar-label">Python / ML</span>
+                  <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:92%"></div></div>
+                </div>
+                <div class="skill-bar-item">
+                  <span class="skill-bar-label">C / C++</span>
+                  <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:78%"></div></div>
+                </div>
+                <div class="skill-bar-item">
+                  <span class="skill-bar-label">JavaScript / Web</span>
+                  <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:80%"></div></div>
+                </div>
+                <div class="skill-bar-item">
+                  <span class="skill-bar-label">Research / Writing</span>
+                  <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:88%"></div></div>
+                </div>
+                <div class="skill-bar-item">
+                  <span class="skill-bar-label">Cloud / DevOps</span>
+                  <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:70%"></div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="resume-block">
+              <h3 class="resume-block-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Leadership &amp; Activities
+              </h3>
+              <div class="resume-entry">
+                <div class="resume-entry-header">
+                  <strong>President</strong>
+                  <span class="resume-date">2023 – 2024</span>
+                </div>
+                <div class="resume-entry-sub">[CS Club / Organization Name]</div>
+              </div>
+              <div class="resume-entry">
+                <div class="resume-entry-header">
+                  <strong>Teaching Assistant</strong>
+                  <span class="resume-date">2022 – 2024</span>
+                </div>
+                <div class="resume-entry-sub">Intro to Algorithms · [University]</div>
+              </div>
+              <div class="resume-entry">
+                <div class="resume-entry-header">
+                  <strong>Competitive Programmer</strong>
+                  <span class="resume-date">2021 – Present</span>
+                </div>
+                <div class="resume-entry-sub">ICPC, LeetCode, Codeforces</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── INTERESTS ─── -->
+    <section id="interests" class="section">
+      <div class="section-inner">
+        <div class="section-header">
+          <span class="section-number">05</span>
+          <h2 class="section-title">Interests</h2>
+          <div class="section-line"></div>
+        </div>
+        <p class="section-subtitle">The pursuits that keep me curious outside the lab.</p>
+
+        <div class="interests-bento">
+
+          <div class="bento-card large music">
+            <div class="bento-icon">🎵</div>
+            <h3 class="bento-title">Music</h3>
+            <p class="bento-desc">Playing piano since age 6, classical and jazz improvisation. Currently learning guitar. Music keeps the right brain alive.</p>
+            <div class="bento-detail">
+              <span>Favorites: Chopin, Miles Davis, Bill Evans</span>
+            </div>
+          </div>
+
+          <div class="bento-card climbing">
+            <div class="bento-icon">🧗</div>
+            <h3 class="bento-title">Rock Climbing</h3>
+            <p class="bento-desc">Bouldering problems as mental puzzles in 3D space. V5–V7 range.</p>
+          </div>
+
+          <div class="bento-card reading">
+            <div class="bento-icon">📚</div>
+            <h3 class="bento-title">Reading</h3>
+            <p class="bento-desc">Voracious reader across science, philosophy, and literary fiction.</p>
+            <div class="bento-detail">
+              <span>Currently: <em>[Book Title]</em> by [Author]</span>
+            </div>
+          </div>
+
+          <div class="bento-card large photography">
+            <div class="bento-icon">📷</div>
+            <h3 class="bento-title">Photography</h3>
+            <p class="bento-desc">Street and landscape photography. Finding compelling geometry in everyday scenes. Shot on a [Camera Model].</p>
+            <div class="bento-tags">
+              <span class="btag">Urban</span>
+              <span class="btag">Landscape</span>
+              <span class="btag">Film</span>
+            </div>
+          </div>
+
+          <div class="bento-card cooking">
+            <div class="bento-icon">🍜</div>
+            <h3 class="bento-title">Cooking</h3>
+            <p class="bento-desc">Asian cuisine specialist. The kitchen is where chemistry becomes art.</p>
+          </div>
+
+          <div class="bento-card travel">
+            <div class="bento-icon">✈️</div>
+            <h3 class="bento-title">Travel</h3>
+            <p class="bento-desc">12 countries visited. Every new place is a different lens on the world.</p>
+            <div class="bento-detail">
+              <span>Next destination: [Place]</span>
+            </div>
+          </div>
+
+          <div class="bento-card philosophy">
+            <div class="bento-icon">🧠</div>
+            <h3 class="bento-title">Philosophy of Mind</h3>
+            <p class="bento-desc">Consciousness, free will, and what it means to think. Perpetually unresolved.</p>
+          </div>
+
+          <div class="bento-card chess">
+            <div class="bento-icon">♟️</div>
+            <h3 class="bento-title">Chess</h3>
+            <p class="bento-desc">~1800 Elo on Chess.com. The game that teaches patience.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ─── Footer ─── -->
+  <footer id="site-footer">
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <span class="logo-bracket">[</span>ASD<span class="logo-bracket">]</span>
+      </div>
+      <p class="footer-copy">© 2024 Andy S. Ding · Built with care &amp; caffeine</p>
+      <div class="footer-links">
+        <a href="#">GitHub</a>
+        <a href="#">LinkedIn</a>
+        <a href="#">Email</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
