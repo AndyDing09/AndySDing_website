@@ -1,0 +1,7 @@
+# Serve index.html before index.php (bypasses WordPress)
+DirectoryIndex index.html index.php
+
+  # Disable WordPress rewrite rules for root
+  <IfModule mod_rewrite.c>
+  RewriteEngine Off
+</IfModule>
