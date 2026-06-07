@@ -104,11 +104,11 @@
   const el = document.getElementById('typed');
   if (!el) return;
   const words = [
-    'Machine Learning & AI.',
-    'Systems Research.',
-    'Human-Computer Interaction.',
-    'Open Science.',
-    'Full-Stack Engineering.'
+    'Robotics & Autonomous Systems.',
+    'Environmental Engineering.',
+    'Microplastic Research.',
+    'Ocean Science & Technology.',
+    'Entrepreneurship & Impact.'
   ];
   let wi = 0, ci = 0, deleting = false, wait = 0;
 
