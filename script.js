@@ -241,20 +241,22 @@ document.querySelectorAll('.res-tab').forEach(tab => {
   observeCards();
 })();
 
-/* ── Resume download button feedback ── */
-const dlBtn = document.getElementById('download-btn');
-if (dlBtn) {
-  dlBtn.addEventListener('click', (e) => {
-    /* If no real PDF yet, give feedback instead of 404 */
-    const href = dlBtn.getAttribute('href');
-    if (href === 'resume.pdf') {
-      e.preventDefault();
-      const original = dlBtn.innerHTML;
-      dlBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> PDF coming soon!`;
-      setTimeout(() => { dlBtn.innerHTML = original; }, 2500);
-    }
-  });
+/* ── Resume download button feedback (section button + FAB) ── */
+function handleResumeClick(btn, e) {
+  const href = btn.getAttribute('href');
+  if (href === 'resume.pdf') {
+    e.preventDefault();
+    const original = btn.innerHTML;
+    btn.innerHTML = btn.id === 'fab-resume'
+      ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20"><polyline points="20 6 9 17 4 12"/></svg><span>Coming soon!</span>`
+      : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> PDF coming soon!`;
+    setTimeout(() => { btn.innerHTML = original; }, 2500);
+  }
 }
+const dlBtn = document.getElementById('download-btn');
+if (dlBtn) dlBtn.addEventListener('click', e => handleResumeClick(dlBtn, e));
+const fabBtn = document.getElementById('fab-resume');
+if (fabBtn) fabBtn.addEventListener('click', e => handleResumeClick(fabBtn, e));
 
 /* ── Subtle tilt on bento cards (desktop) ── */
 document.querySelectorAll('.bento-card').forEach(card => {

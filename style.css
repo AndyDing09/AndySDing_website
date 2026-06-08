@@ -1056,3 +1056,45 @@ img { max-width: 100%; }
 
 /* Selection */
 ::selection { background: rgba(99,102,241,0.35); color: var(--text-1); }
+
+/* ── Floating Resume Download Button ── */
+.fab-resume {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, var(--indigo), #7c3aed);
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  border-radius: 50px;
+  box-shadow: 0 4px 24px rgba(99,102,241,0.45), 0 2px 8px rgba(0,0,0,0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  opacity: 0.95;
+}
+.fab-resume:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 8px 32px rgba(99,102,241,0.6), 0 4px 12px rgba(0,0,0,0.4);
+  opacity: 1;
+}
+.fab-resume:active {
+  transform: translateY(0) scale(0.98);
+}
+.fab-resume svg {
+  flex-shrink: 0;
+}
+@media (max-width: 520px) {
+  .fab-resume {
+    bottom: 20px;
+    right: 16px;
+    padding: 10px 16px;
+    font-size: 0.8rem;
+  }
+}
