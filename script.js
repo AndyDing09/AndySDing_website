@@ -77,7 +77,7 @@ if (dlBtn) {
   const DEFAULT_POST = {
     title: 'Welcome to my blog',
     content:
-      '<p>This is my little corner of the internet for writing about the environment, school, and whatever I’m curious about right now.</p>' +
+      '<p>This is my little corner of the internet for writing about Project Kymarion, ocean research, school, and whatever I’m curious about right now.</p>' +
       '<h2>How this page works (note to self)</h2>' +
       '<p>Hit the <strong>✏️ Edit</strong> button at the top right to start writing. While editing you can:</p>' +
       '<ul>' +

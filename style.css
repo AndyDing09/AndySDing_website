@@ -696,7 +696,39 @@ body::before {
   background: var(--green-soft);
   color: var(--green-deep);
 }
+.project-badge.ongoing {
+  background: var(--clay-soft);
+  color: var(--clay);
+}
 .project-year { color: var(--ink-3); font-size: 0.8rem; }
+
+/* Papers in progress */
+.papers-block {
+  margin-top: 32px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 26px 28px;
+  box-shadow: var(--shadow);
+}
+.papers-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--green-deep);
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.papers-list { display: flex; flex-direction: column; gap: 16px; }
+.papers-list li { display: flex; flex-direction: column; gap: 3px; }
+.papers-list strong {
+  font-size: 0.95rem;
+  color: var(--ink);
+  line-height: 1.45;
+}
+.paper-meta { font-size: 0.82rem; color: var(--ink-3); }
 .project-card-title {
   font-family: var(--font-display);
   font-size: 1.15rem;
