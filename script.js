@@ -2,255 +2,310 @@
    ANDY S. DING — PERSONAL WEBSITE SCRIPTS
 ═══════════════════════════════════════════════ */
 
-/* ── Animated particle/nebula background ── */
-(function initCanvas() {
-  const canvas = document.getElementById('bg-canvas');
-  const ctx = canvas.getContext('2d');
-  let W, H, particles, mouse = { x: -999, y: -999 };
-
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  }
-
-  function mkParticle() {
-    return {
-      x: Math.random() * W,
-      y: Math.random() * H,
-      r: Math.random() * 1.6 + 0.3,
-      vx: (Math.random() - 0.5) * 0.25,
-      vy: (Math.random() - 0.5) * 0.25,
-      alpha: Math.random() * 0.55 + 0.1,
-      hue: Math.random() < 0.6 ? 240 : (Math.random() < 0.5 ? 265 : 180)
-    };
-  }
-
-  function init() {
-    resize();
-    particles = Array.from({ length: 110 }, mkParticle);
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-
-    /* Soft gradient blobs */
-    const grad1 = ctx.createRadialGradient(W * 0.15, H * 0.25, 0, W * 0.15, H * 0.25, W * 0.38);
-    grad1.addColorStop(0, 'rgba(99,102,241,0.07)');
-    grad1.addColorStop(1, 'transparent');
-    ctx.fillStyle = grad1;
-    ctx.fillRect(0, 0, W, H);
-
-    const grad2 = ctx.createRadialGradient(W * 0.82, H * 0.7, 0, W * 0.82, H * 0.7, W * 0.3);
-    grad2.addColorStop(0, 'rgba(167,139,250,0.06)');
-    grad2.addColorStop(1, 'transparent');
-    ctx.fillStyle = grad2;
-    ctx.fillRect(0, 0, W, H);
-
-    /* Particles */
-    particles.forEach(p => {
-      /* Mouse repulsion */
-      const dx = p.x - mouse.x, dy = p.y - mouse.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 120) {
-        p.vx += (dx / dist) * 0.04;
-        p.vy += (dy / dist) * 0.04;
-      }
-      /* Speed cap */
-      const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
-      if (speed > 0.8) { p.vx *= 0.8 / speed; p.vy *= 0.8 / speed; }
-
-      p.x += p.vx;
-      p.y += p.vy;
-      if (p.x < 0) p.x = W;
-      if (p.x > W) p.x = 0;
-      if (p.y < 0) p.y = H;
-      if (p.y > H) p.y = 0;
-
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `hsla(${p.hue}, 75%, 75%, ${p.alpha})`;
-      ctx.fill();
-    });
-
-    /* Connection lines */
-    for (let i = 0; i < particles.length; i++) {
-      for (let j = i + 1; j < particles.length; j++) {
-        const dx = particles[i].x - particles[j].x;
-        const dy = particles[i].y - particles[j].y;
-        const d  = Math.sqrt(dx * dx + dy * dy);
-        if (d < 90) {
-          ctx.beginPath();
-          ctx.moveTo(particles[i].x, particles[i].y);
-          ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = `rgba(99,102,241,${0.12 * (1 - d / 90)})`;
-          ctx.lineWidth = 0.5;
-          ctx.stroke();
-        }
-      }
-    }
-
-    requestAnimationFrame(draw);
-  }
-
-  window.addEventListener('resize', () => { resize(); });
-  window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
-
-  init();
-  draw();
-})();
-
-/* ── Typed effect on hero ── */
-(function initTyped() {
-  const el = document.getElementById('typed');
-  if (!el) return;
-  const words = [
-    'Robotics & Autonomous Systems.',
-    'Environmental Engineering.',
-    'Microplastic Research.',
-    'Ocean Science & Technology.',
-    'Entrepreneurship & Impact.'
-  ];
-  let wi = 0, ci = 0, deleting = false, wait = 0;
-
-  function tick() {
-    const word = words[wi];
-    if (!deleting) {
-      el.textContent = word.slice(0, ++ci);
-      if (ci === word.length) { deleting = true; wait = 48; }
-    } else {
-      if (--wait > 0) { setTimeout(tick, 20); return; }
-      el.textContent = word.slice(0, --ci);
-      if (ci === 0) { deleting = false; wi = (wi + 1) % words.length; }
-    }
-    setTimeout(tick, deleting ? 38 : 75);
-  }
-  setTimeout(tick, 800);
-})();
-
 /* ── Section navigation ── */
 (function initNav() {
   const sections = document.querySelectorAll('.section');
-  const navLinks  = document.querySelectorAll('.nav-link, .drawer-link, .btn[data-section]');
-  const navbar    = document.getElementById('navbar');
+  const navLinks = document.querySelectorAll('.nav-link, .drawer-link, .btn[data-section], .nav-logo');
 
-  function showSection(id) {
+  window.showSection = function (id) {
     sections.forEach(s => s.classList.remove('active'));
     const target = document.getElementById(id);
     if (target) {
       target.classList.add('active');
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
-
-    /* Update active nav state */
     document.querySelectorAll('.nav-link, .drawer-link').forEach(l => {
-      l.classList.toggle('active', l.dataset.section === id);
+      // The post view belongs to the Blog tab
+      const navId = id === 'post' ? 'blog' : id;
+      l.classList.toggle('active', l.dataset.section === navId);
     });
-
-    /* Re-trigger skill bar animation when resume opens */
-    if (id === 'resume') {
-      document.querySelectorAll('.skill-bar-fill').forEach(bar => {
-        bar.style.animation = 'none';
-        requestAnimationFrame(() => {
-          bar.style.animation = '';
-        });
-      });
-    }
-  }
+  };
 
   navLinks.forEach(link => {
     link.addEventListener('click', e => {
-      e.preventDefault();
       const id = link.dataset.section;
       if (id) {
+        e.preventDefault();
         showSection(id);
         closeMobileDrawer();
       }
     });
   });
 
-  /* Scroll-based navbar shadow */
-  window.addEventListener('scroll', () => {
-    navbar.classList.toggle('scrolled', window.scrollY > 20);
-  });
-
-  /* Initial section from URL hash */
-  const hash = window.location.hash.replace('#', '');
-  if (hash && document.getElementById(hash)) showSection(hash);
-  else showSection('home');
+  if (sections.length) {
+    const hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById(hash)) showSection(hash);
+    else showSection('home');
+  }
 })();
 
 /* ── Mobile hamburger / drawer ── */
-const hamburger    = document.getElementById('hamburger');
-const mobileDrawer = document.getElementById('mobile-drawer');
-const drawerOverlay= document.getElementById('drawer-overlay');
+const hamburger     = document.getElementById('hamburger');
+const mobileDrawer  = document.getElementById('mobile-drawer');
+const drawerOverlay = document.getElementById('drawer-overlay');
 
 function closeMobileDrawer() {
+  if (!hamburger) return;
   hamburger.classList.remove('open');
   mobileDrawer.classList.remove('open');
   drawerOverlay.classList.remove('visible');
 }
-
-hamburger.addEventListener('click', () => {
-  const isOpen = mobileDrawer.classList.toggle('open');
-  hamburger.classList.toggle('open', isOpen);
-  drawerOverlay.classList.toggle('visible', isOpen);
-});
-drawerOverlay.addEventListener('click', closeMobileDrawer);
-
-/* ── Research tab switcher ── */
-document.querySelectorAll('.res-tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.res-tab').forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    const id = tab.dataset.tab;
-    document.querySelectorAll('.research-content').forEach(c => {
-      c.classList.toggle('hidden', !c.id.endsWith(id));
-    });
+if (hamburger) {
+  hamburger.addEventListener('click', () => {
+    const isOpen = mobileDrawer.classList.toggle('open');
+    hamburger.classList.toggle('open', isOpen);
+    drawerOverlay.classList.toggle('visible', isOpen);
   });
-});
+  drawerOverlay.addEventListener('click', closeMobileDrawer);
+}
 
-/* ── Scroll-reveal for cards ── */
-(function initReveal() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.style.opacity = '1';
-        entry.target.style.transform = 'translateY(0)';
-        observer.unobserve(entry.target);
+/* ═══════════════════════════════════════════════
+   BLOG — single post with built-in editor
+   Saved in this browser via localStorage.
+═══════════════════════════════════════════════ */
+(function initBlog() {
+  if (!document.getElementById('blog-card')) return; // not on this page
+  const KEY = 'asd-blog-post-v1';
+
+  const DEFAULT_POST = {
+    title: 'Welcome to my blog',
+    content:
+      '<p>This is my little corner of the internet for writing about Project Kymarion, ocean research, school, and whatever I’m curious about right now.</p>' +
+      '<h2>How this page works (note to self)</h2>' +
+      '<p>Hit the <strong>✏️ Edit</strong> button at the top right to start writing. While editing you can:</p>' +
+      '<ul>' +
+      '<li>Use the toolbar (or <strong>Ctrl+B</strong> / <strong>Ctrl+I</strong> / <strong>Ctrl+U</strong>) to format text</li>' +
+      '<li>Add headings, lists, quotes, and links</li>' +
+      '<li>Stop worrying about saving — it autosaves as you type</li>' +
+      '<li>Click <strong>⬇ Backup</strong> now and then to download a copy of your post</li>' +
+      '</ul>' +
+      '<blockquote>Replace all of this with your first real post whenever you’re ready!</blockquote>',
+    created: Date.now(),
+    updated: null
+  };
+
+  /* ── Elements ── */
+  const cardDate     = document.getElementById('card-date');
+  const cardTitle    = document.getElementById('card-title');
+  const cardExcerpt  = document.getElementById('card-excerpt');
+  const cardReadtime = document.getElementById('card-readtime');
+  const cardOpen     = document.getElementById('card-open');
+
+  const postSection  = document.getElementById('post');
+  const postBack     = document.getElementById('post-back');
+  const editToggle   = document.getElementById('edit-toggle');
+  const saveStatus   = document.getElementById('save-status');
+  const toolbar      = document.getElementById('editor-toolbar');
+  const postTitle    = document.getElementById('post-title');
+  const postDate     = document.getElementById('post-date');
+  const postStats    = document.getElementById('post-stats');
+  const postBody     = document.getElementById('post-body');
+  const editorFooter = document.getElementById('editor-footer');
+  const wordCount    = document.getElementById('word-count');
+  const backupBtn    = document.getElementById('backup-btn');
+  const restoreInput = document.getElementById('restore-input');
+  const resetBtn     = document.getElementById('reset-btn');
+  const linkBtn      = document.getElementById('link-btn');
+
+  let post = loadPost();
+  let editing = false;
+  let saveTimer = null;
+
+  /* ── Storage ── */
+  function loadPost() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (raw) {
+        const p = JSON.parse(raw);
+        if (p && typeof p.title === 'string' && typeof p.content === 'string') return p;
       }
-    });
-  }, { threshold: 0.08 });
-
-  function observeCards() {
-    document.querySelectorAll(
-      '.blog-card, .research-card, .pub-item, .bento-card, .resume-block'
-    ).forEach(el => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(24px)';
-      el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-      observer.observe(el);
-    });
+    } catch (e) { /* corrupted data — fall back to default */ }
+    return JSON.parse(JSON.stringify(DEFAULT_POST));
   }
 
-  /* Re-observe when sections become active */
-  const sectionObserver = new MutationObserver(observeCards);
-  document.querySelectorAll('.section').forEach(s => {
-    sectionObserver.observe(s, { attributes: true, attributeFilter: ['class'] });
+  function persist() {
+    post.title = postTitle.textContent.trim();
+    post.content = postBody.innerHTML;
+    post.updated = Date.now();
+    try {
+      localStorage.setItem(KEY, JSON.stringify(post));
+      flashStatus('Saved ✓', true);
+    } catch (e) {
+      flashStatus('⚠ Could not save (storage full?)', false);
+    }
+    renderCard();
+    renderMeta();
+  }
+
+  function scheduleSave() {
+    saveStatus.textContent = 'Saving…';
+    saveStatus.classList.remove('saved');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(persist, 600);
+  }
+
+  function flashStatus(msg, ok) {
+    saveStatus.textContent = msg;
+    saveStatus.classList.toggle('saved', !!ok);
+  }
+
+  /* ── Helpers ── */
+  function textOf(html) {
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return (div.textContent || '').trim();
+  }
+  function words(html) {
+    const t = textOf(html);
+    return t ? t.split(/\s+/).length : 0;
+  }
+  function readTime(html) {
+    return Math.max(1, Math.round(words(html) / 200));
+  }
+  function fmtDate(ts) {
+    return new Date(ts).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  }
+
+  /* ── Render ── */
+  function renderCard() {
+    cardTitle.textContent = post.title || 'Untitled post';
+    const t = textOf(post.content);
+    cardExcerpt.textContent = t.length > 200 ? t.slice(0, 200).trimEnd() + '…' : (t || 'Nothing written yet — open the post and start writing!');
+    cardDate.textContent = post.updated ? 'Updated ' + fmtDate(post.updated) : fmtDate(post.created);
+    cardReadtime.textContent = '🕐 ' + readTime(post.content) + ' min read';
+  }
+
+  function renderMeta() {
+    postDate.textContent = post.updated ? 'Updated ' + fmtDate(post.updated) : fmtDate(post.created);
+    postStats.textContent = readTime(post.content) + ' min read';
+    wordCount.textContent = words(post.content) + ' words';
+  }
+
+  function renderPost() {
+    postTitle.textContent = post.title;
+    postBody.innerHTML = post.content;
+    renderMeta();
+  }
+
+  /* ── Edit mode ── */
+  function setEditing(on) {
+    editing = on;
+    postSection.classList.toggle('editing', on);
+    toolbar.classList.toggle('hidden', !on);
+    editorFooter.classList.toggle('hidden', !on);
+    postTitle.contentEditable = on;
+    postBody.contentEditable = on;
+    editToggle.innerHTML = on ? '✓ Done' : '✏️ Edit';
+    editToggle.classList.toggle('btn-primary', on);
+    editToggle.classList.toggle('btn-ghost', !on);
+    if (on) {
+      flashStatus('Editing — changes save automatically', false);
+      postBody.focus();
+    } else {
+      clearTimeout(saveTimer);
+      persist();
+    }
+  }
+
+  /* ── Wire up ── */
+  cardOpen.addEventListener('click', () => { renderPost(); showSection('post'); });
+  document.getElementById('blog-card').addEventListener('click', e => {
+    if (e.target.closest('button')) return;
+    renderPost();
+    showSection('post');
   });
 
-  observeCards();
+  postBack.addEventListener('click', () => {
+    if (editing) setEditing(false);
+    showSection('blog');
+  });
+
+  editToggle.addEventListener('click', () => setEditing(!editing));
+
+  postTitle.addEventListener('input', scheduleSave);
+  postBody.addEventListener('input', () => {
+    scheduleSave();
+    wordCount.textContent = words(postBody.innerHTML) + ' words';
+  });
+
+  /* Keep the title to a single line; Enter jumps into the body */
+  postTitle.addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      postBody.focus();
+    }
+  });
+
+  /* Ctrl+S = save now (it autosaves anyway, but habits are habits) */
+  document.addEventListener('keydown', e => {
+    if (editing && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+      e.preventDefault();
+      clearTimeout(saveTimer);
+      persist();
+    }
+  });
+
+  /* Toolbar commands */
+  toolbar.querySelectorAll('.tb-btn').forEach(btn => {
+    /* Keep focus/selection in the editor when clicking toolbar buttons */
+    btn.addEventListener('mousedown', e => e.preventDefault());
+    btn.addEventListener('click', () => {
+      const cmd = btn.dataset.cmd;
+      const block = btn.dataset.block;
+      if (cmd) document.execCommand(cmd, false, null);
+      else if (block) document.execCommand('formatBlock', false, '<' + block + '>');
+    });
+  });
+
+  linkBtn.addEventListener('click', () => {
+    const url = prompt('Link address (e.g. https://example.com):');
+    if (url) document.execCommand('createLink', false, url);
+  });
+
+  /* Backup — download the post as a small file */
+  backupBtn.addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(post, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'my-blog-post.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+    flashStatus('Backup downloaded ✓', true);
+  });
+
+  /* Restore from a backup file */
+  restoreInput.addEventListener('change', () => {
+    const file = restoreInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const p = JSON.parse(reader.result);
+        if (!p || typeof p.title !== 'string' || typeof p.content !== 'string') throw new Error('bad file');
+        post = p;
+        renderPost();
+        persist();
+        flashStatus('Restored from backup ✓', true);
+      } catch (e) {
+        flashStatus('⚠ That file doesn’t look like a blog backup', false);
+      }
+      restoreInput.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  /* Start over */
+  resetBtn.addEventListener('click', () => {
+    if (!confirm('Erase this post and start with a blank page?\n(Tip: download a Backup first if you might want it back.)')) return;
+    post = { title: '', content: '', created: Date.now(), updated: null };
+    postTitle.textContent = '';
+    postBody.innerHTML = '';
+    persist();
+    flashStatus('Fresh page ready ✓', true);
+    postTitle.focus();
+  });
+
+  /* ── First paint ── */
+  renderCard();
+  renderPost();
 })();
-
-
-/* ── Subtle tilt on bento cards (desktop) ── */
-document.querySelectorAll('.bento-card').forEach(card => {
-  card.addEventListener('mousemove', e => {
-    const rect = card.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width  - 0.5;
-    const y = (e.clientY - rect.top)  / rect.height - 0.5;
-    card.style.transform = `translateY(-4px) scale(1.01) rotateX(${-y * 6}deg) rotateY(${x * 6}deg)`;
-  });
-  card.addEventListener('mouseleave', () => {
-    card.style.transform = '';
-  });
-});

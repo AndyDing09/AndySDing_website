@@ -6,33 +6,30 @@
   <title>Project Kymarion — Andy S. Ding</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <style>
     /* ── Page-level overrides for the project detail layout ── */
-    body { min-height: 100vh; }
-
     .project-page {
       max-width: 860px;
       margin: 0 auto;
-      padding: 120px 24px 80px;
+      padding: 110px 24px 80px;
     }
 
     .back-link {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      color: var(--text-3);
-      font-size: 0.85rem;
-      font-weight: 500;
-      text-decoration: none;
+      color: var(--ink-3);
+      font-size: 0.86rem;
+      font-weight: 600;
       margin-bottom: 40px;
       transition: var(--transition);
     }
-    .back-link:hover { color: var(--indigo-light); }
+    .back-link:hover { color: var(--green-deep); }
     .back-link svg { width: 14px; height: 14px; }
 
-    .project-hero { margin-bottom: 48px; }
+    .project-hero { margin-bottom: 44px; }
 
     .project-badges {
       display: flex;
@@ -41,66 +38,69 @@
       margin-bottom: 16px;
       flex-wrap: wrap;
     }
+    .research-badge.ongoing {
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: var(--clay-soft);
+      color: var(--clay);
+    }
+    .research-year { color: var(--ink-3); font-size: 0.82rem; }
 
     .project-title {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(1.8rem, 5vw, 2.8rem);
+      font-family: var(--font-display);
+      font-size: clamp(1.9rem, 5vw, 2.8rem);
       font-weight: 700;
-      color: var(--text-1);
-      line-height: 1.2;
+      color: var(--ink);
+      line-height: 1.15;
       margin-bottom: 16px;
     }
 
     .project-subtitle {
       font-size: 1.05rem;
-      color: var(--text-2);
-      line-height: 1.7;
+      color: var(--ink-2);
+      line-height: 1.75;
       max-width: 700px;
     }
 
     .project-meta-bar {
       display: flex;
       flex-wrap: wrap;
-      gap: 24px;
-      padding: 20px 24px;
-      background: var(--bg-glass);
+      gap: 26px;
+      padding: 20px 26px;
+      background: #fff;
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      margin-bottom: 48px;
+      box-shadow: var(--shadow);
+      margin-bottom: 44px;
       font-size: 0.85rem;
-      color: var(--text-2);
     }
     .meta-item { display: flex; flex-direction: column; gap: 4px; }
     .meta-label {
-      font-family: 'JetBrains Mono', monospace;
       font-size: 0.7rem;
-      color: var(--text-3);
+      font-weight: 700;
+      color: var(--ink-3);
       text-transform: uppercase;
       letter-spacing: 0.08em;
     }
-    .meta-value { font-weight: 600; color: var(--text-1); }
+    .meta-value { font-weight: 600; color: var(--ink); }
 
     .section-heading {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--teal);
-      font-family: 'JetBrains Mono', monospace;
-      letter-spacing: 0.04em;
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--green-deep);
       margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .section-heading::before {
-      content: '//';
-      color: var(--text-3);
     }
 
-    .project-section { margin-bottom: 48px; }
+    .project-section { margin-bottom: 44px; }
 
     .project-section p {
-      color: var(--text-2);
-      line-height: 1.8;
+      color: var(--ink-2);
+      line-height: 1.85;
       margin-bottom: 12px;
     }
 
@@ -114,13 +114,13 @@
     .project-section ul li {
       display: flex;
       gap: 10px;
-      color: var(--text-2);
+      color: var(--ink-2);
       line-height: 1.7;
       font-size: 0.95rem;
     }
     .project-section ul li::before {
       content: '→';
-      color: var(--teal);
+      color: var(--green);
       flex-shrink: 0;
       margin-top: 2px;
     }
@@ -132,33 +132,40 @@
     }
     .tech-tag {
       padding: 5px 14px;
-      border-radius: 6px;
-      background: var(--indigo-dim);
-      border: 1px solid var(--border);
-      color: var(--indigo-light);
-      font-size: 0.8rem;
+      border-radius: 999px;
+      background: var(--green-soft);
+      border: 1px solid rgba(46, 107, 78, 0.2);
+      color: var(--green-deep);
+      font-size: 0.82rem;
       font-weight: 500;
-      font-family: 'JetBrains Mono', monospace;
     }
 
     .spec-table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.88rem;
+      font-size: 0.9rem;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
     }
     .spec-table td {
-      padding: 10px 14px;
+      padding: 11px 16px;
       border-bottom: 1px solid var(--border);
       vertical-align: top;
     }
+    .spec-table tr:last-child td { border-bottom: none; }
     .spec-table td:first-child {
-      color: var(--text-3);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.78rem;
+      color: var(--ink-3);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
       white-space: nowrap;
       width: 35%;
     }
-    .spec-table td:last-child { color: var(--text-1); }
+    .spec-table td:last-child { color: var(--ink); }
 
     .timeline {
       position: relative;
@@ -174,11 +181,9 @@
       top: 6px;
       bottom: 6px;
       width: 2px;
-      background: var(--border);
+      background: var(--border-strong);
     }
-    .timeline-item {
-      position: relative;
-    }
+    .timeline-item { position: relative; }
     .timeline-item::before {
       content: '';
       position: absolute;
@@ -187,33 +192,35 @@
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: var(--teal);
-      border: 2px solid var(--bg);
+      background: var(--green);
+      border: 2px solid var(--paper);
     }
     .timeline-date {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.72rem;
-      color: var(--text-3);
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--clay);
       margin-bottom: 4px;
     }
     .timeline-title {
       font-weight: 600;
-      color: var(--text-1);
+      color: var(--ink);
       margin-bottom: 4px;
     }
-    .timeline-desc { color: var(--text-2); font-size: 0.88rem; line-height: 1.6; }
+    .timeline-desc { color: var(--ink-2); font-size: 0.9rem; line-height: 1.6; }
 
     .status-note {
-      padding: 14px 18px;
-      background: rgba(45,212,191,0.06);
-      border: 1px solid rgba(45,212,191,0.2);
+      padding: 15px 20px;
+      background: var(--green-soft);
+      border: 1px solid rgba(46, 107, 78, 0.25);
       border-radius: var(--radius);
-      color: var(--text-2);
-      font-size: 0.88rem;
-      line-height: 1.6;
-      margin-bottom: 48px;
+      color: var(--ink-2);
+      font-size: 0.9rem;
+      line-height: 1.65;
+      margin-bottom: 44px;
     }
-    .status-note strong { color: var(--teal); }
+    .status-note strong { color: var(--green-deep); }
 
     .cta-row {
       display: flex;
@@ -222,46 +229,36 @@
       margin-top: 8px;
     }
     .cta-btn {
-      padding: 10px 22px;
-      border-radius: 8px;
+      padding: 11px 24px;
+      border-radius: 999px;
       font-size: 0.9rem;
       font-weight: 600;
-      text-decoration: none;
       transition: var(--transition);
-      border: 1px solid;
     }
     .cta-btn.primary {
-      background: var(--indigo);
+      background: var(--green);
       color: #fff;
-      border-color: var(--indigo);
     }
-    .cta-btn.primary:hover { opacity: 0.85; }
+    .cta-btn.primary:hover { background: var(--green-deep); transform: translateY(-1px); }
     .cta-btn.secondary {
       background: transparent;
-      color: var(--indigo-light);
-      border-color: var(--border);
+      color: var(--green-deep);
+      border: 1.5px solid var(--green);
     }
-    .cta-btn.secondary:hover {
-      background: var(--indigo-dim);
-      border-color: var(--indigo);
-    }
+    .cta-btn.secondary:hover { background: var(--green-soft); transform: translateY(-1px); }
   </style>
 </head>
 <body>
 
-  <canvas id="bg-canvas"></canvas>
-
   <nav id="navbar">
-    <div class="nav-logo">
-      <a href="index.html" style="text-decoration:none;color:inherit;">
-        <span class="logo-bracket">[</span>ASD<span class="logo-bracket">]</span>
-      </a>
-    </div>
+    <a href="index.html" class="nav-logo">
+      <span class="logo-leaf">🌊</span> Andy S. Ding
+    </a>
     <ul class="nav-links">
       <li><a href="index.html#home"     class="nav-link">Home</a></li>
       <li><a href="index.html#about"    class="nav-link">About</a></li>
       <li><a href="index.html#blog"     class="nav-link">Blog</a></li>
-      <li><a href="index.html#research" class="nav-link">Research</a></li>
+      <li><a href="index.html#research" class="nav-link active">Research</a></li>
       <li><a href="index.html#resume"   class="nav-link">Résumé</a></li>
       <li><a href="index.html#interests" class="nav-link">Interests</a></li>
     </ul>

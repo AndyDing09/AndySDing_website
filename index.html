@@ -3,29 +3,27 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Andy S. Ding — Personal Website</title>
+  <title>Andy S. Ding — Aspiring Environmental Engineer</title>
+  <meta name="description" content="Personal website of Andy S. Ding — student researcher mapping ocean microplastics with autonomous robotics, and future environmental engineer." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <!-- ─── Canvas background ─── -->
-  <canvas id="bg-canvas"></canvas>
-
   <!-- ─── Navigation ─── -->
   <nav id="navbar">
-    <div class="nav-logo">
-      <span class="logo-bracket">[</span>ASD<span class="logo-bracket">]</span>
-    </div>
+    <a href="#home" class="nav-logo" data-section="home">
+      <span class="logo-leaf">🌊</span> Andy S. Ding
+    </a>
     <ul class="nav-links" id="nav-links">
-      <li><a href="#home"     class="nav-link active" data-section="home">Home</a></li>
-      <li><a href="#about"    class="nav-link"        data-section="about">About</a></li>
-      <li><a href="#blog"     class="nav-link"        data-section="blog">Blog</a></li>
-      <li><a href="#research" class="nav-link"        data-section="research">Research</a></li>
-      <li><a href="#resume"   class="nav-link"        data-section="resume">Résumé</a></li>
-      <li><a href="#interests" class="nav-link"       data-section="interests">Interests</a></li>
+      <li><a href="#home"      class="nav-link active" data-section="home">Home</a></li>
+      <li><a href="#about"     class="nav-link"        data-section="about">About</a></li>
+      <li><a href="#blog"      class="nav-link"        data-section="blog">Blog</a></li>
+      <li><a href="#research"  class="nav-link"        data-section="research">Research</a></li>
+      <li><a href="#resume"    class="nav-link"        data-section="resume">Résumé</a></li>
+      <li><a href="#interests" class="nav-link"        data-section="interests">Interests</a></li>
     </ul>
     <button class="hamburger" id="hamburger" aria-label="Toggle menu">
       <span></span><span></span><span></span>
@@ -36,7 +34,7 @@
   <div class="mobile-drawer" id="mobile-drawer">
     <ul>
       <li><a href="#home"      class="drawer-link" data-section="home">Home</a></li>
-      <li><a href="#about"     class="drawer-link" data-section="about">About Me</a></li>
+      <li><a href="#about"     class="drawer-link" data-section="about">About</a></li>
       <li><a href="#blog"      class="drawer-link" data-section="blog">Blog</a></li>
       <li><a href="#research"  class="drawer-link" data-section="research">Research</a></li>
       <li><a href="#resume"    class="drawer-link" data-section="resume">Résumé</a></li>
@@ -45,50 +43,29 @@
   </div>
   <div class="drawer-overlay" id="drawer-overlay"></div>
 
-  <!-- ═══════════════════════════════════════
-       MAIN CONTENT
-  ════════════════════════════════════════ -->
   <main id="main">
 
     <!-- ─── HOME ─── -->
     <section id="home" class="section active">
       <div class="hero-container">
-        <div class="hero-eyebrow">
-          <span class="dot pulse"></span>
-          <span>Available for opportunities</span>
-        </div>
-        <h1 class="hero-name">
-          Andy S.<br /><em>Ding</em>
-        </h1>
+        <p class="hero-eyebrow">Hi, I'm Andy 👋</p>
+        <h1 class="hero-name">Future<br /><em>environmental</em><br />engineer.</h1>
         <p class="hero-tagline">
-          Engineer &amp; Researcher.<br />
-          Building things that matter at the intersection of<br />
-          <span class="typed-wrapper"><span id="typed"></span><span class="cursor">|</span></span>
+          I build autonomous robots that study the ocean. My current project,
+          <strong>Project Kymarion</strong>, is a self-navigating boat we designed and built
+          to map microplastic pollution along the Massachusetts coast. This site is where
+          I share my research, my writing, and what I'm learning along the way.
         </p>
         <div class="hero-cta">
-          <a href="#about" class="btn btn-primary" data-section="about">Explore My Work</a>
-          <a href="#resume" class="btn btn-ghost" data-section="resume">View Résumé</a>
+          <a href="#research" class="btn btn-primary" data-section="research">See my research</a>
+          <a href="#blog" class="btn btn-ghost" data-section="blog">Read my blog</a>
         </div>
-        <div class="hero-stats">
-          <div class="stat">
-            <span class="stat-number">2</span>
-            <span class="stat-label">Research Projects</span>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat">
-            <span class="stat-number">2</span>
-            <span class="stat-label">Papers</span>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat">
-            <span class="stat-number">ISEF</span>
-            <span class="stat-label">Target</span>
-          </div>
+        <div class="hero-topics">
+          <span class="topic-chip">🌊 Ocean research</span>
+          <span class="topic-chip">🤖 Autonomous robotics</span>
+          <span class="topic-chip">💧 Microplastic detection</span>
+          <span class="topic-chip">♻️ Sustainability</span>
         </div>
-      </div>
-      <div class="hero-scroll-hint">
-        <span>Scroll</span>
-        <div class="scroll-line"></div>
       </div>
     </section>
 
@@ -105,37 +82,36 @@
           <div class="about-photo-col">
             <div class="photo-frame">
               <div class="photo-placeholder">
-                <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="100" cy="80" r="42" fill="rgba(99,102,241,0.3)" stroke="rgba(99,102,241,0.6)" stroke-width="2"/>
-                  <ellipse cx="100" cy="175" rx="68" ry="38" fill="rgba(99,102,241,0.2)" stroke="rgba(99,102,241,0.4)" stroke-width="2"/>
-                </svg>
-                <span>Photo Coming Soon</span>
+                <span class="photo-emoji">🌄</span>
+                <span>Photo coming soon</span>
               </div>
-              <div class="photo-accent-ring"></div>
             </div>
-            <div class="social-links">
-              <a href="https://github.com/andyding09" class="social-btn" aria-label="GitHub" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.54-1.38-1.33-1.75-1.33-1.75-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49.99.1-.78.42-1.3.76-1.6-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 3-.4c1.02 0 2.04.14 3 .4 2.28-1.55 3.29-1.23 3.29-1.23.66 1.66.25 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.81 5.63-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
-              </a>
-              <a href="https://www.linkedin.com/in/andy-ding-a5b352317/" class="social-btn" aria-label="LinkedIn" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.95v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zm1.78 13.02H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
-              </a>
-              <a href="https://mail.google.com/mail/?view=cm&to=andyding09@gmail.com" class="social-btn" aria-label="Email" target="_blank" rel="noopener">
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>
-              </a>
+            <div class="social-row">
+              <a href="https://github.com/andyding09" class="social-link" target="_blank" rel="noopener">GitHub</a>
+              <a href="https://www.linkedin.com/in/andy-ding-a5b352317/" class="social-link" target="_blank" rel="noopener">LinkedIn</a>
+              <a href="https://mail.google.com/mail/?view=cm&to=andyding09@gmail.com" class="social-link" target="_blank" rel="noopener">Email</a>
             </div>
           </div>
 
           <div class="about-text-col">
             <p class="about-bio">
-              Hi! I'm <strong>Andy</strong>, a 10th grader at Weston High School (Class of 2028) with a passion for engineering, environmental science, and building things that matter. I thrive at the intersection of hardware, software, and real-world impact — whether that's designing autonomous vehicles, developing medical imaging systems, or competing on a national stage.
+              I'm <strong>Andy Ding</strong>, a 10th grader at Weston High School (Class of 2028)
+              planning to major in <strong>environmental engineering</strong>. I'm passionate about
+              engineering, environmental science, and building things that matter — and I thrive at
+              the intersection of hardware, software, and real-world impact.
             </p>
             <p class="about-bio">
-              My current research includes <strong>Project Kymarion</strong>, an ISEF project I'm co-developing with a partner to map nearshore microplastic concentrations using a low-cost autonomous surface vehicle along the Massachusetts coast, and <strong>LuminaBone</strong>, a medical imaging project developing a shading-based 3D bone endoscope for orthopedic surgery. Beyond research, I captain my FTC robotics team, compete in DECA and debate, swim at the varsity level, and write about my work for public audiences.
+              My current research includes <strong>Project Kymarion</strong>, an ISEF project I'm
+              co-developing with a partner to map nearshore microplastic concentrations using a
+              low-cost autonomous surface vehicle along the Massachusetts coast, and
+              <strong>LuminaBone</strong>, a medical imaging project developing a shading-based 3D
+              bone endoscope for orthopedic surgery. Beyond research, I captain my FTC robotics
+              team, compete in DECA and debate, swim at the varsity level, and write about my work
+              for public audiences.
             </p>
 
             <div class="skills-section">
-              <h3 class="skills-title">Skills &amp; Technologies</h3>
+              <h3 class="skills-title">Skills &amp; technologies</h3>
               <div class="skills-grid">
                 <div class="skill-category">
                   <span class="skill-cat-label">Languages</span>
@@ -168,18 +144,9 @@
             </div>
 
             <div class="about-quick-facts">
-              <div class="fact">
-                <span class="fact-icon">🎓</span>
-                <span>Weston High School, MA — Class of 2028</span>
-              </div>
-              <div class="fact">
-                <span class="fact-icon">🔬</span>
-                <span>Research focus: Autonomous systems &amp; microplastic detection</span>
-              </div>
-              <div class="fact">
-                <span class="fact-icon">📍</span>
-                <span>Weston, Massachusetts</span>
-              </div>
+              <div class="fact"><span class="fact-icon">🎓</span><span>Weston High School, MA — Class of 2028</span></div>
+              <div class="fact"><span class="fact-icon">🔬</span><span>Research focus: Autonomous systems &amp; microplastic detection</span></div>
+              <div class="fact"><span class="fact-icon">📍</span><span>Weston, Massachusetts</span></div>
             </div>
           </div>
         </div>
@@ -194,93 +161,75 @@
           <h2 class="section-title">Blog</h2>
           <div class="section-line"></div>
         </div>
-        <p class="section-subtitle">Thoughts on technology, research, and everything in between.</p>
+        <p class="section-subtitle">Field notes — documenting Project Kymarion, ocean research, and whatever I'm learning right now.</p>
 
-        <div class="blog-featured">
-          <article class="blog-card featured">
-            <div class="blog-card-meta">
-              <span class="blog-tag featured-tag">Featured</span>
-              <span class="blog-date">December 15, 2024</span>
-            </div>
-            <h3 class="blog-card-title">The Future of Large Language Models in Scientific Research</h3>
-            <p class="blog-card-excerpt">
-              An exploration of how transformer-based language models are reshaping the way scientists discover, synthesize, and communicate knowledge — and what this means for the next decade of research.
-            </p>
-            <div class="blog-card-footer">
-              <div class="blog-read-time">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                8 min read
-              </div>
-              <a href="#" class="blog-read-link">Read Article →</a>
-            </div>
-          </article>
+        <article class="blog-card" id="blog-card">
+          <div class="blog-card-top">
+            <span class="blog-tag">Journal</span>
+            <span class="blog-date" id="card-date"></span>
+          </div>
+          <h3 class="blog-card-title" id="card-title"></h3>
+          <p class="blog-card-excerpt" id="card-excerpt"></p>
+          <div class="blog-card-footer">
+            <span class="blog-read-time" id="card-readtime"></span>
+            <button class="btn btn-primary" id="card-open">See more →</button>
+          </div>
+        </article>
+
+        <p class="blog-hint">✏️ This is your journal. Open it and hit <strong>Edit</strong> to write — everything saves automatically in your browser.</p>
+      </div>
+    </section>
+
+    <!-- ─── POST (full blog view + editor — not in nav) ─── -->
+    <section id="post" class="section">
+      <div class="section-inner post-inner">
+
+        <div class="post-topbar">
+          <button class="link-btn" id="post-back">← Back to blog</button>
+          <div class="post-actions">
+            <span class="save-status" id="save-status"></span>
+            <button class="btn btn-ghost btn-small" id="edit-toggle">✏️ Edit</button>
+          </div>
         </div>
 
-        <div class="blog-grid">
-          <article class="blog-card">
-            <div class="blog-card-meta">
-              <span class="blog-tag">Machine Learning</span>
-              <span class="blog-date">Nov 30, 2024</span>
-            </div>
-            <h3 class="blog-card-title">Understanding Attention Mechanisms: A Visual Guide</h3>
-            <p class="blog-card-excerpt">Breaking down the self-attention mechanism that powers modern transformers with intuitive visualizations and code examples.</p>
-            <div class="blog-card-footer">
-              <div class="blog-read-time">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                6 min read
-              </div>
-              <a href="#" class="blog-read-link">Read →</a>
-            </div>
-          </article>
-
-          <article class="blog-card">
-            <div class="blog-card-meta">
-              <span class="blog-tag">Career</span>
-              <span class="blog-date">Nov 10, 2024</span>
-            </div>
-            <h3 class="blog-card-title">Navigating Research Internships as an Undergrad</h3>
-            <p class="blog-card-excerpt">Lessons learned from applying to, landing, and making the most of research internships at top institutions.</p>
-            <div class="blog-card-footer">
-              <div class="blog-read-time">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                5 min read
-              </div>
-              <a href="#" class="blog-read-link">Read →</a>
-            </div>
-          </article>
-
-          <article class="blog-card">
-            <div class="blog-card-meta">
-              <span class="blog-tag">Systems</span>
-              <span class="blog-date">Oct 22, 2024</span>
-            </div>
-            <h3 class="blog-card-title">Distributed Systems: Why Consistency is Hard</h3>
-            <p class="blog-card-excerpt">A deep dive into the CAP theorem and the fundamental tradeoffs that every distributed system engineer must understand.</p>
-            <div class="blog-card-footer">
-              <div class="blog-read-time">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                7 min read
-              </div>
-              <a href="#" class="blog-read-link">Read →</a>
-            </div>
-          </article>
-
-          <article class="blog-card">
-            <div class="blog-card-meta">
-              <span class="blog-tag">Reflection</span>
-              <span class="blog-date">Oct 5, 2024</span>
-            </div>
-            <h3 class="blog-card-title">On Learning in Public and Building a Research Identity</h3>
-            <p class="blog-card-excerpt">Why sharing your work openly — even when it's imperfect — is one of the most powerful things a young researcher can do.</p>
-            <div class="blog-card-footer">
-              <div class="blog-read-time">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                4 min read
-              </div>
-              <a href="#" class="blog-read-link">Read →</a>
-            </div>
-          </article>
+        <div class="editor-toolbar hidden" id="editor-toolbar">
+          <button class="tb-btn" data-cmd="bold"          title="Bold (Ctrl+B)"><strong>B</strong></button>
+          <button class="tb-btn" data-cmd="italic"        title="Italic (Ctrl+I)"><em>I</em></button>
+          <button class="tb-btn" data-cmd="underline"     title="Underline (Ctrl+U)"><u>U</u></button>
+          <span class="tb-sep"></span>
+          <button class="tb-btn" data-block="h2"          title="Big heading">H2</button>
+          <button class="tb-btn" data-block="h3"          title="Small heading">H3</button>
+          <button class="tb-btn" data-block="p"           title="Normal text">¶</button>
+          <button class="tb-btn" data-block="blockquote"  title="Quote">❝</button>
+          <span class="tb-sep"></span>
+          <button class="tb-btn" data-cmd="insertUnorderedList" title="Bullet list">•≡</button>
+          <button class="tb-btn" data-cmd="insertOrderedList"   title="Numbered list">1≡</button>
+          <button class="tb-btn" id="link-btn"            title="Add link">🔗</button>
+          <span class="tb-sep"></span>
+          <button class="tb-btn" data-cmd="removeFormat"  title="Clear formatting">✕fmt</button>
+          <button class="tb-btn" data-cmd="undo"          title="Undo (Ctrl+Z)">↺</button>
+          <button class="tb-btn" data-cmd="redo"          title="Redo (Ctrl+Y)">↻</button>
         </div>
+
+        <h1 class="post-title" id="post-title" data-placeholder="Give your post a title…"></h1>
+        <div class="post-meta">
+          <span id="post-date"></span>
+          <span class="meta-dot">·</span>
+          <span id="post-stats"></span>
+        </div>
+        <article class="post-body" id="post-body" data-placeholder="Start writing here…"></article>
+
+        <div class="editor-footer hidden" id="editor-footer">
+          <span class="word-count" id="word-count"></span>
+          <div class="editor-footer-actions">
+            <button class="link-btn" id="backup-btn" title="Download a copy of your post as a file">⬇ Backup</button>
+            <label class="link-btn restore-label" title="Load a post from a backup file">
+              ⬆ Restore<input type="file" id="restore-input" accept=".json" hidden />
+            </label>
+            <button class="link-btn danger" id="reset-btn" title="Erase everything and start a blank post">🗑 Start over</button>
+          </div>
+        </div>
+
       </div>
     </section>
 
@@ -292,79 +241,58 @@
           <h2 class="section-title">Research</h2>
           <div class="section-line"></div>
         </div>
-        <p class="section-subtitle">Exploring problems at the frontier of computer science.</p>
+        <p class="section-subtitle">Independent research in environmental engineering, robotics, and ocean science.</p>
 
-        <div class="research-tabs">
-          <button class="res-tab active" data-tab="projects">Projects</button>
-          <button class="res-tab" data-tab="papers">Publications</button>
-        </div>
-
-        <div class="research-content" id="tab-projects">
-          <div class="research-grid">
-            <div class="research-card">
-              <div class="research-card-header">
-                <span class="research-badge ongoing">Ongoing</span>
-                <span class="research-year">2025–Present</span>
-              </div>
-              <h3 class="research-card-title"><a href="kymarion.html" class="card-title-link">Project Kymarion — ISEF Autonomous Surface Vehicle</a></h3>
-              <p class="research-card-desc">
-                A collaborative ISEF research project investigating whether nearshore microplastic concentrations peak at sites where opposing coastal currents converge. We designed and built a low-cost autonomous surface vehicle equipped with GPS-tagged sensors that conducts 15–20 waypoint surveys per deployment across candidate convergence zones along the Massachusetts coast. Statistical analysis (ANOVA, regression against convergence-strength metrics) will test whether microplastic accumulation is governed by predictable hydrodynamic features — and if confirmed, identify high-yield sites for future capture stations.
-              </p>
-              <div class="research-card-meta">
-                <span class="research-venue">ISEF — Environmental Science &amp; Earth/Ocean Sciences · Co-investigator</span>
-              </div>
-              <div class="research-links">
-                <a href="kymarion.html" class="res-link">Learn More →</a>
-                <a href="kymarion.html#paper" class="res-link">Paper (Draft)</a>
-                <a href="kymarion.html#build-guide" class="res-link">Build Guide</a>
-              </div>
+        <div class="projects-grid">
+          <a class="project-card project-card-link" href="kymarion.html">
+            <div class="project-card-header">
+              <span class="project-badge ongoing">Ongoing</span>
+              <span class="project-year">2025 – Present</span>
             </div>
+            <h3 class="project-card-title">Project Kymarion — ISEF Autonomous Surface Vehicle</h3>
+            <p class="project-card-desc">
+              A collaborative ISEF research project investigating whether nearshore microplastic
+              concentrations peak at sites where opposing coastal currents converge. We designed
+              and built a low-cost autonomous surface vehicle equipped with GPS-tagged sensors
+              that conducts 15–20 waypoint surveys per deployment across candidate convergence
+              zones along the Massachusetts coast. Statistical analysis will test whether
+              microplastic accumulation is governed by predictable hydrodynamic features.
+            </p>
+            <span class="project-card-meta">ISEF — Environmental Science &amp; Earth/Ocean Sciences · Co-investigator</span>
+            <span class="project-more">Learn more →</span>
+          </a>
 
-            <div class="research-card">
-              <div class="research-card-header">
-                <span class="research-badge ongoing">Ongoing</span>
-                <span class="research-year">Summer 2026</span>
-              </div>
-              <h3 class="research-card-title">LuminaBone — Low-Cost Shading-Based 3D Bone Endoscope</h3>
-              <p class="research-card-desc">
-                A medical imaging project developing a 6 mm endoscope that uses near-light photometric stereo to reconstruct accurate 3D bone topography in real time — without dye or expensive stereo cameras. Two off-axis micro-LEDs driven sequentially via PWM capture shading gradients across rigid bone surfaces; a Lambertian + inverse-square pipeline then solves surface normals and integrates them into a full 3D map. Targeting ≥15 fps on bone phantoms and validated against high-precision laser scans.
-              </p>
-              <div class="research-card-meta">
-                <span class="research-venue">Summer 2026 Medical Imaging Internship — orthopedic &amp; ENT applications</span>
-              </div>
-              <div class="research-links">
-                <a href="#" class="res-link">Proposal</a>
-              </div>
+          <div class="project-card">
+            <div class="project-card-header">
+              <span class="project-badge ongoing">Ongoing</span>
+              <span class="project-year">Summer 2026</span>
             </div>
+            <h3 class="project-card-title">LuminaBone — Low-Cost Shading-Based 3D Bone Endoscope</h3>
+            <p class="project-card-desc">
+              A medical imaging project developing a 6 mm endoscope that uses near-light
+              photometric stereo to reconstruct accurate 3D bone topography in real time —
+              without dye or expensive stereo cameras. Two off-axis micro-LEDs driven
+              sequentially via PWM capture shading gradients across rigid bone surfaces;
+              a Lambertian + inverse-square pipeline then solves surface normals and integrates
+              them into a full 3D map. Targeting ≥15 fps on bone phantoms and validated against
+              high-precision laser scans.
+            </p>
+            <span class="project-card-meta">Summer 2026 Medical Imaging Internship — orthopedic &amp; ENT applications</span>
           </div>
         </div>
 
-        <div class="research-content hidden" id="tab-papers">
-          <ol class="publications-list">
-            <li class="pub-item">
-              <div class="pub-venue">
-                <span class="pub-badge preprint">In Progress</span>
-                <span class="pub-conf-name">ISEF Research Paper · 2025–2026</span>
-              </div>
-              <h4 class="pub-title">Nearshore Microplastic Accumulation at Current-Convergence Zones: A Low-Cost ASV Mapping Study</h4>
-              <p class="pub-authors"><strong>Andy S. Ding</strong>, Co-investigator</p>
-              <div class="pub-links">
-                <a href="#" class="pub-link">[Draft]</a>
-                <a href="#" class="pub-link">[Build Guide]</a>
-              </div>
+        <div class="papers-block">
+          <h3 class="papers-title">📄 Papers in progress</h3>
+          <ul class="papers-list">
+            <li>
+              <strong>Nearshore Microplastic Accumulation at Current-Convergence Zones: A Low-Cost ASV Mapping Study</strong>
+              <span class="paper-meta">Andy S. Ding, Co-investigator — ISEF research paper · 2025–2026 · draft</span>
             </li>
-            <li class="pub-item">
-              <div class="pub-venue">
-                <span class="pub-badge preprint">In Progress</span>
-                <span class="pub-conf-name">Medical Imaging Internship Report · Summer 2026</span>
-              </div>
-              <h4 class="pub-title">LuminaBone: Development of a Low-Cost Shading-Based 3D Bone Endoscope Using a Near-Light Photometric Stereo Approach</h4>
-              <p class="pub-authors"><strong>Andy S. Ding</strong></p>
-              <div class="pub-links">
-                <a href="#" class="pub-link">[Proposal]</a>
-              </div>
+            <li>
+              <strong>LuminaBone: Development of a Low-Cost Shading-Based 3D Bone Endoscope Using a Near-Light Photometric Stereo Approach</strong>
+              <span class="paper-meta">Andy S. Ding — medical imaging internship report · Summer 2026 · proposal</span>
             </li>
-          </ol>
+          </ul>
         </div>
       </div>
     </section>
@@ -379,21 +307,14 @@
         </div>
 
         <div class="resume-actions">
-          <a href="resume.pdf" download class="btn btn-primary" id="download-btn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Download PDF
-          </a>
+          <a href="resume.pdf" download="Andy_Ding_Resume.pdf" class="btn btn-primary" id="download-btn">⬇ Download PDF</a>
           <span class="resume-updated">Last updated: June 2026</span>
         </div>
 
         <div class="resume-layout">
-          <!-- Left column -->
           <div class="resume-left">
             <div class="resume-block">
-              <h3 class="resume-block-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-                Education
-              </h3>
+              <h3 class="resume-block-title">🎓 Education</h3>
               <div class="resume-entry">
                 <div class="resume-entry-header">
                   <strong>Weston High School</strong>
@@ -409,20 +330,27 @@
             </div>
 
             <div class="resume-block">
-              <h3 class="resume-block-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-                Experience
-              </h3>
+              <h3 class="resume-block-title">💼 Experience</h3>
               <div class="resume-entry">
                 <div class="resume-entry-header">
-                  <strong>Principal Investigator — Project Kymarion</strong>
+                  <strong>Co-Investigator — Project Kymarion</strong>
                   <span class="resume-date">2025 – Present</span>
                 </div>
-                <div class="resume-entry-sub">Independent ISEF Research, Coastal Massachusetts</div>
+                <div class="resume-entry-sub">ISEF Research, Coastal Massachusetts</div>
                 <ul class="resume-bullets">
-                  <li>Designed and built HDPE trimaran ASV for autonomous nearshore microplastic mapping</li>
-                  <li>Engineered full ESP32/NEO-M8N navigation stack; conducting fieldwork in MA coastal waters</li>
-                  <li>Authoring two independent research papers; targeting ISEF international</li>
+                  <li>Co-designed and built a low-cost ASV for autonomous nearshore microplastic mapping</li>
+                  <li>Runs 15–20 GPS waypoint surveys per deployment; fieldwork underway in MA coastal waters</li>
+                  <li>Authoring research paper on convergence-zone microplastic accumulation; targeting ISEF</li>
+                </ul>
+              </div>
+              <div class="resume-entry">
+                <div class="resume-entry-header">
+                  <strong>Medical Robotics Program</strong>
+                  <span class="resume-date">Summer 2025</span>
+                </div>
+                <div class="resume-entry-sub">Medical Robotics</div>
+                <ul class="resume-bullets">
+                  <li>Participated in selective medical robotics program</li>
                 </ul>
               </div>
               <div class="resume-entry">
@@ -436,84 +364,35 @@
                   <li>Completed paid WPS internship</li>
                 </ul>
               </div>
-              <div class="resume-entry">
-                <div class="resume-entry-header">
-                  <strong>Medical Robotics Program</strong>
-                  <span class="resume-date">Summer 2025</span>
-                </div>
-                <div class="resume-entry-sub">Medical Robotics</div>
-                <ul class="resume-bullets">
-                  <li>Participated in selective medical robotics program</li>
-                </ul>
-              </div>
             </div>
           </div>
 
-          <!-- Right column -->
           <div class="resume-right">
             <div class="resume-block">
-              <h3 class="resume-block-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                Achievements
-              </h3>
+              <h3 class="resume-block-title">⭐ Achievements</h3>
               <ul class="achievements-list">
-                <li class="achievement-item">
-                  <span class="achievement-icon">🏆</span>
-                  <span>Dean's List Semifinalist — FIRST Tech Challenge, 2025</span>
-                </li>
-                <li class="achievement-item">
-                  <span class="achievement-icon">🥇</span>
-                  <span>DECA ICDC Qualifier — International Career Development Conference, 2026</span>
-                </li>
-                <li class="achievement-item">
-                  <span class="achievement-icon">🏊</span>
-                  <span>Top 30 New England 50m Freestyle LCM (13–14 age group) — USA Swimming</span>
-                </li>
-                <li class="achievement-item">
-                  <span class="achievement-icon">🤖</span>
-                  <span>MA State Championship Qualifier — FTC Team 26413</span>
-                </li>
-                <li class="achievement-item">
-                  <span class="achievement-icon">🎤</span>
-                  <span>MA NSDA State Tournament Qualifier — Speech &amp; Debate</span>
-                </li>
+                <li class="achievement-item"><span class="achievement-icon">🏅</span><span>Dean's List Semifinalist — FIRST Tech Challenge, 2025</span></li>
+                <li class="achievement-item"><span class="achievement-icon">💼</span><span>DECA ICDC Qualifier — International Career Development Conference, 2026</span></li>
+                <li class="achievement-item"><span class="achievement-icon">🏊</span><span>Top 30 New England 50m Freestyle LCM (13–14 age group) — USA Swimming</span></li>
+                <li class="achievement-item"><span class="achievement-icon">🤖</span><span>MA State Championship Qualifier — FTC Team 26413</span></li>
+                <li class="achievement-item"><span class="achievement-icon">🎤</span><span>MA NSDA State Tournament Qualifier — Speech &amp; Debate</span></li>
               </ul>
             </div>
 
             <div class="resume-block">
-              <h3 class="resume-block-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
-                Technical Skills
-              </h3>
-              <div class="skill-bars">
-                <div class="skill-bar-item">
-                  <span class="skill-bar-label">Python / C++</span>
-                  <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:85%"></div></div>
-                </div>
-                <div class="skill-bar-item">
-                  <span class="skill-bar-label">Embedded Systems (ESP32)</span>
-                  <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:82%"></div></div>
-                </div>
-                <div class="skill-bar-item">
-                  <span class="skill-bar-label">Research / Technical Writing</span>
-                  <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:88%"></div></div>
-                </div>
-                <div class="skill-bar-item">
-                  <span class="skill-bar-label">Robotics / Mechanical Design</span>
-                  <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:80%"></div></div>
-                </div>
-                <div class="skill-bar-item">
-                  <span class="skill-bar-label">Public Speaking / Debate</span>
-                  <div class="skill-bar-track"><div class="skill-bar-fill" style="--pct:75%"></div></div>
-                </div>
+              <h3 class="resume-block-title">🛠 Skills</h3>
+              <div class="skill-tags resume-skill-tags">
+                <span class="tag">Python / C++</span>
+                <span class="tag">Embedded systems (ESP32)</span>
+                <span class="tag">Research &amp; technical writing</span>
+                <span class="tag">Robotics &amp; mechanical design</span>
+                <span class="tag">CAD</span>
+                <span class="tag">Public speaking &amp; debate</span>
               </div>
             </div>
 
             <div class="resume-block">
-              <h3 class="resume-block-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                Leadership &amp; Activities
-              </h3>
+              <h3 class="resume-block-title">🌟 Leadership &amp; Activities</h3>
               <div class="resume-entry">
                 <div class="resume-entry-header">
                   <strong>Team Captain</strong>
@@ -558,64 +437,47 @@
         </div>
         <p class="section-subtitle">The pursuits that keep me curious outside the lab.</p>
 
-        <div class="interests-bento">
-
-          <div class="bento-card large music">
-            <div class="bento-icon">🌊</div>
-            <h3 class="bento-title">Ocean Research</h3>
-            <p class="bento-desc">Fascinated by the intersection of robotics and environmental science. Project Kymarion is my attempt to give the ocean a voice through data — one autonomous pass at a time.</p>
-            <div class="bento-detail">
-              <span>Focus: nearshore microplastic distribution, coastal MA</span>
-            </div>
+        <div class="interests-grid">
+          <div class="interest-card large">
+            <div class="interest-icon">🌊</div>
+            <h3 class="interest-title">Ocean research</h3>
+            <p class="interest-desc">Fascinated by the intersection of robotics and environmental science. Project Kymarion is my attempt to give the ocean a voice through data — one autonomous pass at a time.</p>
           </div>
-
-          <div class="bento-card climbing">
-            <div class="bento-icon">🏊</div>
-            <h3 class="bento-title">Competitive Swimming</h3>
-            <p class="bento-desc">Varsity swimmer and USA Swimming competitor. Top 30 New England 50m Freestyle (13–14 LCM). MIAA North Sectional qualifier.</p>
+          <div class="interest-card">
+            <div class="interest-icon">🏊</div>
+            <h3 class="interest-title">Competitive swimming</h3>
+            <p class="interest-desc">Varsity swimmer and USA Swimming competitor. Top 30 New England 50m Freestyle (13–14 LCM). MIAA North Sectional qualifier.</p>
           </div>
-
-          <div class="bento-card reading">
-            <div class="bento-icon">🤖</div>
-            <h3 class="bento-title">Robotics</h3>
-            <p class="bento-desc">FTC Team 26413 Captain and Dean's List Semifinalist. Led full design-build-program cycle. Also founding GNCE Robotics to expand STEM access for local youth.</p>
+          <div class="interest-card">
+            <div class="interest-icon">🤖</div>
+            <h3 class="interest-title">Robotics</h3>
+            <p class="interest-desc">FTC Team 26413 Captain and Dean's List Semifinalist. Led full design–build–program cycle. Also founding GNCE Robotics to expand STEM access for local youth.</p>
           </div>
-
-          <div class="bento-card large photography">
-            <div class="bento-icon">💼</div>
-            <h3 class="bento-title">Entrepreneurship</h3>
-            <p class="bento-desc">DECA ICDC qualifier (2026). Competed in Entrepreneurship: Franchising, scored 96% on live business presentation. Long-term goal: build a company that advances human potential.</p>
-            <div class="bento-tags">
-              <span class="btag">DECA</span>
-              <span class="btag">Startups</span>
-              <span class="btag">Impact</span>
-            </div>
+          <div class="interest-card large">
+            <div class="interest-icon">💼</div>
+            <h3 class="interest-title">Entrepreneurship</h3>
+            <p class="interest-desc">DECA ICDC qualifier (2026). Competed in Entrepreneurship: Franchising, scored 96% on live business presentation. Long-term goal: build a company that advances human potential.</p>
           </div>
-
-          <div class="bento-card cooking">
-            <div class="bento-icon">🎤</div>
-            <h3 class="bento-title">Speech &amp; Debate</h3>
-            <p class="bento-desc">MA NSDA State Tournament qualifier. Competitive debate sharpens the same analytical instincts that drive my research.</p>
+          <div class="interest-card">
+            <div class="interest-icon">🎤</div>
+            <h3 class="interest-title">Speech &amp; debate</h3>
+            <p class="interest-desc">MA NSDA State Tournament qualifier. Competitive debate sharpens the same analytical instincts that drive my research.</p>
           </div>
-
-          <div class="bento-card travel">
-            <div class="bento-icon">✍️</div>
-            <h3 class="bento-title">Science Communication</h3>
-            <p class="bento-desc">Writing and publishing about microplastics and robotics for public audiences. Running a blog and podcast to document Project Kymarion and make ocean research accessible.</p>
+          <div class="interest-card">
+            <div class="interest-icon">✍️</div>
+            <h3 class="interest-title">Science communication</h3>
+            <p class="interest-desc">Writing and publishing about microplastics and robotics for public audiences. Running a blog and podcast to document Project Kymarion and make ocean research accessible.</p>
           </div>
-
-          <div class="bento-card philosophy">
-            <div class="bento-icon">🧠</div>
-            <h3 class="bento-title">Philosophy of Technology</h3>
-            <p class="bento-desc">How do autonomous systems change our relationship with the natural world? The ethical questions behind environmental engineering keep me thinking.</p>
+          <div class="interest-card">
+            <div class="interest-icon">🧠</div>
+            <h3 class="interest-title">Philosophy of technology</h3>
+            <p class="interest-desc">How do autonomous systems change our relationship with the natural world? The ethical questions behind environmental engineering keep me thinking.</p>
           </div>
-
-          <div class="bento-card chess">
-            <div class="bento-icon">🏃</div>
-            <h3 class="bento-title">Track &amp; Field</h3>
-            <p class="bento-desc">Competing in track keeps me grounded. The discipline of training translates directly to long research hours on the water.</p>
+          <div class="interest-card">
+            <div class="interest-icon">🏃</div>
+            <h3 class="interest-title">Track &amp; field</h3>
+            <p class="interest-desc">Competing in track keeps me grounded. The discipline of training translates directly to long research hours on the water.</p>
           </div>
-
         </div>
       </div>
     </section>
@@ -625,10 +487,8 @@
   <!-- ─── Footer ─── -->
   <footer id="site-footer">
     <div class="footer-inner">
-      <div class="footer-logo">
-        <span class="logo-bracket">[</span>ASD<span class="logo-bracket">]</span>
-      </div>
-      <p class="footer-copy">© 2026 Andy S. Ding · Built with care &amp; caffeine</p>
+      <span class="footer-logo">🌊 Andy S. Ding</span>
+      <p class="footer-copy">© 2026 Andy S. Ding</p>
       <div class="footer-links">
         <a href="https://github.com/andyding09" target="_blank" rel="noopener">GitHub</a>
         <a href="https://www.linkedin.com/in/andy-ding-a5b352317/" target="_blank" rel="noopener">LinkedIn</a>
@@ -637,9 +497,9 @@
     </div>
   </footer>
 
-  <!-- ─── Floating Resume Download Button ─── -->
-  <a href="resume.pdf" download="Andy_Ding_Resume.pdf" class="fab-resume" id="fab-resume" aria-label="Download Résumé">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20">
+  <!-- ─── Floating résumé download ─── -->
+  <a href="resume.pdf" download="Andy_Ding_Resume.pdf" class="fab-resume" aria-label="Download Résumé">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
       <polyline points="7 10 12 15 17 10"/>
       <line x1="12" y1="15" x2="12" y2="3"/>
