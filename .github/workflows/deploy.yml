@@ -3,7 +3,7 @@ name: Deploy to Hostinger
 on:
   push:
     branches:
-      - main
+      - claude/pensive-sagan-9rTxC
 
 jobs:
   deploy:
