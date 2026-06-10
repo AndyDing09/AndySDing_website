@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=3" />
+  <link rel="stylesheet" href="style.css?v=4" />
 </head>
 <body>
 
@@ -176,58 +176,61 @@
           </div>
         </article>
 
-        <p class="blog-hint">✏️ This is your journal. Open it and hit <strong>Edit</strong> to write — everything saves automatically in your browser.</p>
+        <p class="blog-hint">💬 Comments are open on every post — I read all of them.</p>
       </div>
     </section>
 
-    <!-- ─── POST (full blog view + editor — not in nav) ─── -->
+    <!-- ─── POST (full blog view — not in nav) ─── -->
     <section id="post" class="section">
       <div class="section-inner post-inner">
 
         <div class="post-topbar">
           <button class="link-btn" id="post-back">← Back to blog</button>
-          <div class="post-actions">
-            <span class="save-status" id="save-status"></span>
-            <button class="btn btn-ghost btn-small" id="edit-toggle">✏️ Edit</button>
-          </div>
         </div>
 
-        <div class="editor-toolbar hidden" id="editor-toolbar">
-          <button class="tb-btn" data-cmd="bold"          title="Bold (Ctrl+B)"><strong>B</strong></button>
-          <button class="tb-btn" data-cmd="italic"        title="Italic (Ctrl+I)"><em>I</em></button>
-          <button class="tb-btn" data-cmd="underline"     title="Underline (Ctrl+U)"><u>U</u></button>
-          <span class="tb-sep"></span>
-          <button class="tb-btn" data-block="h2"          title="Big heading">H2</button>
-          <button class="tb-btn" data-block="h3"          title="Small heading">H3</button>
-          <button class="tb-btn" data-block="p"           title="Normal text">¶</button>
-          <button class="tb-btn" data-block="blockquote"  title="Quote">❝</button>
-          <span class="tb-sep"></span>
-          <button class="tb-btn" data-cmd="insertUnorderedList" title="Bullet list">•≡</button>
-          <button class="tb-btn" data-cmd="insertOrderedList"   title="Numbered list">1≡</button>
-          <button class="tb-btn" id="link-btn"            title="Add link">🔗</button>
-          <span class="tb-sep"></span>
-          <button class="tb-btn" data-cmd="removeFormat"  title="Clear formatting">✕fmt</button>
-          <button class="tb-btn" data-cmd="undo"          title="Undo (Ctrl+Z)">↺</button>
-          <button class="tb-btn" data-cmd="redo"          title="Redo (Ctrl+Y)">↻</button>
-        </div>
-
-        <h1 class="post-title" id="post-title" data-placeholder="Give your post a title…"></h1>
+        <h1 class="post-title" id="post-title">Welcome to my corner of the internet</h1>
         <div class="post-meta">
-          <span id="post-date"></span>
+          <span id="post-date">June 10, 2026</span>
           <span class="meta-dot">·</span>
           <span id="post-stats"></span>
         </div>
-        <article class="post-body" id="post-body" data-placeholder="Start writing here…"></article>
+        <article class="post-body" id="post-body">
+          <p>Hi, I'm Andy — welcome to my blog.</p>
+          <p>
+            This is where I'll be writing about the things I'm working on and thinking about:
+            building and field-testing <strong>Project Kymarion</strong> (our autonomous boat
+            that maps microplastic pollution along the Massachusetts coast), what I'm learning
+            in robotics and research, and the occasional detour into swimming, debate, or
+            whatever else has my attention.
+          </p>
+          <h2>Why a blog?</h2>
+          <p>
+            Research generates a lot of stories that never make it into a paper — sensors that
+            fail at the worst possible moment, deployments that almost work, small wins that
+            feel huge. I want to document those while they're fresh, and hopefully make ocean
+            research feel a little more accessible along the way.
+          </p>
+          <p>
+            First real field log coming soon. In the meantime, say hi in the comments below —
+            I read every one.
+          </p>
+        </article>
 
-        <div class="editor-footer hidden" id="editor-footer">
-          <span class="word-count" id="word-count"></span>
-          <div class="editor-footer-actions">
-            <button class="link-btn" id="backup-btn" title="Download a copy of your post as a file">⬇ Backup</button>
-            <label class="link-btn restore-label" title="Load a post from a backup file">
-              ⬆ Restore<input type="file" id="restore-input" accept=".json" hidden />
-            </label>
-            <button class="link-btn danger" id="reset-btn" title="Erase everything and start a blank post">🗑 Start over</button>
-          </div>
+        <!-- ── Comments ── -->
+        <div class="comments-section">
+          <h2 class="comments-title">Comments <span id="comments-count"></span></h2>
+          <div class="comments-list" id="comments-list"></div>
+
+          <form class="comment-form" id="comment-form">
+            <input type="text" id="comment-name" maxlength="60" placeholder="Your name (optional)" autocomplete="name" />
+            <textarea id="comment-text" maxlength="1500" placeholder="Share your thoughts…" required></textarea>
+            <input type="text" id="comment-website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            <div class="comment-form-foot">
+              <span class="char-count" id="char-count">0 / 1500</span>
+              <button type="submit" class="btn btn-primary btn-small" id="comment-submit">Post comment</button>
+            </div>
+          </form>
+          <p class="comment-status" id="comment-status"></p>
         </div>
 
       </div>
@@ -507,6 +510,6 @@
     <span>Résumé</span>
   </a>
 
-  <script src="script.js?v=3"></script>
+  <script src="script.js?v=4"></script>
 </body>
 </html>

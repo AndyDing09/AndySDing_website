@@ -60,252 +60,151 @@ if (hamburger) {
 }
 
 /* ═══════════════════════════════════════════════
-   BLOG — single post with built-in editor
-   Saved in this browser via localStorage.
+   BLOG — card preview built from the static post
 ═══════════════════════════════════════════════ */
-(function initBlog() {
-  if (!document.getElementById('blog-card')) return; // not on this page
-  const KEY = 'asd-blog-post-v1';
+(function initBlogCard() {
+  const body = document.getElementById('post-body');
+  const card = document.getElementById('blog-card');
+  if (!body || !card) return; // not on this page
 
-  const DEFAULT_POST = {
-    title: 'Welcome to my blog',
-    content:
-      '<p>This is my little corner of the internet for writing about Project Kymarion, ocean research, school, and whatever I’m curious about right now.</p>' +
-      '<h2>How this page works (note to self)</h2>' +
-      '<p>Hit the <strong>✏️ Edit</strong> button at the top right to start writing. While editing you can:</p>' +
-      '<ul>' +
-      '<li>Use the toolbar (or <strong>Ctrl+B</strong> / <strong>Ctrl+I</strong> / <strong>Ctrl+U</strong>) to format text</li>' +
-      '<li>Add headings, lists, quotes, and links</li>' +
-      '<li>Stop worrying about saving — it autosaves as you type</li>' +
-      '<li>Click <strong>⬇ Backup</strong> now and then to download a copy of your post</li>' +
-      '</ul>' +
-      '<blockquote>Replace all of this with your first real post whenever you’re ready!</blockquote>',
-    created: Date.now(),
-    updated: null
-  };
+  const text  = (body.textContent || '').trim();
+  const words = text ? text.split(/\s+/).length : 0;
+  const mins  = Math.max(1, Math.round(words / 200));
 
-  /* ── Elements ── */
-  const cardDate     = document.getElementById('card-date');
-  const cardTitle    = document.getElementById('card-title');
-  const cardExcerpt  = document.getElementById('card-excerpt');
-  const cardReadtime = document.getElementById('card-readtime');
-  const cardOpen     = document.getElementById('card-open');
+  document.getElementById('card-title').textContent   = document.getElementById('post-title').textContent;
+  document.getElementById('card-date').textContent    = document.getElementById('post-date').textContent;
+  document.getElementById('card-excerpt').textContent = text.length > 200 ? text.slice(0, 200).trimEnd() + '…' : text;
+  document.getElementById('card-readtime').textContent = '🕐 ' + mins + ' min read';
+  document.getElementById('post-stats').textContent    = mins + ' min read';
 
-  const postSection  = document.getElementById('post');
-  const postBack     = document.getElementById('post-back');
-  const editToggle   = document.getElementById('edit-toggle');
-  const saveStatus   = document.getElementById('save-status');
-  const toolbar      = document.getElementById('editor-toolbar');
-  const postTitle    = document.getElementById('post-title');
-  const postDate     = document.getElementById('post-date');
-  const postStats    = document.getElementById('post-stats');
-  const postBody     = document.getElementById('post-body');
-  const editorFooter = document.getElementById('editor-footer');
-  const wordCount    = document.getElementById('word-count');
-  const backupBtn    = document.getElementById('backup-btn');
-  const restoreInput = document.getElementById('restore-input');
-  const resetBtn     = document.getElementById('reset-btn');
-  const linkBtn      = document.getElementById('link-btn');
+  const openPost = () => showSection('post');
+  document.getElementById('card-open').addEventListener('click', openPost);
+  card.addEventListener('click', e => {
+    if (!e.target.closest('button')) openPost();
+  });
+  document.getElementById('post-back').addEventListener('click', () => showSection('blog'));
+})();
 
-  let post = loadPost();
-  let editing = false;
-  let saveTimer = null;
+/* ═══════════════════════════════════════════════
+   COMMENTS — stored server-side via comments.php
+═══════════════════════════════════════════════ */
+(function initComments() {
+  const list = document.getElementById('comments-list');
+  if (!list) return; // not on this page
 
-  /* ── Storage ── */
-  function loadPost() {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) {
-        const p = JSON.parse(raw);
-        if (p && typeof p.title === 'string' && typeof p.content === 'string') return p;
-      }
-    } catch (e) { /* corrupted data — fall back to default */ }
-    return JSON.parse(JSON.stringify(DEFAULT_POST));
+  const form      = document.getElementById('comment-form');
+  const nameInput = document.getElementById('comment-name');
+  const textInput = document.getElementById('comment-text');
+  const honeypot  = document.getElementById('comment-website');
+  const charCount = document.getElementById('char-count');
+  const countEl   = document.getElementById('comments-count');
+  const statusEl  = document.getElementById('comment-status');
+  const submitBtn = document.getElementById('comment-submit');
+
+  const NAME_KEY = 'asd-comment-name';
+  nameInput.value = localStorage.getItem(NAME_KEY) || '';
+
+  function setStatus(msg, kind) {
+    statusEl.textContent = msg;
+    statusEl.className = 'comment-status' + (kind ? ' ' + kind : '');
   }
 
-  function persist() {
-    post.title = postTitle.textContent.trim();
-    post.content = postBody.innerHTML;
-    post.updated = Date.now();
-    try {
-      localStorage.setItem(KEY, JSON.stringify(post));
-      flashStatus('Saved ✓', true);
-    } catch (e) {
-      flashStatus('⚠ Could not save (storage full?)', false);
+  function fmtTime(seconds) {
+    const diff = Math.floor(Date.now() / 1000) - seconds;
+    if (diff < 60)     return 'just now';
+    if (diff < 3600)   return Math.floor(diff / 60) + ' min ago';
+    if (diff < 86400)  return Math.floor(diff / 3600) + ' hr ago';
+    if (diff < 604800) return Math.floor(diff / 86400) + ' day' + (diff < 172800 ? '' : 's') + ' ago';
+    return new Date(seconds * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  }
+
+  function commentEl(c) {
+    const el   = document.createElement('div');
+    el.className = 'comment';
+    const head = document.createElement('div');
+    head.className = 'comment-head';
+    const name = document.createElement('span');
+    name.className = 'comment-name';
+    name.textContent = c.name; // textContent keeps user input safely escaped
+    const time = document.createElement('span');
+    time.className = 'comment-time';
+    time.textContent = fmtTime(c.time);
+    head.append(name, time);
+    const body = document.createElement('p');
+    body.className = 'comment-body';
+    body.textContent = c.text;
+    el.append(head, body);
+    return el;
+  }
+
+  function render(comments) {
+    list.innerHTML = '';
+    countEl.textContent = comments.length ? '(' + comments.length + ')' : '';
+    if (!comments.length) {
+      const empty = document.createElement('p');
+      empty.className = 'comments-empty';
+      empty.textContent = 'No comments yet — be the first!';
+      list.appendChild(empty);
+      return;
     }
-    renderCard();
-    renderMeta();
+    comments.forEach(c => list.appendChild(commentEl(c)));
   }
 
-  function scheduleSave() {
-    saveStatus.textContent = 'Saving…';
-    saveStatus.classList.remove('saved');
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(persist, 600);
+  function loadComments() {
+    fetch('comments.php')
+      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+      .then(data => render(data.comments || []))
+      .catch(() => {
+        render([]);
+        list.innerHTML = '';
+        if (location.protocol === 'file:') {
+          setStatus('💬 Comments work on the live site (they need the server).', '');
+          form.classList.add('hidden');
+        } else {
+          setStatus('⚠ Comments couldn\'t load — try refreshing.', 'err');
+        }
+      });
   }
 
-  function flashStatus(msg, ok) {
-    saveStatus.textContent = msg;
-    saveStatus.classList.toggle('saved', !!ok);
-  }
-
-  /* ── Helpers ── */
-  function textOf(html) {
-    const div = document.createElement('div');
-    div.innerHTML = html;
-    return (div.textContent || '').trim();
-  }
-  function words(html) {
-    const t = textOf(html);
-    return t ? t.split(/\s+/).length : 0;
-  }
-  function readTime(html) {
-    return Math.max(1, Math.round(words(html) / 200));
-  }
-  function fmtDate(ts) {
-    return new Date(ts).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-  }
-
-  /* ── Render ── */
-  function renderCard() {
-    cardTitle.textContent = post.title || 'Untitled post';
-    const t = textOf(post.content);
-    cardExcerpt.textContent = t.length > 200 ? t.slice(0, 200).trimEnd() + '…' : (t || 'Nothing written yet — open the post and start writing!');
-    cardDate.textContent = post.updated ? 'Updated ' + fmtDate(post.updated) : fmtDate(post.created);
-    cardReadtime.textContent = '🕐 ' + readTime(post.content) + ' min read';
-  }
-
-  function renderMeta() {
-    postDate.textContent = post.updated ? 'Updated ' + fmtDate(post.updated) : fmtDate(post.created);
-    postStats.textContent = readTime(post.content) + ' min read';
-    wordCount.textContent = words(post.content) + ' words';
-  }
-
-  function renderPost() {
-    postTitle.textContent = post.title;
-    postBody.innerHTML = post.content;
-    renderMeta();
-  }
-
-  /* ── Edit mode ── */
-  function setEditing(on) {
-    editing = on;
-    postSection.classList.toggle('editing', on);
-    toolbar.classList.toggle('hidden', !on);
-    editorFooter.classList.toggle('hidden', !on);
-    postTitle.contentEditable = on;
-    postBody.contentEditable = on;
-    editToggle.innerHTML = on ? '✓ Done' : '✏️ Edit';
-    editToggle.classList.toggle('btn-primary', on);
-    editToggle.classList.toggle('btn-ghost', !on);
-    if (on) {
-      flashStatus('Editing — changes save automatically', false);
-      postBody.focus();
-    } else {
-      clearTimeout(saveTimer);
-      persist();
-    }
-  }
-
-  /* ── Wire up ── */
-  cardOpen.addEventListener('click', () => { renderPost(); showSection('post'); });
-  document.getElementById('blog-card').addEventListener('click', e => {
-    if (e.target.closest('button')) return;
-    renderPost();
-    showSection('post');
+  textInput.addEventListener('input', () => {
+    charCount.textContent = textInput.value.length + ' / 1500';
   });
 
-  postBack.addEventListener('click', () => {
-    if (editing) setEditing(false);
-    showSection('blog');
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const text = textInput.value.trim();
+    if (!text) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Posting…';
+    setStatus('', '');
+    localStorage.setItem(NAME_KEY, nameInput.value.trim());
+
+    fetch('comments.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: nameInput.value.trim(),
+        text: text,
+        website: honeypot.value
+      })
+    })
+      .then(r => r.json().then(data => ({ ok: r.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) throw new Error(data.error || 'Something went wrong');
+        textInput.value = '';
+        charCount.textContent = '0 / 1500';
+        setStatus('✓ Comment posted — thanks!', 'ok');
+        loadComments();
+      })
+      .catch(err => {
+        setStatus('⚠ ' + (err.message || 'Could not post your comment — try again.'), 'err');
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Post comment';
+      });
   });
 
-  editToggle.addEventListener('click', () => setEditing(!editing));
-
-  postTitle.addEventListener('input', scheduleSave);
-  postBody.addEventListener('input', () => {
-    scheduleSave();
-    wordCount.textContent = words(postBody.innerHTML) + ' words';
-  });
-
-  /* Keep the title to a single line; Enter jumps into the body */
-  postTitle.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      postBody.focus();
-    }
-  });
-
-  /* Ctrl+S = save now (it autosaves anyway, but habits are habits) */
-  document.addEventListener('keydown', e => {
-    if (editing && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
-      e.preventDefault();
-      clearTimeout(saveTimer);
-      persist();
-    }
-  });
-
-  /* Toolbar commands */
-  toolbar.querySelectorAll('.tb-btn').forEach(btn => {
-    /* Keep focus/selection in the editor when clicking toolbar buttons */
-    btn.addEventListener('mousedown', e => e.preventDefault());
-    btn.addEventListener('click', () => {
-      const cmd = btn.dataset.cmd;
-      const block = btn.dataset.block;
-      if (cmd) document.execCommand(cmd, false, null);
-      else if (block) document.execCommand('formatBlock', false, '<' + block + '>');
-    });
-  });
-
-  linkBtn.addEventListener('click', () => {
-    const url = prompt('Link address (e.g. https://example.com):');
-    if (url) document.execCommand('createLink', false, url);
-  });
-
-  /* Backup — download the post as a small file */
-  backupBtn.addEventListener('click', () => {
-    const blob = new Blob([JSON.stringify(post, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'my-blog-post.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
-    flashStatus('Backup downloaded ✓', true);
-  });
-
-  /* Restore from a backup file */
-  restoreInput.addEventListener('change', () => {
-    const file = restoreInput.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const p = JSON.parse(reader.result);
-        if (!p || typeof p.title !== 'string' || typeof p.content !== 'string') throw new Error('bad file');
-        post = p;
-        renderPost();
-        persist();
-        flashStatus('Restored from backup ✓', true);
-      } catch (e) {
-        flashStatus('⚠ That file doesn’t look like a blog backup', false);
-      }
-      restoreInput.value = '';
-    };
-    reader.readAsText(file);
-  });
-
-  /* Start over */
-  resetBtn.addEventListener('click', () => {
-    if (!confirm('Erase this post and start with a blank page?\n(Tip: download a Backup first if you might want it back.)')) return;
-    post = { title: '', content: '', created: Date.now(), updated: null };
-    postTitle.textContent = '';
-    postBody.innerHTML = '';
-    persist();
-    flashStatus('Fresh page ready ✓', true);
-    postTitle.focus();
-  });
-
-  /* ── First paint ── */
-  renderCard();
-  renderPost();
+  loadComments();
 })();
