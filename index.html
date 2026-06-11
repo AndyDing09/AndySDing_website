@@ -229,7 +229,7 @@
           </div>
         </article>
 
-        <p class="blog-hint">✏️ This is your journal. Open it and hit <strong>Edit</strong> to write — everything saves automatically in your browser.</p>
+        <p class="blog-hint">💬 Comments are open on every post — I read all of them.</p>
       </div>
     </section>
 
@@ -239,32 +239,9 @@
 
         <div class="post-topbar">
           <button class="link-btn" id="post-back">← Back to blog</button>
-          <div class="post-actions">
-            <span class="save-status" id="save-status"></span>
-            <button class="btn btn-ghost btn-small" id="edit-toggle">✏️ Edit</button>
-          </div>
         </div>
 
-        <div class="editor-toolbar hidden" id="editor-toolbar">
-          <button class="tb-btn" data-cmd="bold"          title="Bold (Ctrl+B)"><strong>B</strong></button>
-          <button class="tb-btn" data-cmd="italic"        title="Italic (Ctrl+I)"><em>I</em></button>
-          <button class="tb-btn" data-cmd="underline"     title="Underline (Ctrl+U)"><u>U</u></button>
-          <span class="tb-sep"></span>
-          <button class="tb-btn" data-block="h2"          title="Big heading">H2</button>
-          <button class="tb-btn" data-block="h3"          title="Small heading">H3</button>
-          <button class="tb-btn" data-block="p"           title="Normal text">¶</button>
-          <button class="tb-btn" data-block="blockquote"  title="Quote">❝</button>
-          <span class="tb-sep"></span>
-          <button class="tb-btn" data-cmd="insertUnorderedList" title="Bullet list">•≡</button>
-          <button class="tb-btn" data-cmd="insertOrderedList"   title="Numbered list">1≡</button>
-          <button class="tb-btn" id="link-btn"            title="Add link">🔗</button>
-          <span class="tb-sep"></span>
-          <button class="tb-btn" data-cmd="removeFormat"  title="Clear formatting">✕fmt</button>
-          <button class="tb-btn" data-cmd="undo"          title="Undo (Ctrl+Z)">↺</button>
-          <button class="tb-btn" data-cmd="redo"          title="Redo (Ctrl+Y)">↻</button>
-        </div>
-
-        <h1 class="post-title" id="post-title" data-placeholder="Give your post a title…"></h1>
+        <h1 class="post-title" id="post-title"></h1>
         <div class="post-meta">
           <span id="post-date"></span>
           <span class="meta-dot">·</span>
@@ -274,18 +251,7 @@
           <button class="engage-btn" id="like-btn" aria-pressed="false">🤍 <span id="like-count"></span></button>
           <button class="engage-btn" id="share-btn">🔗 Share</button>
         </div>
-        <article class="post-body" id="post-body" data-placeholder="Start writing here…"></article>
-
-        <div class="editor-footer hidden" id="editor-footer">
-          <span class="word-count" id="word-count"></span>
-          <div class="editor-footer-actions">
-            <button class="link-btn" id="backup-btn" title="Download a copy of your post as a file">⬇ Backup</button>
-            <label class="link-btn restore-label" title="Load a post from a backup file">
-              ⬆ Restore<input type="file" id="restore-input" accept=".json" hidden />
-            </label>
-            <button class="link-btn danger" id="reset-btn" title="Erase everything and start a blank post">🗑 Start over</button>
-          </div>
-        </div>
+        <article class="post-body" id="post-body"></article>
 
         <!-- ── Comments ── -->
         <div class="comments-section">
@@ -581,7 +547,7 @@
     <span>Résumé</span>
   </a>
 
-  <script src="script.js?v=5"></script>
+  <script src="script.js?v=6"></script>
   <script src="chat.js?v=1"></script>
 </body>
 </html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dev — Andy S. Ding</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🔧%3C/text%3E%3C/svg%3E" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=6" />
+  <style>
+    .dev-wrap { max-width: 780px; margin: 0 auto; padding: 90px 24px 80px; }
+
+    /* Lock screen */
+    .lock-card {
+      max-width: 380px;
+      margin: 14vh auto 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      padding: 36px 32px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .lock-emoji { font-size: 2.6rem; }
+    .lock-title { font-family: var(--font-display); font-size: 1.4rem; font-weight: 700; color: var(--ink); }
+    .lock-sub { font-size: 0.88rem; color: var(--ink-2); }
+    .lock-input {
+      font-family: inherit;
+      font-size: 1.5rem;
+      letter-spacing: 0.5em;
+      text-align: center;
+      padding: 12px 0 12px 0.5em;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      background: var(--paper);
+      color: var(--ink);
+      outline: none;
+      transition: var(--transition);
+    }
+    .lock-input:focus { border-color: var(--green); background: var(--card); }
+    .lock-error { color: var(--clay); font-size: 0.84rem; font-weight: 600; min-height: 1.2em; }
+
+    /* Editor chrome */
+    .dev-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 26px;
+    }
+    .dev-brand { font-family: var(--font-display); font-weight: 700; color: var(--ink); font-size: 1.1rem; }
+    .dev-brand span { color: var(--clay); font-size: 0.75rem; font-weight: 600; margin-left: 8px; letter-spacing: 0.08em; }
+    .dev-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .dev-status { font-size: 0.82rem; color: var(--ink-3); }
+    .dev-status.ok { color: var(--green); font-weight: 700; }
+    .dev-status.err { color: var(--clay); font-weight: 700; }
+
+    .editing-area .post-title,
+    .editing-area .post-body {
+      border-radius: var(--radius-sm);
+      transition: background var(--transition), box-shadow var(--transition);
+    }
+    .editing-area .post-title { padding: 4px 8px; margin-left: -8px; }
+    .editing-area .post-body { padding: 8px 12px; margin-left: -12px; min-height: 280px; }
+    .editing-area .post-title:hover, .editing-area .post-body:hover { background: var(--paper-2); }
+    .editing-area .post-title:focus, .editing-area .post-body:focus {
+      background: var(--card);
+      box-shadow: 0 0 0 1.5px rgba(46, 107, 78, 0.35);
+    }
+    .post-title:empty::before, .post-body:empty::before {
+      content: attr(data-placeholder);
+      color: var(--ink-3);
+      pointer-events: none;
+      display: block;
+    }
+
+    .dev-foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 34px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      font-size: 0.84rem;
+      color: var(--ink-3);
+    }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Lock screen ── -->
+  <div class="lock-card" id="lock-card">
+    <div class="lock-emoji">🔒</div>
+    <div class="lock-title">Dev access</div>
+    <div class="lock-sub">Enter the dev code to edit the blog.</div>
+    <form id="lock-form" style="display:flex;flex-direction:column;gap:12px;">
+      <input class="lock-input" id="lock-input" type="password" inputmode="numeric" maxlength="12" autocomplete="off" autofocus />
+      <button type="submit" class="btn btn-primary" id="lock-btn">Unlock</button>
+    </form>
+    <div class="lock-error" id="lock-error"></div>
+  </div>
+
+  <!-- ── Editor ── -->
+  <main class="dev-wrap hidden" id="editor-wrap">
+    <div class="dev-topbar">
+      <div class="dev-brand">🌊 Blog editor <span>DEV</span></div>
+      <div class="dev-actions">
+        <span class="dev-status" id="dev-status"></span>
+        <a class="link-btn" href="index.html#post" target="_blank" rel="noopener">View on site ↗</a>
+        <button class="btn btn-primary btn-small" id="publish-btn">🚀 Publish</button>
+      </div>
+    </div>
+
+    <div class="editor-toolbar" id="editor-toolbar">
+      <button class="tb-btn" data-cmd="bold"          title="Bold (Ctrl+B)"><strong>B</strong></button>
+      <button class="tb-btn" data-cmd="italic"        title="Italic (Ctrl+I)"><em>I</em></button>
+      <button class="tb-btn" data-cmd="underline"     title="Underline (Ctrl+U)"><u>U</u></button>
+      <span class="tb-sep"></span>
+      <button class="tb-btn" data-block="h2"          title="Big heading">H2</button>
+      <button class="tb-btn" data-block="h3"          title="Small heading">H3</button>
+      <button class="tb-btn" data-block="p"           title="Normal text">¶</button>
+      <button class="tb-btn" data-block="blockquote"  title="Quote">❝</button>
+      <span class="tb-sep"></span>
+      <button class="tb-btn" data-cmd="insertUnorderedList" title="Bullet list">•≡</button>
+      <button class="tb-btn" data-cmd="insertOrderedList"   title="Numbered list">1≡</button>
+      <button class="tb-btn" id="link-btn"            title="Add link">🔗</button>
+      <span class="tb-sep"></span>
+      <button class="tb-btn" data-cmd="removeFormat"  title="Clear formatting">✕fmt</button>
+      <button class="tb-btn" data-cmd="undo"          title="Undo (Ctrl+Z)">↺</button>
+      <button class="tb-btn" data-cmd="redo"          title="Redo (Ctrl+Y)">↻</button>
+    </div>
+
+    <div class="editing-area">
+      <h1 class="post-title" id="post-title" contenteditable="true" data-placeholder="Give your post a title…"></h1>
+      <article class="post-body" id="post-body" contenteditable="true" data-placeholder="Start writing here…"></article>
+    </div>
+
+    <div class="dev-foot">
+      <span id="word-count"></span>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button class="link-btn" id="reload-btn" title="Throw away this draft and load what's currently live">↩ Load published version</button>
+        <button class="link-btn danger" id="lock-again">🔒 Lock</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+      var CODE_KEY  = 'asd-dev-code';
+      var DRAFT_KEY = 'asd-dev-draft';
+
+      var lockCard  = document.getElementById('lock-card');
+      var lockForm  = document.getElementById('lock-form');
+      var lockInput = document.getElementById('lock-input');
+      var lockBtn   = document.getElementById('lock-btn');
+      var lockError = document.getElementById('lock-error');
+
+      var wrap      = document.getElementById('editor-wrap');
+      var titleEl   = document.getElementById('post-title');
+      var bodyEl    = document.getElementById('post-body');
+      var statusEl  = document.getElementById('dev-status');
+      var wordEl    = document.getElementById('word-count');
+      var publishBtn = document.getElementById('publish-btn');
+      var toolbar   = document.getElementById('editor-toolbar');
+
+      var code = sessionStorage.getItem(CODE_KEY) || '';
+      var draftTimer = null;
+
+      function setStatus(msg, kind) {
+        statusEl.textContent = msg;
+        statusEl.className = 'dev-status' + (kind ? ' ' + kind : '');
+      }
+
+      function words() {
+        var t = (bodyEl.textContent || '').trim();
+        return t ? t.split(/\s+/).length : 0;
+      }
+      function updateCount() { wordEl.textContent = words() + ' words'; }
+
+      /* ── Lock / unlock ── */
+      function verify(c, silent) {
+        return fetch('blog.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'verify', code: c })
+        }).then(function (r) {
+          return r.json().then(function (d) { return { ok: r.ok, data: d }; });
+        }).then(function (res) {
+          if (res.ok) return true;
+          if (!silent) lockError.textContent = res.data.error || 'Wrong code';
+          return false;
+        }).catch(function () {
+          if (!silent) lockError.textContent = 'Could not reach the server — are you online?';
+          return false;
+        });
+      }
+
+      function showEditor() {
+        lockCard.classList.add('hidden');
+        wrap.classList.remove('hidden');
+        loadPost();
+      }
+      function showLock() {
+        sessionStorage.removeItem(CODE_KEY);
+        code = '';
+        wrap.classList.add('hidden');
+        lockCard.classList.remove('hidden');
+        lockInput.value = '';
+        lockInput.focus();
+      }
+
+      lockForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var c = lockInput.value.trim();
+        if (!c) return;
+        lockBtn.disabled = true;
+        lockError.textContent = '';
+        verify(c, false).then(function (ok) {
+          lockBtn.disabled = false;
+          if (ok) {
+            code = c;
+            sessionStorage.setItem(CODE_KEY, c);
+            showEditor();
+          } else {
+            lockInput.value = '';
+            lockInput.focus();
+          }
+        });
+      });
+
+      document.getElementById('lock-again').addEventListener('click', showLock);
+
+      /* ── Load: draft if present, else the live post ── */
+      function loadPost() {
+        var draft = null;
+        try { draft = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) {}
+        if (draft && typeof draft.title === 'string' && typeof draft.content === 'string') {
+          titleEl.textContent = draft.title;
+          bodyEl.innerHTML = draft.content;
+          setStatus('Draft restored — not published yet', '');
+          updateCount();
+          return;
+        }
+        fetchPublished();
+      }
+
+      function fetchPublished() {
+        setStatus('Loading…', '');
+        fetch('blog.php')
+          .then(function (r) { return r.json(); })
+          .then(function (d) {
+            titleEl.textContent = d.title || '';
+            bodyEl.innerHTML = d.content || '';
+            setStatus(d.title ? 'Loaded the live post' : 'No post published yet — write your first one!', '');
+            updateCount();
+          })
+          .catch(function () { setStatus('Could not load the post', 'err'); });
+      }
+
+      document.getElementById('reload-btn').addEventListener('click', function () {
+        if (!confirm('Throw away this draft and load the currently published version?')) return;
+        localStorage.removeItem(DRAFT_KEY);
+        fetchPublished();
+      });
+
+      /* ── Draft autosave (local only — Publish makes it live) ── */
+      function scheduleDraft() {
+        clearTimeout(draftTimer);
+        setStatus('Draft…', '');
+        draftTimer = setTimeout(function () {
+          try {
+            localStorage.setItem(DRAFT_KEY, JSON.stringify({
+              title: titleEl.textContent.trim(),
+              content: bodyEl.innerHTML
+            }));
+            setStatus('Draft saved (not published)', '');
+          } catch (e) { setStatus('Draft too large to autosave', 'err'); }
+        }, 600);
+      }
+      titleEl.addEventListener('input', scheduleDraft);
+      bodyEl.addEventListener('input', function () { scheduleDraft(); updateCount(); });
+      titleEl.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); bodyEl.focus(); }
+      });
+
+      /* ── Toolbar ── */
+      toolbar.querySelectorAll('.tb-btn').forEach(function (btn) {
+        btn.addEventListener('mousedown', function (e) { e.preventDefault(); });
+        btn.addEventListener('click', function () {
+          var cmd = btn.dataset.cmd, block = btn.dataset.block;
+          if (cmd) document.execCommand(cmd, false, null);
+          else if (block) document.execCommand('formatBlock', false, '<' + block + '>');
+        });
+      });
+      document.getElementById('link-btn').addEventListener('click', function () {
+        var url = prompt('Link address (e.g. https://example.com):');
+        if (url) document.execCommand('createLink', false, url);
+      });
+
+      /* ── Publish ── */
+      function publish() {
+        var title = titleEl.textContent.trim();
+        var content = bodyEl.innerHTML;
+        if (!title) { setStatus('Add a title before publishing', 'err'); titleEl.focus(); return; }
+        if (!(bodyEl.textContent || '').trim()) { setStatus('Write something before publishing', 'err'); bodyEl.focus(); return; }
+
+        publishBtn.disabled = true;
+        publishBtn.textContent = 'Publishing…';
+        fetch('blog.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'publish', code: code, title: title, content: content })
+        })
+          .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, data: d }; }); })
+          .then(function (res) {
+            if (res.ok && res.data.ok) {
+              localStorage.removeItem(DRAFT_KEY);
+              setStatus('✓ Published — live on the site!', 'ok');
+            } else if (res.data && res.data.error === 'Wrong code') {
+              setStatus('Session expired — enter the code again', 'err');
+              showLock();
+            } else {
+              setStatus((res.data && res.data.error) || 'Publish failed — try again', 'err');
+            }
+          })
+          .catch(function () { setStatus('Publish failed — check your connection', 'err'); })
+          .finally(function () {
+            publishBtn.disabled = false;
+            publishBtn.textContent = '🚀 Publish';
+          });
+      }
+      publishBtn.addEventListener('click', publish);
+      document.addEventListener('keydown', function (e) {
+        if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+          e.preventDefault();
+          publish();
+        }
+      });
+
+      /* ── Boot: silent re-verify if a code is stored ── */
+      if (code) {
+        verify(code, true).then(function (ok) {
+          if (ok) showEditor();
+          else showLock();
+        });
+      } else {
+        lockInput.focus();
+      }
+    })();
+  </script>
+</body>
+</html>

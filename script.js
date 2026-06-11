@@ -111,13 +111,12 @@ hamburger.addEventListener('click', () => {
 drawerOverlay.addEventListener('click', closeMobileDrawer);
 
 /* ═══════════════════════════════════════════════
-   BLOG — single post with built-in WYSIWYG editor
-   Content is saved in this browser via localStorage.
-   Comments are loaded/submitted via comments.php.
+   BLOG — published post loaded from blog.php
+   (Andy edits it from the private dev page;
+   the public site is read-only.)
 ═══════════════════════════════════════════════ */
 (function initBlog() {
   if (!document.getElementById('blog-card')) return; // not on this page
-  var KEY = 'asd-blog-post-v1';
 
   var DEFAULT_POST = {
     title: 'Welcome to my blog',
@@ -134,7 +133,6 @@ drawerOverlay.addEventListener('click', closeMobileDrawer);
       'accessible along the way.</p>' +
       '<blockquote>First real field log coming soon. In the meantime, say hi in the comments below — ' +
       'I read every one.</blockquote>',
-    created: Date.now(),
     updated: null
   };
 
@@ -145,63 +143,11 @@ drawerOverlay.addEventListener('click', closeMobileDrawer);
   var cardReadtime = document.getElementById('card-readtime');
   var cardOpen     = document.getElementById('card-open');
 
-  var postSection  = document.getElementById('post');
   var postBack     = document.getElementById('post-back');
-  var editToggle   = document.getElementById('edit-toggle');
-  var saveStatus   = document.getElementById('save-status');
-  var toolbar      = document.getElementById('editor-toolbar');
   var postTitle    = document.getElementById('post-title');
   var postDate     = document.getElementById('post-date');
   var postStats    = document.getElementById('post-stats');
   var postBody     = document.getElementById('post-body');
-  var editorFooter = document.getElementById('editor-footer');
-  var wordCount    = document.getElementById('word-count');
-  var backupBtn    = document.getElementById('backup-btn');
-  var restoreInput = document.getElementById('restore-input');
-  var resetBtn     = document.getElementById('reset-btn');
-  var linkBtn      = document.getElementById('link-btn');
-
-  var post = loadPost();
-  var editing = false;
-  var saveTimer = null;
-
-  /* ── Storage ── */
-  function loadPost() {
-    try {
-      var raw = localStorage.getItem(KEY);
-      if (raw) {
-        var p = JSON.parse(raw);
-        if (p && typeof p.title === 'string' && typeof p.content === 'string') return p;
-      }
-    } catch (e) { /* corrupted data — fall back to default */ }
-    return JSON.parse(JSON.stringify(DEFAULT_POST));
-  }
-
-  function persist() {
-    post.title = postTitle.textContent.trim();
-    post.content = postBody.innerHTML;
-    post.updated = Date.now();
-    try {
-      localStorage.setItem(KEY, JSON.stringify(post));
-      flashStatus('Saved \u2713', true);
-    } catch (e) {
-      flashStatus('\u26a0 Could not save (storage full?)', false);
-    }
-    renderCard();
-    renderMeta();
-  }
-
-  function scheduleSave() {
-    saveStatus.textContent = 'Saving\u2026';
-    saveStatus.classList.remove('saved');
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(persist, 600);
-  }
-
-  function flashStatus(msg, ok) {
-    saveStatus.textContent = msg;
-    saveStatus.classList.toggle('saved', !!ok);
-  }
 
   /* ── Helpers ── */
   function textOf(html) {
@@ -209,163 +155,53 @@ drawerOverlay.addEventListener('click', closeMobileDrawer);
     div.innerHTML = html;
     return (div.textContent || '').trim();
   }
-  function words(html) {
-    var t = textOf(html);
-    return t ? t.split(/\s+/).length : 0;
+  function readTime(text) {
+    var words = text ? text.split(/\s+/).length : 0;
+    return Math.max(1, Math.round(words / 200));
   }
-  function readTime(html) {
-    return Math.max(1, Math.round(words(html) / 200));
-  }
-  function fmtDate(ts) {
-    return new Date(ts).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  function fmtDate(ms) {
+    return new Date(ms).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   }
 
-  /* ── Render ── */
-  function renderCard() {
-    cardTitle.textContent = post.title || 'Untitled post';
-    var t = textOf(post.content);
-    cardExcerpt.textContent = t.length > 200 ? t.slice(0, 200).trimEnd() + '\u2026' : (t || 'Nothing written yet \u2014 open the post and start writing!');
-    cardDate.textContent = post.updated ? 'Updated ' + fmtDate(post.updated) : fmtDate(post.created);
-    cardReadtime.textContent = '\U0001f4f0 ' + readTime(post.content) + ' min read';
-  }
+  /* ── Render the post + its card preview ── */
+  function render(post) {
+    var text = textOf(post.content);
+    var mins = readTime(text);
+    var dateText = post.updated ? fmtDate(post.updated) : fmtDate(Date.now());
 
-  function renderMeta() {
-    postDate.textContent = post.updated ? 'Updated ' + fmtDate(post.updated) : fmtDate(post.created);
-    postStats.textContent = readTime(post.content) + ' min read';
-    wordCount.textContent = words(post.content) + ' words';
-  }
+    cardTitle.textContent = post.title;
+    cardExcerpt.textContent = text.length > 200 ? text.slice(0, 200).trimEnd() + '…' : text;
+    cardDate.textContent = dateText;
+    cardReadtime.textContent = '🕐 ' + mins + ' min read';
 
-  function renderPost() {
     postTitle.textContent = post.title;
-    postBody.innerHTML = post.content;
-    renderMeta();
+    postBody.innerHTML = post.content; // trusted: authored by Andy, sanitized server-side
+    postDate.textContent = dateText;
+    postStats.textContent = mins + ' min read';
   }
 
-  /* ── Edit mode ── */
-  function setEditing(on) {
-    editing = on;
-    postSection.classList.toggle('editing', on);
-    toolbar.classList.toggle('hidden', !on);
-    editorFooter.classList.toggle('hidden', !on);
-    postTitle.contentEditable = on;
-    postBody.contentEditable = on;
-    editToggle.innerHTML = on ? '\u2713 Done' : '\u270f\ufe0f Edit';
-    editToggle.classList.toggle('btn-primary', on);
-    editToggle.classList.toggle('btn-ghost', !on);
-    if (on) {
-      flashStatus('Editing \u2014 changes save automatically', false);
-      postBody.focus();
-    } else {
-      clearTimeout(saveTimer);
-      persist();
-    }
+  render(DEFAULT_POST);
+
+  /* Load the published post from the server */
+  if (location.protocol !== 'file:') {
+    fetch('blog.php')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d && d.title && d.content) {
+          render({ title: d.title, content: d.content, updated: d.updated ? d.updated * 1000 : null });
+        }
+      })
+      .catch(function () { /* keep the default post */ });
   }
 
   /* ── Wire up ── */
-  cardOpen.addEventListener('click', function() { renderPost(); showSection('post'); });
-  document.getElementById('blog-card').addEventListener('click', function(e) {
+  var openPost = function () { showSection('post'); };
+  cardOpen.addEventListener('click', openPost);
+  document.getElementById('blog-card').addEventListener('click', function (e) {
     if (e.target.closest('button')) return;
-    renderPost();
-    showSection('post');
+    openPost();
   });
-
-  postBack.addEventListener('click', function() {
-    if (editing) setEditing(false);
-    showSection('blog');
-  });
-
-  editToggle.addEventListener('click', function() { setEditing(!editing); });
-
-  postTitle.addEventListener('input', scheduleSave);
-  postBody.addEventListener('input', function() {
-    scheduleSave();
-    wordCount.textContent = words(postBody.innerHTML) + ' words';
-  });
-
-  /* Keep the title to a single line; Enter jumps into the body */
-  postTitle.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      postBody.focus();
-    }
-  });
-
-  /* Ctrl+S = save now */
-  document.addEventListener('keydown', function(e) {
-    if (editing && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
-      e.preventDefault();
-      clearTimeout(saveTimer);
-      persist();
-    }
-  });
-
-  /* Toolbar commands */
-  var i, btn, cmd, block;
-  var btns = toolbar.querySelectorAll('.tb-btn');
-  for (i = 0; i < btns.length; i++) {
-    btn = btns[i];
-    btn.addEventListener('mousedown', function(e) { e.preventDefault(); });
-    btn.addEventListener('click', function(b) {
-      return function() {
-        cmd = b.dataset.cmd;
-        block = b.dataset.block;
-        if (cmd) document.execCommand(cmd, false, null);
-        else if (block) document.execCommand('formatBlock', false, '<' + block + '>');
-      };
-    }(btn));
-  }
-
-  linkBtn.addEventListener('click', function() {
-    var url = prompt('Link address (e.g. https://example.com):');
-    if (url) document.execCommand('createLink', false, url);
-  });
-
-  /* Backup */
-  backupBtn.addEventListener('click', function() {
-    var blob = new Blob([JSON.stringify(post, null, 2)], { type: 'application/json' });
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'my-blog-post.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
-    flashStatus('Backup downloaded \u2713', true);
-  });
-
-  /* Restore from backup file */
-  restoreInput.addEventListener('change', function() {
-    var file = restoreInput.files[0];
-    if (!file) return;
-    var reader = new FileReader();
-    reader.onload = function() {
-      try {
-        var p = JSON.parse(reader.result);
-        if (!p || typeof p.title !== 'string' || typeof p.content !== 'string') throw new Error('bad file');
-        post = p;
-        renderPost();
-        persist();
-        flashStatus('Restored from backup \u2713', true);
-      } catch (e) {
-        flashStatus('\u26a0 That file doesn\'t look like a blog backup', false);
-      }
-      restoreInput.value = '';
-    };
-    reader.readAsText(file);
-  });
-
-  /* Start over */
-  resetBtn.addEventListener('click', function() {
-    if (!confirm('Erase this post and start with a blank page?\n(Tip: download a Backup first if you might want it back.)')) return;
-    post = { title: '', content: '', created: Date.now(), updated: null };
-    postTitle.textContent = '';
-    postBody.innerHTML = '';
-    persist();
-    flashStatus('Fresh page ready \u2713', true);
-    postTitle.focus();
-  });
-
-  /* ── First paint ── */
-  renderCard();
-  renderPost();
+  postBack.addEventListener('click', function () { showSection('blog'); });
 })();
 
 /* ═══════════════════════════════════════════════
