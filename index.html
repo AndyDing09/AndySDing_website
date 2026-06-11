@@ -160,7 +160,7 @@
               <strong>LuminaBone</strong>, a medical imaging project developing a shading-based 3D
               bone endoscope for orthopedic surgery. Beyond research, I captain my FTC robotics
               team, compete in DECA and debate, swim at the varsity level, and write about my work
-              for public audiences.
+              for public audiences. <a href="https://ethan-zhang.lightsdarke.workers.dev/research/" target="_blank" rel="noopener">Visit my partner Ethan Zhang's research site →</a>
             </p>
 
             <div class="skills-section">
@@ -229,7 +229,7 @@
           </div>
         </article>
 
-        <p class="blog-hint">💬 Comments are open on every post — I read all of them.</p>
+        <p class="blog-hint">✏️ This is your journal. Open it and hit <strong>Edit</strong> to write — everything saves automatically in your browser.</p>
       </div>
     </section>
 
@@ -239,11 +239,34 @@
 
         <div class="post-topbar">
           <button class="link-btn" id="post-back">← Back to blog</button>
+          <div class="post-actions">
+            <span class="save-status" id="save-status"></span>
+            <button class="btn btn-ghost btn-small" id="edit-toggle">✏️ Edit</button>
+          </div>
         </div>
 
-        <h1 class="post-title" id="post-title">Welcome to my corner of the internet</h1>
+        <div class="editor-toolbar hidden" id="editor-toolbar">
+          <button class="tb-btn" data-cmd="bold"          title="Bold (Ctrl+B)"><strong>B</strong></button>
+          <button class="tb-btn" data-cmd="italic"        title="Italic (Ctrl+I)"><em>I</em></button>
+          <button class="tb-btn" data-cmd="underline"     title="Underline (Ctrl+U)"><u>U</u></button>
+          <span class="tb-sep"></span>
+          <button class="tb-btn" data-block="h2"          title="Big heading">H2</button>
+          <button class="tb-btn" data-block="h3"          title="Small heading">H3</button>
+          <button class="tb-btn" data-block="p"           title="Normal text">¶</button>
+          <button class="tb-btn" data-block="blockquote"  title="Quote">❝</button>
+          <span class="tb-sep"></span>
+          <button class="tb-btn" data-cmd="insertUnorderedList" title="Bullet list">•≡</button>
+          <button class="tb-btn" data-cmd="insertOrderedList"   title="Numbered list">1≡</button>
+          <button class="tb-btn" id="link-btn"            title="Add link">🔗</button>
+          <span class="tb-sep"></span>
+          <button class="tb-btn" data-cmd="removeFormat"  title="Clear formatting">✕fmt</button>
+          <button class="tb-btn" data-cmd="undo"          title="Undo (Ctrl+Z)">↺</button>
+          <button class="tb-btn" data-cmd="redo"          title="Redo (Ctrl+Y)">↻</button>
+        </div>
+
+        <h1 class="post-title" id="post-title" data-placeholder="Give your post a title…"></h1>
         <div class="post-meta">
-          <span id="post-date">June 10, 2026</span>
+          <span id="post-date"></span>
           <span class="meta-dot">·</span>
           <span id="post-stats"></span>
         </div>
@@ -251,27 +274,18 @@
           <button class="engage-btn" id="like-btn" aria-pressed="false">🤍 <span id="like-count"></span></button>
           <button class="engage-btn" id="share-btn">🔗 Share</button>
         </div>
-        <article class="post-body" id="post-body">
-          <p>Hi, I'm Andy — welcome to my blog.</p>
-          <p>
-            This is where I'll be writing about the things I'm working on and thinking about:
-            building and field-testing <strong>Project Kymarion</strong> (our autonomous boat
-            that maps microplastic pollution along the Massachusetts coast), what I'm learning
-            in robotics and research, and the occasional detour into swimming, debate, or
-            whatever else has my attention.
-          </p>
-          <h2>Why a blog?</h2>
-          <p>
-            Research generates a lot of stories that never make it into a paper — sensors that
-            fail at the worst possible moment, deployments that almost work, small wins that
-            feel huge. I want to document those while they're fresh, and hopefully make ocean
-            research feel a little more accessible along the way.
-          </p>
-          <p>
-            First real field log coming soon. In the meantime, say hi in the comments below —
-            I read every one.
-          </p>
-        </article>
+        <article class="post-body" id="post-body" data-placeholder="Start writing here…"></article>
+
+        <div class="editor-footer hidden" id="editor-footer">
+          <span class="word-count" id="word-count"></span>
+          <div class="editor-footer-actions">
+            <button class="link-btn" id="backup-btn" title="Download a copy of your post as a file">⬇ Backup</button>
+            <label class="link-btn restore-label" title="Load a post from a backup file">
+              ⬆ Restore<input type="file" id="restore-input" accept=".json" hidden />
+            </label>
+            <button class="link-btn danger" id="reset-btn" title="Erase everything and start a blank post">🗑 Start over</button>
+          </div>
+        </div>
 
         <!-- ── Comments ── -->
         <div class="comments-section">
@@ -307,7 +321,7 @@
           <a class="project-card project-card-link" href="kymarion.html">
             <div class="project-card-header">
               <span class="project-badge ongoing">Ongoing</span>
-              <span class="project-year">2025 – Present</span>
+              <span class="project-year">Summer 2026 – Summer 2027</span>
             </div>
             <h3 class="project-card-title">Project Kymarion — ISEF Autonomous Surface Vehicle</h3>
             <p class="project-card-desc">
@@ -325,7 +339,7 @@
           <div class="project-card">
             <div class="project-card-header">
               <span class="project-badge ongoing">Ongoing</span>
-              <span class="project-year">Summer 2026</span>
+              <span class="project-year">Summer 2026 – Summer 2027</span>
             </div>
             <h3 class="project-card-title">LuminaBone — Low-Cost Shading-Based 3D Bone Endoscope</h3>
             <p class="project-card-desc">
@@ -394,7 +408,7 @@
               <div class="resume-entry">
                 <div class="resume-entry-header">
                   <strong>Co-Investigator — Project Kymarion</strong>
-                  <span class="resume-date">2025 – Present</span>
+                  <span class="resume-date">Summer 2026 – Summer 2027</span>
                 </div>
                 <div class="resume-entry-sub">ISEF Research, Coastal Massachusetts</div>
                 <ul class="resume-bullets">
