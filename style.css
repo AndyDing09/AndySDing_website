@@ -8,6 +8,8 @@
   --paper:      #faf8f2;
   --paper-2:    #f1eee3;
   --paper-3:    #e9e5d6;
+  --card:       #ffffff;
+  --nav-bg:     rgba(250, 248, 242, 0.88);
   --ink:        #21302a;
   --ink-2:      #56655d;
   --ink-3:      #8b968f;
@@ -26,6 +28,29 @@
   --shadow-lg:  0 12px 32px rgba(33, 48, 42, 0.12);
   --font-body:  'Inter', system-ui, sans-serif;
   --font-display: 'Fraunces', Georgia, serif;
+  color-scheme: light;
+}
+
+/* ── Dark theme (ocean at night) ── */
+html[data-theme="dark"] {
+  --paper:      #10171a;
+  --paper-2:    #151f22;
+  --paper-3:    #1c282c;
+  --card:       #182327;
+  --nav-bg:     rgba(16, 23, 26, 0.88);
+  --ink:        #e9f0ec;
+  --ink-2:      #a9bab1;
+  --ink-3:      #71837a;
+  --green:      #3f8a66;
+  --green-deep: #8fd0ae;
+  --green-soft: rgba(102, 187, 146, 0.12);
+  --clay:       #e0916b;
+  --clay-soft:  rgba(224, 145, 107, 0.12);
+  --border:     rgba(233, 240, 236, 0.12);
+  --border-strong: rgba(233, 240, 236, 0.22);
+  --shadow:     0 2px 10px rgba(0, 0, 0, 0.25);
+  --shadow-lg:  0 12px 32px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
 }
 
 /* ── Reset ── */
@@ -67,7 +92,7 @@ body::before {
   align-items: center;
   justify-content: space-between;
   padding: 0 clamp(20px, 5vw, 60px);
-  background: rgba(250, 248, 242, 0.88);
+  background: var(--nav-bg);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid var(--border);
@@ -330,7 +355,7 @@ body::before {
 .topic-chip {
   padding: 7px 16px;
   border-radius: 999px;
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   color: var(--ink-2);
   font-size: 0.84rem;
@@ -443,7 +468,7 @@ body::before {
    BLOG — single card
 ════════════════════════════════════════════════ */
 .blog-card {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 36px 40px;
@@ -606,7 +631,7 @@ body::before {
   margin-bottom: 28px;
 }
 .comment {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 14px 18px;
@@ -633,7 +658,7 @@ body::before {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 18px 20px;
@@ -655,7 +680,7 @@ body::before {
 .comment-form input[type="text"]:focus,
 .comment-form textarea:focus {
   border-color: var(--green);
-  background: #fff;
+  background: var(--card);
 }
 .comment-form textarea { min-height: 90px; resize: vertical; }
 .comment-form .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
@@ -680,7 +705,7 @@ body::before {
   gap: 22px;
 }
 .project-card {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 28px;
@@ -719,7 +744,7 @@ body::before {
 /* Papers in progress */
 .papers-block {
   margin-top: 32px;
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 26px 28px;
@@ -788,7 +813,7 @@ body::before {
 }
 
 .resume-block {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 26px 28px;
@@ -862,7 +887,7 @@ body::before {
   gap: 16px;
 }
 .interest-card {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 24px;
@@ -968,6 +993,147 @@ body::before {
   .projects-grid { grid-template-columns: 1fr; }
   .post-topbar { flex-direction: column; align-items: flex-start; }
 }
+
+/* ═══════════════════════════════════════════════
+   THEME TOGGLE
+════════════════════════════════════════════════ */
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.theme-toggle {
+  width: 36px; height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--card);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.theme-toggle:hover {
+  border-color: var(--green);
+  transform: rotate(15deg) scale(1.08);
+}
+
+/* ═══════════════════════════════════════════════
+   HERO WAVES
+════════════════════════════════════════════════ */
+#home { position: relative; overflow: hidden; }
+.hero-waves {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 110px;
+  pointer-events: none;
+  overflow: hidden;
+}
+.hero-waves svg {
+  position: absolute;
+  bottom: 0; left: 0;
+  width: 200%;
+  height: 100%;
+}
+.wave-back  { animation: waveDrift 26s linear infinite; }
+.wave-front { animation: waveDrift 16s linear infinite; }
+.wave-back path  { fill: var(--clay-soft); }
+.wave-front path { fill: var(--green-soft); }
+@keyframes waveDrift {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* ═══════════════════════════════════════════════
+   POST ENGAGEMENT (like + share)
+════════════════════════════════════════════════ */
+.post-engage {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: -16px 0 36px;
+}
+.engage-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--ink-2);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+}
+.engage-btn:hover {
+  border-color: var(--green);
+  color: var(--green-deep);
+  transform: translateY(-1px);
+}
+.engage-btn.liked {
+  border-color: rgba(214, 64, 69, 0.4);
+  background: rgba(214, 64, 69, 0.08);
+  color: #d64045;
+}
+
+/* ═══════════════════════════════════════════════
+   SCROLL REVEAL
+════════════════════════════════════════════════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.reveal.revealed { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .wave-back, .wave-front { animation: none; }
+  html { scroll-behavior: auto; }
+}
+
+/* ═══════════════════════════════════════════════
+   ACCESSIBILITY
+════════════════════════════════════════════════ */
+.skip-link {
+  position: fixed;
+  top: -60px; left: 16px;
+  z-index: 2000;
+  padding: 10px 18px;
+  border-radius: 8px;
+  background: var(--green);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: top 0.2s ease;
+}
+.skip-link:focus { top: 12px; }
+:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+/* ═══════════════════════════════════════════════
+   404 PAGE
+════════════════════════════════════════════════ */
+.notfound {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 24px;
+  gap: 14px;
+}
+.notfound-emoji { font-size: 4rem; }
+.notfound h1 {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  color: var(--ink);
+}
+.notfound p { color: var(--ink-2); max-width: 440px; line-height: 1.7; }
+.notfound .btn { margin-top: 10px; }
 
 /* Scrollbar + selection */
 ::-webkit-scrollbar { width: 8px; }

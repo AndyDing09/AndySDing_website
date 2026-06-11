@@ -7,7 +7,17 @@
   const sections = document.querySelectorAll('.section');
   const navLinks = document.querySelectorAll('.nav-link, .drawer-link, .btn[data-section], .nav-logo');
 
-  window.showSection = function (id) {
+  const TITLES = {
+    home:      'Andy S. Ding — Aspiring Environmental Engineer',
+    about:     'About — Andy S. Ding',
+    blog:      'Blog — Andy S. Ding',
+    post:      'Welcome to my corner of the internet — Andy S. Ding',
+    research:  'Research — Andy S. Ding',
+    resume:    'Résumé — Andy S. Ding',
+    interests: 'Interests — Andy S. Ding'
+  };
+
+  window.showSection = function (id, push) {
     sections.forEach(s => s.classList.remove('active'));
     const target = document.getElementById(id);
     if (target) {
@@ -19,6 +29,9 @@
       const navId = id === 'post' ? 'blog' : id;
       l.classList.toggle('active', l.dataset.section === navId);
     });
+    if (TITLES[id]) document.title = TITLES[id];
+    /* Keep the URL shareable and the back button working */
+    if (push !== false) history.pushState({ section: id }, '', '#' + id);
   };
 
   navLinks.forEach(link => {
@@ -33,10 +46,50 @@
   });
 
   if (sections.length) {
+    window.addEventListener('popstate', () => {
+      const id = location.hash.replace('#', '') || 'home';
+      if (document.getElementById(id)) showSection(id, false);
+    });
     const hash = window.location.hash.replace('#', '');
-    if (hash && document.getElementById(hash)) showSection(hash);
-    else showSection('home');
+    if (hash && document.getElementById(hash)) showSection(hash, false);
+    else showSection('home', false);
   }
+})();
+
+/* ── Theme toggle (dark / light) ── */
+(function initTheme() {
+  const btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  const root = document.documentElement;
+  function paint() {
+    btn.textContent = root.dataset.theme === 'dark' ? '☀️' : '🌙';
+  }
+  btn.addEventListener('click', () => {
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('asd-theme', root.dataset.theme);
+    paint();
+  });
+  paint();
+})();
+
+/* ── Scroll-reveal for cards ── */
+(function initReveal() {
+  const els = document.querySelectorAll(
+    '.blog-card, .project-card, .papers-block, .resume-block, .interest-card, .project-section'
+  );
+  if (!els.length || !('IntersectionObserver' in window)) return;
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  els.forEach(el => {
+    el.classList.add('reveal');
+    observer.observe(el);
+  });
 })();
 
 /* ── Mobile hamburger / drawer ── */
@@ -83,6 +136,63 @@ if (hamburger) {
     if (!e.target.closest('button')) openPost();
   });
   document.getElementById('post-back').addEventListener('click', () => showSection('blog'));
+})();
+
+/* ═══════════════════════════════════════════════
+   LIKE + SHARE — likes stored server-side
+═══════════════════════════════════════════════ */
+(function initEngage() {
+  const likeBtn = document.getElementById('like-btn');
+  const shareBtn = document.getElementById('share-btn');
+  if (!likeBtn) return;
+
+  const LIKED_KEY = 'asd-liked-post-1';
+  let liked = localStorage.getItem(LIKED_KEY) === '1';
+  let count = null;
+
+  function paint() {
+    likeBtn.innerHTML = (liked ? '❤️' : '🤍') + ' <span id="like-count">' + (count === null ? '' : count) + '</span>';
+    likeBtn.classList.toggle('liked', liked);
+    likeBtn.setAttribute('aria-pressed', liked ? 'true' : 'false');
+  }
+
+  fetch('likes.php')
+    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    .then(d => { count = d.likes || 0; paint(); })
+    .catch(() => { likeBtn.style.display = 'none'; });
+
+  likeBtn.addEventListener('click', () => {
+    liked = !liked;
+    localStorage.setItem(LIKED_KEY, liked ? '1' : '0');
+    if (count !== null) count = Math.max(0, count + (liked ? 1 : -1));
+    paint(); // optimistic
+    fetch('likes.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: liked ? 'like' : 'unlike' })
+    })
+      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+      .then(d => { count = d.likes; paint(); })
+      .catch(() => {});
+  });
+
+  if (shareBtn) {
+    shareBtn.addEventListener('click', () => {
+      const url = 'https://www.andysding.com/#post';
+      const data = { title: document.title, url: url };
+      if (navigator.share) {
+        navigator.share(data).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(url).then(() => {
+          const original = shareBtn.innerHTML;
+          shareBtn.innerHTML = '✓ Link copied';
+          setTimeout(() => { shareBtn.innerHTML = original; }, 1800);
+        });
+      }
+    });
+  }
+
+  paint();
 })();
 
 /* ═══════════════════════════════════════════════

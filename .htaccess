@@ -1,6 +1,9 @@
 # Serve index.html before index.php (bypasses WordPress)
 DirectoryIndex index.html index.php
 
+# Friendly 404 page
+ErrorDocument 404 /404.html
+
   # Disable WordPress rewrite rules for root
   <IfModule mod_rewrite.c>
   RewriteEngine Off

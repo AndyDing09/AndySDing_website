@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /comments.php
+Disallow: /likes.php
+
+Sitemap: https://www.andysding.com/sitemap.xml

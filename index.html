@@ -5,12 +5,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Andy S. Ding — Aspiring Environmental Engineer</title>
   <meta name="description" content="Personal website of Andy S. Ding — student researcher mapping ocean microplastics with autonomous robotics, and future environmental engineer." />
+  <link rel="canonical" href="https://www.andysding.com/" />
+  <meta name="theme-color" content="#2e6b4e" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌊%3C/text%3E%3C/svg%3E" />
+
+  <!-- Link previews (Discord, iMessage, social) -->
+  <meta property="og:title" content="Andy S. Ding — Aspiring Environmental Engineer" />
+  <meta property="og:description" content="Student researcher mapping ocean microplastics with an autonomous boat — Project Kymarion, robotics, and field notes from the Massachusetts coast." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.andysding.com/" />
+  <meta property="og:site_name" content="Andy S. Ding" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Andy S. Ding — Aspiring Environmental Engineer" />
+  <meta name="twitter:description" content="Student researcher mapping ocean microplastics with an autonomous boat — Project Kymarion, robotics, and field notes." />
+
+  <!-- Structured data for search engines -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Andy S. Ding",
+    "url": "https://www.andysding.com/",
+    "email": "mailto:andyding09@gmail.com",
+    "affiliation": { "@type": "EducationalOrganization", "name": "Weston High School" },
+    "knowsAbout": ["Environmental engineering", "Autonomous surface vehicles", "Microplastic detection", "Robotics"],
+    "sameAs": [
+      "https://github.com/andyding09",
+      "https://www.linkedin.com/in/andy-ding-a5b352317/"
+    ]
+  }
+  </script>
+
+  <!-- Apply saved theme before first paint (prevents flash) -->
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=4" />
+  <link rel="stylesheet" href="style.css?v=5" />
 </head>
 <body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- ─── Navigation ─── -->
   <nav id="navbar">
@@ -25,9 +67,12 @@
       <li><a href="#resume"    class="nav-link"        data-section="resume">Résumé</a></li>
       <li><a href="#interests" class="nav-link"        data-section="interests">Interests</a></li>
     </ul>
-    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </nav>
 
   <!-- ─── Mobile drawer ─── -->
@@ -66,6 +111,14 @@
           <span class="topic-chip">💧 Microplastic detection</span>
           <span class="topic-chip">♻️ Sustainability</span>
         </div>
+      </div>
+      <div class="hero-waves" aria-hidden="true">
+        <svg class="wave-back" viewBox="0 0 2880 120" preserveAspectRatio="none">
+          <path d="M0,72 C240,104 480,40 720,72 C960,104 1200,40 1440,72 C1680,104 1920,40 2160,72 C2400,104 2640,40 2880,72 L2880,120 L0,120 Z"/>
+        </svg>
+        <svg class="wave-front" viewBox="0 0 2880 120" preserveAspectRatio="none">
+          <path d="M0,84 C240,116 480,52 720,84 C960,116 1200,52 1440,84 C1680,116 1920,52 2160,84 C2400,116 2640,52 2880,84 L2880,120 L0,120 Z"/>
+        </svg>
       </div>
     </section>
 
@@ -193,6 +246,10 @@
           <span id="post-date">June 10, 2026</span>
           <span class="meta-dot">·</span>
           <span id="post-stats"></span>
+        </div>
+        <div class="post-engage">
+          <button class="engage-btn" id="like-btn" aria-pressed="false">🤍 <span id="like-count"></span></button>
+          <button class="engage-btn" id="share-btn">🔗 Share</button>
         </div>
         <article class="post-body" id="post-body">
           <p>Hi, I'm Andy — welcome to my blog.</p>
@@ -510,6 +567,6 @@
     <span>Résumé</span>
   </a>
 
-  <script src="script.js?v=4"></script>
+  <script src="script.js?v=5"></script>
 </body>
 </html>
