@@ -264,11 +264,12 @@ if (hamburger && mobileDrawer && drawerOverlay) {
 })();
 
 /* ═══════════════════════════════════════════════
-   COMMENTS — stored server-side via comments.php
+   COMMENTS v2 — threaded replies + up/down votes
+   Stored server-side via comments.php
 ═══════════════════════════════════════════════ */
 (function initComments() {
-  var list = document.getElementById('comments-list');
-  if (!list) return; // not on this page
+  var list      = document.getElementById('comments-list');
+  if (!list) return;
 
   var form      = document.getElementById('comment-form');
   var nameInput = document.getElementById('comment-name');
@@ -279,8 +280,19 @@ if (hamburger && mobileDrawer && drawerOverlay) {
   var statusEl  = document.getElementById('comment-status');
   var submitBtn = document.getElementById('comment-submit');
 
-  var NAME_KEY = 'asd-comment-name';
+  var NAME_KEY  = 'asd-comment-name';
+  var VOTES_KEY = 'asd-comment-votes';
+
   nameInput.value = localStorage.getItem(NAME_KEY) || '';
+
+  function getLocalVotes() {
+    try { return JSON.parse(localStorage.getItem(VOTES_KEY) || '{}'); } catch (e) { return {}; }
+  }
+  function setLocalVote(id, dir) {
+    var v = getLocalVotes();
+    if (dir === 0) delete v[id]; else v[id] = dir;
+    localStorage.setItem(VOTES_KEY, JSON.stringify(v));
+  }
 
   function setStatus(msg, kind) {
     statusEl.textContent = msg;
@@ -288,48 +300,241 @@ if (hamburger && mobileDrawer && drawerOverlay) {
   }
 
   function fmtTime(seconds) {
+    var d    = new Date(seconds * 1000);
     var diff = Math.floor(Date.now() / 1000) - seconds;
-    if (diff < 60)     return 'just now';
-    if (diff < 3600)   return Math.floor(diff / 60) + ' min ago';
-    if (diff < 86400)  return Math.floor(diff / 3600) + ' hr ago';
-    if (diff < 604800) return Math.floor(diff / 86400) + ' day' + (diff < 172800 ? '' : 's') + ' ago';
-    return new Date(seconds * 1000).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    var abs  = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    var rel;
+    if (diff < 60)       rel = 'just now';
+    else if (diff < 3600)  rel = Math.floor(diff / 60) + 'm ago';
+    else if (diff < 86400) rel = Math.floor(diff / 3600) + 'h ago';
+    else if (diff < 604800) rel = Math.floor(diff / 86400) + 'd ago';
+    else rel = null;
+    return rel ? (rel + ' · ' + abs) : abs;
   }
 
-  function commentEl(c) {
-    var el   = document.createElement('div');
-    el.className = 'comment';
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function commentEl(c, depth) {
+    depth = depth || 0;
+    var localVotes = getLocalVotes();
+    var myVote     = localVotes[c.id] || 0;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'comment' + (depth > 0 ? ' comment-reply' : '');
+    wrap.dataset.id = c.id;
+
     var head = document.createElement('div');
     head.className = 'comment-head';
+
     var name = document.createElement('span');
     name.className = 'comment-name';
-    name.textContent = c.name; // textContent keeps user input safely escaped
+    name.textContent = c.name;
+
     var time = document.createElement('span');
     time.className = 'comment-time';
+    time.title = new Date(c.time * 1000).toLocaleString();
     time.textContent = fmtTime(c.time);
+
     head.appendChild(name);
     head.appendChild(time);
+
     var body = document.createElement('p');
     body.className = 'comment-body';
     body.textContent = c.text;
-    el.appendChild(head);
-    el.appendChild(body);
-    return el;
+
+    var actions = document.createElement('div');
+    actions.className = 'comment-actions';
+
+    var voteWrap = document.createElement('span');
+    voteWrap.className = 'comment-votes';
+
+    var upBtn = document.createElement('button');
+    upBtn.type = 'button';
+    upBtn.className = 'vote-btn vote-up' + (myVote === 1 ? ' active' : '');
+    upBtn.setAttribute('aria-label', 'Upvote');
+    upBtn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3l5 5H3l5-5z"/></svg>';
+
+    var score = document.createElement('span');
+    score.className = 'vote-score' + (c.votes > 0 ? ' pos' : c.votes < 0 ? ' neg' : '');
+    score.textContent = c.votes;
+
+    var downBtn = document.createElement('button');
+    downBtn.type = 'button';
+    downBtn.className = 'vote-btn vote-down' + (myVote === -1 ? ' active' : '');
+    downBtn.setAttribute('aria-label', 'Downvote');
+    downBtn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13l5-5H3l5 5z"/></svg>';
+
+    voteWrap.appendChild(upBtn);
+    voteWrap.appendChild(score);
+    voteWrap.appendChild(downBtn);
+
+    var replyBtn = document.createElement('button');
+    replyBtn.type = 'button';
+    replyBtn.className = 'reply-btn';
+    replyBtn.textContent = '↩ Reply';
+    replyBtn.setAttribute('aria-label', 'Reply to ' + c.name);
+
+    actions.appendChild(voteWrap);
+    actions.appendChild(replyBtn);
+
+    var replyFormWrap = document.createElement('div');
+    replyFormWrap.className = 'reply-form-wrap hidden';
+    replyFormWrap.innerHTML =
+      '<form class="comment-form comment-form-reply">' +
+        '<input type="text" class="reply-name" maxlength="60" placeholder="Your name (optional)" autocomplete="name" />' +
+        '<textarea class="reply-text" maxlength="1500" placeholder="Replying to ' + escHtml(c.name) + '…" required></textarea>' +
+        '<div class="comment-form-foot">' +
+          '<span class="char-count reply-char-count">0 / 1500</span>' +
+          '<div style="display:flex;gap:8px">' +
+            '<button type="button" class="btn btn-small btn-ghost reply-cancel">Cancel</button>' +
+            '<button type="submit" class="btn btn-primary btn-small reply-submit">Post reply</button>' +
+          '</div>' +
+        '</div>' +
+      '</form>';
+
+    var children = document.createElement('div');
+    children.className = 'comment-children';
+
+    wrap.appendChild(head);
+    wrap.appendChild(body);
+    wrap.appendChild(actions);
+    wrap.appendChild(replyFormWrap);
+    wrap.appendChild(children);
+
+    function handleVote(dir) {
+      var current = getLocalVotes()[c.id] || 0;
+      var newDir  = (current === dir) ? 0 : dir;
+      var delta   = newDir - current;
+      c.votes += delta;
+      score.textContent = c.votes;
+      score.className   = 'vote-score' + (c.votes > 0 ? ' pos' : c.votes < 0 ? ' neg' : '');
+      upBtn.classList.toggle('active',   newDir === 1);
+      downBtn.classList.toggle('active', newDir === -1);
+      setLocalVote(c.id, newDir);
+      if (location.protocol === 'file:') return;
+      fetch('comments.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'vote', id: c.id, dir: dir })
+      })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (typeof data.votes === 'number') {
+            c.votes = data.votes;
+            score.textContent = c.votes;
+            score.className   = 'vote-score' + (c.votes > 0 ? ' pos' : c.votes < 0 ? ' neg' : '');
+          }
+          if (typeof data.voted === 'number') {
+            upBtn.classList.toggle('active',   data.voted === 1);
+            downBtn.classList.toggle('active', data.voted === -1);
+            setLocalVote(c.id, data.voted);
+          }
+        })
+        .catch(function() {});
+    }
+
+    upBtn.addEventListener('click',   function() { handleVote(1);  });
+    downBtn.addEventListener('click', function() { handleVote(-1); });
+
+    replyBtn.addEventListener('click', function() {
+      replyFormWrap.classList.toggle('hidden');
+      if (!replyFormWrap.classList.contains('hidden')) {
+        replyFormWrap.querySelector('.reply-name').value = localStorage.getItem(NAME_KEY) || '';
+        replyFormWrap.querySelector('.reply-text').focus();
+      }
+    });
+
+    replyFormWrap.querySelector('.reply-cancel').addEventListener('click', function() {
+      replyFormWrap.classList.add('hidden');
+    });
+
+    replyFormWrap.querySelector('.reply-text').addEventListener('input', function() {
+      replyFormWrap.querySelector('.reply-char-count').textContent = this.value.length + ' / 1500';
+    });
+
+    replyFormWrap.querySelector('form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var rText   = replyFormWrap.querySelector('.reply-text').value.trim();
+      if (!rText) return;
+      var rName   = replyFormWrap.querySelector('.reply-name').value.trim();
+      var rSubmit = replyFormWrap.querySelector('.reply-submit');
+      rSubmit.disabled    = true;
+      rSubmit.textContent = 'Posting…';
+      localStorage.setItem(NAME_KEY, rName);
+      fetch('comments.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: rName, text: rText, parentId: c.id, website: '' })
+      })
+        .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+        .then(function(result) {
+          if (!result.ok) throw new Error(result.data.error || 'Something went wrong');
+          replyFormWrap.classList.add('hidden');
+          replyFormWrap.querySelector('.reply-text').value = '';
+          replyFormWrap.querySelector('.reply-char-count').textContent = '0 / 1500';
+          loadComments();
+        })
+        .catch(function(err) {
+          var errEl = replyFormWrap.querySelector('.reply-err') || document.createElement('p');
+          errEl.className = 'comment-status err reply-err';
+          errEl.textContent = '⚠ ' + (err.message || 'Could not post — try again.');
+          if (!replyFormWrap.querySelector('.reply-err')) replyFormWrap.querySelector('form').appendChild(errEl);
+        })
+        .finally(function() {
+          rSubmit.disabled    = false;
+          rSubmit.textContent = 'Post reply';
+        });
+    });
+
+    return { wrap: wrap, children: children };
   }
 
   function render(comments) {
     list.innerHTML = '';
-    countEl.textContent = comments.length ? '(' + comments.length + ')' : '';
-    if (!comments.length) {
+    var total = comments.length;
+    countEl.textContent = total ? '(' + total + ')' : '';
+
+    if (!total) {
       var empty = document.createElement('p');
       empty.className = 'comments-empty';
-      empty.textContent = 'No comments yet \u2014 be the first!';
+      empty.textContent = 'No comments yet — be the first!';
       list.appendChild(empty);
       return;
     }
-    var i;
+
+    var nodes    = {};
+    var topLevel = [];
+    var i, c, built;
+
     for (i = 0; i < comments.length; i++) {
-      list.appendChild(commentEl(comments[i]));
+      c = comments[i];
+      built = commentEl(c, c.parentId ? 1 : 0);
+      nodes[c.id] = built;
+      if (!c.parentId) topLevel.push(built);
+    }
+
+    for (i = 0; i < comments.length; i++) {
+      c = comments[i];
+      if (c.parentId && nodes[c.parentId]) {
+        nodes[c.parentId].children.appendChild(nodes[c.id].wrap);
+      }
+    }
+
+    topLevel.sort(function(a, b) {
+      var ca = null, cb = null, j;
+      for (j = 0; j < comments.length; j++) {
+        if (comments[j].id === a.wrap.dataset.id) ca = comments[j];
+        if (comments[j].id === b.wrap.dataset.id) cb = comments[j];
+      }
+      if (!ca || !cb) return 0;
+      if (cb.votes !== ca.votes) return cb.votes - ca.votes;
+      return ca.time - cb.time;
+    });
+
+    for (i = 0; i < topLevel.length; i++) {
+      list.appendChild(topLevel[i].wrap);
     }
   }
 
@@ -344,7 +549,7 @@ if (hamburger && mobileDrawer && drawerOverlay) {
           setStatus('\U0001f4ac Comments work on the live site (they need the server).', '');
           form.classList.add('hidden');
         } else {
-          setStatus('\u26a0 Comments couldn\'t load \u2014 try refreshing.', 'err');
+          setStatus('⚠ Comments couldn\'t load — try refreshing.', 'err');
         }
       });
   }
@@ -358,8 +563,8 @@ if (hamburger && mobileDrawer && drawerOverlay) {
     var text = textInput.value.trim();
     if (!text) return;
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Posting\u2026';
+    submitBtn.disabled    = true;
+    submitBtn.textContent = 'Posting…';
     setStatus('', '');
     localStorage.setItem(NAME_KEY, nameInput.value.trim());
 
@@ -367,24 +572,25 @@ if (hamburger && mobileDrawer && drawerOverlay) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        name: nameInput.value.trim(),
-        text: text,
-        website: honeypot.value
+        name:     nameInput.value.trim(),
+        text:     text,
+        parentId: '',
+        website:  honeypot.value
       })
     })
-      .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, data: data }; }); })
+      .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
       .then(function(result) {
         if (!result.ok) throw new Error(result.data.error || 'Something went wrong');
         textInput.value = '';
         charCount.textContent = '0 / 1500';
-        setStatus('\u2713 Comment posted \u2014 thanks!', 'ok');
+        setStatus('✓ Comment posted — thanks!', 'ok');
         loadComments();
       })
       .catch(function(err) {
-        setStatus('\u26a0 ' + (err.message || 'Could not post your comment \u2014 try again.'), 'err');
+        setStatus('⚠ ' + (err.message || 'Could not post your comment — try again.'), 'err');
       })
       .finally(function() {
-        submitBtn.disabled = false;
+        submitBtn.disabled    = false;
         submitBtn.textContent = 'Post comment';
       });
   });

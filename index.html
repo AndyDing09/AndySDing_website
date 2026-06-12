@@ -257,7 +257,9 @@
           <h2 class="comments-title">Comments <span id="comments-count"></span></h2>
           <div class="comments-list" id="comments-list"></div>
 
-          <form class="comment-form" id="comment-form">
+          <!-- Top-level post form -->
+          <form class="comment-form" id="comment-form" data-parent="">
+            <p class="comment-form-label">Leave a comment</p>
             <input type="text" id="comment-name" maxlength="60" placeholder="Your name (optional)" autocomplete="name" />
             <textarea id="comment-text" maxlength="1500" placeholder="Share your thoughts…" required></textarea>
             <input type="text" id="comment-website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />

@@ -641,13 +641,30 @@ body::before {
   gap: 14px;
   margin-bottom: 28px;
 }
+
+/* base comment card */
 .comment {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 14px 18px;
   box-shadow: var(--shadow);
 }
+/* threaded reply — indented with a left accent bar */
+.comment-reply {
+  margin-top: 10px;
+  margin-left: 20px;
+  border-left: 3px solid var(--green-soft);
+  border-radius: 0 12px 12px 0;
+  padding-left: 16px;
+}
+.comment-children {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 4px;
+}
+
 .comment-head {
   display: flex;
   align-items: baseline;
@@ -662,22 +679,96 @@ body::before {
   line-height: 1.7;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
+  margin-bottom: 10px;
 }
 .comments-empty { color: var(--ink-3); font-style: italic; }
 
+/* action bar below each comment */
+.comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 6px;
+}
+.comment-votes {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.vote-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition: var(--transition);
+  padding: 0;
+}
+.vote-btn svg { width: 12px; height: 12px; }
+.vote-btn:hover { border-color: var(--green); color: var(--green); }
+.vote-up.active  { background: var(--green-soft); border-color: var(--green); color: var(--green-deep); }
+.vote-down.active{ background: var(--clay-soft);  border-color: var(--clay);  color: var(--clay); }
+.vote-score {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ink-3);
+  min-width: 18px;
+  text-align: center;
+}
+.vote-score.pos { color: var(--green-deep); }
+.vote-score.neg { color: var(--clay); }
+
+.reply-btn {
+  background: none;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-3);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: var(--transition);
+}
+.reply-btn:hover { color: var(--green-deep); background: var(--green-soft); }
+
+/* inline reply form */
+.reply-form-wrap { margin-top: 12px; }
+.reply-form-wrap.hidden { display: none; }
+.comment-form-label {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink-3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+
+/* shared form styles (top-level + reply) */
 .comment-form {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 18px 20px;
   box-shadow: var(--shadow);
 }
+.comment-form-reply {
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: none;
+}
 .comment-form.hidden { display: none; }
 .comment-form input[type="text"],
-.comment-form textarea {
+.comment-form textarea,
+.reply-form-wrap input,
+.reply-form-wrap textarea {
   font-family: inherit;
   font-size: 0.95rem;
   color: var(--ink);
@@ -687,13 +778,18 @@ body::before {
   padding: 10px 14px;
   outline: none;
   transition: var(--transition);
+  width: 100%;
+  box-sizing: border-box;
 }
 .comment-form input[type="text"]:focus,
-.comment-form textarea:focus {
+.comment-form textarea:focus,
+.reply-form-wrap input:focus,
+.reply-form-wrap textarea:focus {
   border-color: var(--green);
-  background: #fff;
+  background: var(--card);
 }
-.comment-form textarea { min-height: 90px; resize: vertical; }
+.comment-form textarea,
+.reply-form-wrap textarea { min-height: 80px; resize: vertical; }
 .comment-form .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 .comment-form-foot {
   display: flex;
@@ -704,8 +800,16 @@ body::before {
 }
 .char-count { color: var(--ink-3); font-size: 0.78rem; }
 .comment-status { margin-top: 10px; font-size: 0.86rem; color: var(--ink-3); }
-.comment-status.ok { color: var(--green); font-weight: 600; }
-.comment-status.err { color: var(--clay); font-weight: 600; }
+.comment-status.ok  { color: var(--green); font-weight: 600; }
+.comment-status.err { color: var(--clay);  font-weight: 600; }
+
+/* ghost/cancel button variant */
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-3);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { background: var(--paper-2); color: var(--ink); }
 
 /* ═══════════════════════════════════════════════
    PROJECTS
@@ -1219,8 +1323,12 @@ body::before {
 [data-theme="dark"] .status-note,
 [data-theme="dark"] .meta-bar,
 [data-theme="dark"] .comments-section,
+[data-theme="dark"] .comment,
+[data-theme="dark"] .comment-form,
 [data-theme="dark"] .comment-form input,
-[data-theme="dark"] .comment-form textarea {
+[data-theme="dark"] .comment-form textarea,
+[data-theme="dark"] .reply-form-wrap input,
+[data-theme="dark"] .reply-form-wrap textarea {
   background: var(--paper-2);
   border-color: var(--border);
 }
