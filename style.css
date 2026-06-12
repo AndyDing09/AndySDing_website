@@ -533,6 +533,7 @@ body::before {
   flex-wrap: wrap;
 }
 .blog-read-time { color: var(--ink-3); font-size: 0.84rem; }
+.blog-view-count { color: var(--ink-3); font-size: 0.84rem; }
 
 .blog-hint {
   margin-top: 22px;

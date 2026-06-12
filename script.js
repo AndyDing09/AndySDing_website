@@ -150,6 +150,8 @@ if (hamburger && mobileDrawer && drawerOverlay) {
   var postDate     = document.getElementById('post-date');
   var postStats    = document.getElementById('post-stats');
   var postBody     = document.getElementById('post-body');
+  var cardViews    = document.getElementById('card-views');
+  var postViews    = document.getElementById('post-views');
 
   /* ── Helpers ── */
   function textOf(html) {
@@ -196,8 +198,35 @@ if (hamburger && mobileDrawer && drawerOverlay) {
       .catch(function () { /* keep the default post */ });
   }
 
+  /* ── View count ── */
+  function paintViews(n) {
+    var txt = '👁 ' + (n === 1 ? '1 view' : n + ' views');
+    if (cardViews) cardViews.textContent = txt;
+    if (postViews) postViews.textContent = txt;
+  }
+
+  if (location.protocol !== 'file:') {
+    fetch('views.php')
+      .then(function(r) { return r.json(); })
+      .then(function(d) { if (typeof d.views === 'number') paintViews(d.views); })
+      .catch(function() {});
+  }
+
   /* ── Wire up ── */
-  var openPost = function () { showSection('post'); };
+  var openPost = function () {
+    showSection('post');
+    if (location.protocol !== 'file:' && !sessionStorage.getItem('asd-viewed-post-1')) {
+      sessionStorage.setItem('asd-viewed-post-1', '1');
+      fetch('views.php', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({action: 'view'})
+      })
+        .then(function(r) { return r.json(); })
+        .then(function(d) { if (typeof d.views === 'number') paintViews(d.views); })
+        .catch(function() {});
+    }
+  };
   cardOpen.addEventListener('click', openPost);
   document.getElementById('blog-card').addEventListener('click', function (e) {
     if (e.target.closest('button')) return;
