@@ -508,6 +508,13 @@ if (hamburger && mobileDrawer && drawerOverlay) {
     var topLevel = [];
     var i, c, built;
 
+    /* skip legacy comments that have no id (old flat format) */
+    var valid = [];
+    for (i = 0; i < comments.length; i++) {
+      if (comments[i].id) valid.push(comments[i]);
+    }
+    comments = valid;
+
     for (i = 0; i < comments.length; i++) {
       c = comments[i];
       built = commentEl(c, c.parentId ? 1 : 0);
