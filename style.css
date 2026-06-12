@@ -1493,3 +1493,75 @@ body::before {
   .chat-window { right: 10px; left: 10px; width: auto; bottom: 82px; }
   .chat-bubble { bottom: 16px; right: 16px; }
 }
+/* ── Partner badge link — prominent inline link ── */
+.partner-badge-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--green-deep);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 2px solid var(--green);
+  padding-bottom: 1px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.partner-badge-link:hover {
+  color: var(--green);
+  border-bottom-color: transparent;
+  background: var(--green-soft);
+  padding: 3px 8px;
+  border-radius: 6px;
+  border-bottom: none;
+  transform: translateX(2px);
+}
+
+/* ── Project meta bar (kymarion page) ── */
+.project-meta-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  background: var(--paper-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 36px;
+}
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border-right: 1px solid var(--border);
+}
+.meta-item:last-child { border-right: none; }
+.meta-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+.meta-value {
+  font-size: 0.9rem;
+  color: var(--ink);
+  font-weight: 500;
+}
+.meta-value a { color: var(--green-deep); font-weight: 600; }
+.meta-value a:hover { color: var(--green); }
+
+@media (max-width: 600px) {
+  .project-meta-bar { flex-direction: column; }
+  .meta-item { border-right: none; border-bottom: 1px solid var(--border); }
+  .meta-item:last-child { border-bottom: none; }
+}
+[data-theme=""dark""] .project-meta-bar {
+  background: var(--paper-2);
+  border-color: var(--border);
+}
+[data-theme=""dark""] .meta-label { color: var(--ink-3); }
+[data-theme=""dark""] .meta-value { color: var(--ink); }
+[data-theme=""dark""] .partner-badge-link:hover {
+  background: var(--green-soft);
+}
