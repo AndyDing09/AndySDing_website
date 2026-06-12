@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LuminaBone — Andy S. Ding</title>
+  <meta name="description" content="LuminaBone: a low-cost 6 mm endoscope using near-light photometric stereo to reconstruct real-time 3D bone topography for orthopedic and ENT surgery — no dye, no stereo cameras." />
+  <link rel="canonical" href="https://www.andysding.com/luminabone.html" />
+  <meta name="theme-color" content="#2e6b4e" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🦴%3C/text%3E%3C/svg%3E" />
+  <meta property="og:title" content="LuminaBone — Andy S. Ding" />
+  <meta property="og:description" content="A low-cost shading-based 3D bone endoscope using near-light photometric stereo — real-time 3D bone topography without dye or stereo cameras." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.andysding.com/luminabone.html" />
+  <meta property="og:image" content="https://www.andysding.com/photo.jpg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://www.andysding.com/photo.jpg" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=6" />
+  <style>
+    /* ── Page-level overrides for the project detail layout ── */
+    .project-page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 110px 24px 80px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--ink-3);
+      font-size: 0.86rem;
+      font-weight: 600;
+      margin-bottom: 40px;
+      transition: var(--transition);
+    }
+    .back-link:hover { color: var(--green-deep); }
+    .back-link svg { width: 14px; height: 14px; }
+
+    .project-hero { margin-bottom: 44px; }
+
+    .project-badges {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .research-badge.ongoing {
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: var(--clay-soft);
+      color: var(--clay);
+    }
+    .research-year { color: var(--ink-3); font-size: 0.82rem; }
+
+    .project-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.9rem, 5vw, 2.8rem);
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .project-subtitle {
+      font-size: 1.05rem;
+      color: var(--ink-2);
+      line-height: 1.75;
+      max-width: 700px;
+    }
+
+    .project-meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 26px;
+      padding: 20px 26px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 44px;
+      font-size: 0.85rem;
+    }
+    .meta-item { display: flex; flex-direction: column; gap: 4px; }
+    .meta-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--ink-3);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .meta-value { font-weight: 600; color: var(--ink); }
+
+    .section-heading {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--green-deep);
+      margin-bottom: 14px;
+    }
+
+    .project-section { margin-bottom: 44px; }
+
+    .project-section p {
+      color: var(--ink-2);
+      line-height: 1.85;
+      margin-bottom: 12px;
+    }
+
+    .project-section ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .project-section ul li {
+      display: flex;
+      gap: 10px;
+      color: var(--ink-2);
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+    .project-section ul li::before {
+      content: '→';
+      color: var(--green);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .tech-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .tech-tag {
+      padding: 5px 14px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      border: 1px solid rgba(46, 107, 78, 0.2);
+      color: var(--green-deep);
+      font-size: 0.82rem;
+      font-weight: 500;
+    }
+
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .spec-table td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .spec-table tr:last-child td { border-bottom: none; }
+    .spec-table td:first-child {
+      color: var(--ink-3);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      width: 35%;
+    }
+    .spec-table td:last-child { color: var(--ink); }
+
+    .timeline {
+      position: relative;
+      padding-left: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background: var(--border-strong);
+    }
+    .timeline-item { position: relative; }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -21px;
+      top: 6px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      border: 2px solid var(--paper);
+    }
+    .timeline-date {
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--clay);
+      margin-bottom: 4px;
+    }
+    .timeline-title {
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    .timeline-desc { color: var(--ink-2); font-size: 0.9rem; line-height: 1.6; }
+
+    .status-note {
+      padding: 15px 20px;
+      background: var(--green-soft);
+      border: 1px solid rgba(46, 107, 78, 0.25);
+      border-radius: var(--radius);
+      color: var(--ink-2);
+      font-size: 0.9rem;
+      line-height: 1.65;
+      margin-bottom: 44px;
+    }
+    .status-note strong { color: var(--green-deep); }
+
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .cta-btn {
+      padding: 11px 24px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .cta-btn.primary {
+      background: var(--green);
+      color: #fff;
+    }
+    .cta-btn.primary:hover { background: var(--green-deep); transform: translateY(-1px); }
+    .cta-btn.secondary {
+      background: transparent;
+      color: var(--green-deep);
+      border: 1.5px solid var(--green);
+    }
+    .cta-btn.secondary:hover { background: var(--green-soft); transform: translateY(-1px); }
+    .cta-btn.disabled {
+      background: var(--paper-2);
+      color: var(--ink-3);
+      border: 1.5px dashed var(--border-strong);
+      cursor: default;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-leaf">🌊</span> Andy S. Ding
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#home"     class="nav-link">Home</a></li>
+      <li><a href="index.html#about"    class="nav-link">About</a></li>
+      <li><a href="index.html#blog"     class="nav-link">Blog</a></li>
+      <li><a href="index.html#research" class="nav-link active">Research</a></li>
+      <li><a href="index.html#resume"   class="nav-link">Résumé</a></li>
+      <li><a href="index.html#interests" class="nav-link">Interests</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── Mobile drawer ─── -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <ul>
+      <li><a href="index.html#home"      class="drawer-link">Home</a></li>
+      <li><a href="index.html#about"     class="drawer-link">About</a></li>
+      <li><a href="index.html#blog"      class="drawer-link">Blog</a></li>
+      <li><a href="index.html#research"  class="drawer-link">Research</a></li>
+      <li><a href="index.html#resume"    class="drawer-link">Résumé</a></li>
+      <li><a href="index.html#interests" class="drawer-link">Interests</a></li>
+    </ul>
+  </div>
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <main class="project-page" id="main">
+
+    <a href="index.html#research" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 3L5 8l5 5"/>
+      </svg>
+      Back to Research
+    </a>
+
+    <!-- ── Hero ── -->
+    <div class="project-hero">
+      <div class="project-badges">
+        <span class="research-badge ongoing">Ongoing</span>
+        <span class="research-year">Summer 2026 – Summer 2027</span>
+      </div>
+      <h1 class="project-title">LuminaBone — Low-Cost Shading-Based 3D Bone Endoscope</h1>
+      <p class="project-subtitle">
+        A medical imaging project developing a 6 mm endoscope that uses near-light photometric
+        stereo to reconstruct accurate 3D bone topography in real time — without dye or
+        expensive stereo cameras. Designed for orthopedic and ENT surgical applications.
+      </p>
+    </div>
+
+    <!-- ── Meta bar ── -->
+    <div class="project-meta-bar">
+      <div class="meta-item">
+        <span class="meta-label">Program</span>
+        <span class="meta-value">Summer 2026 Medical Imaging Internship</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Field</span>
+        <span class="meta-value">Medical Imaging &amp; Computer Vision</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Role</span>
+        <span class="meta-value">Lead Investigator</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Advisor</span>
+        <span class="meta-value">Prof. Peter Kazanzides, Johns Hopkins University</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Timeline</span>
+        <span class="meta-value">Summer 2026 – Summer 2027</span>
+      </div>
+    </div>
+
+    <!-- ── Current status ── -->
+    <div class="status-note">
+      <strong>Status:</strong> Active development — optical design and reconstruction pipeline
+      in progress as part of a Summer 2026 medical imaging internship, advised by
+      Prof. Peter Kazanzides (Johns Hopkins University). Bone-phantom validation against
+      laser scans planned for the 2026–27 cycle.
+    </div>
+
+    <!-- ── The Problem ── -->
+    <div class="project-section">
+      <h2 class="section-heading">The Problem</h2>
+      <p>
+        Surgeons working through endoscopes in orthopedic and ENT procedures see a flat,
+        2D view of curved bone surfaces. Judging depth — how much bone has been removed,
+        how a drill path is progressing, where a ridge ends — relies on experience and
+        indirect cues. Existing 3D solutions either require fluorescent dye, structured-light
+        projectors, or stereo camera pairs that are too bulky and expensive to fit inside
+        a millimeter-scale endoscope.
+      </p>
+      <p>
+        The goal of LuminaBone is real-time, quantitative 3D bone topography from a single
+        small camera and cheap LEDs — hardware simple enough to fit in a 6 mm endoscope tip
+        and cheap enough to be disposable.
+      </p>
+    </div>
+
+    <!-- ── The Approach ── -->
+    <div class="project-section">
+      <h2 class="section-heading">The Approach</h2>
+      <p>
+        LuminaBone uses <strong>near-light photometric stereo</strong>: instead of multiple
+        cameras, it uses multiple <em>lights</em>. Two off-axis micro-LEDs at the endoscope
+        tip are driven sequentially via PWM, so the camera captures alternating frames lit
+        from different directions. The shading gradients across the rigid bone surface encode
+        its local slope.
+      </p>
+      <ul>
+        <li>Two off-axis micro-LEDs fire in sequence, synchronized to the camera frame clock via PWM.</li>
+        <li>Each frame pair captures shading gradients across the bone surface from two known light positions.</li>
+        <li>A Lambertian reflectance model, corrected for inverse-square near-light falloff, solves per-pixel surface normals.</li>
+        <li>Normals are integrated into a continuous 3D height map of the bone surface, updated in real time.</li>
+        <li>No dye, no structured light, no stereo cameras — just timing, optics, and math.</li>
+      </ul>
+    </div>
+
+    <!-- ── Technical Details ── -->
+    <div class="project-section">
+      <h2 class="section-heading">Technical Details</h2>
+      <table class="spec-table">
+        <tr><td>Form factor</td><td>6 mm outer-diameter endoscope tip</td></tr>
+        <tr><td>Illumination</td><td>2× off-axis micro-LEDs, sequentially PWM-driven, frame-synchronized</td></tr>
+        <tr><td>Reconstruction</td><td>Near-light photometric stereo: Lambertian model + inverse-square falloff correction</td></tr>
+        <tr><td>Pipeline</td><td>Per-pixel surface-normal solve → normal-field integration → 3D height map</td></tr>
+        <tr><td>Performance target</td><td>≥ 15 fps real-time reconstruction</td></tr>
+        <tr><td>Validation</td><td>Bone phantoms, ground-truthed against high-precision laser scans</td></tr>
+        <tr><td>Applications</td><td>Orthopedic &amp; ENT surgery — depth feedback during bone removal and drilling</td></tr>
+        <tr><td>Advisor</td><td>Prof. Peter Kazanzides, Johns Hopkins University</td></tr>
+      </table>
+    </div>
+
+    <!-- ── Tech Stack ── -->
+    <div class="project-section">
+      <h2 class="section-heading">Tech &amp; Tools</h2>
+      <div class="tech-grid">
+        <span class="tech-tag">Photometric stereo</span>
+        <span class="tech-tag">Python</span>
+        <span class="tech-tag">OpenCV</span>
+        <span class="tech-tag">NumPy</span>
+        <span class="tech-tag">PWM LED driving</span>
+        <span class="tech-tag">Micro-optics</span>
+        <span class="tech-tag">Lambertian reflectance modeling</span>
+        <span class="tech-tag">Bone phantom fabrication</span>
+        <span class="tech-tag">Laser scan validation</span>
+      </div>
+    </div>
+
+    <!-- ── Timeline ── -->
+    <div class="project-section">
+      <h2 class="section-heading">Timeline</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-date">Spring 2026</div>
+          <div class="timeline-title">Proposal &amp; Background</div>
+          <div class="timeline-desc">Literature review of photometric stereo in endoscopy; project proposal developed with Prof. Kazanzides.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Summer 2026</div>
+          <div class="timeline-title">Internship — Prototype &amp; Pipeline</div>
+          <div class="timeline-desc">Optical bench prototype with off-axis LEDs; implementation of the near-light Lambertian reconstruction pipeline.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Fall 2026</div>
+          <div class="timeline-title">Real-Time Optimization</div>
+          <div class="timeline-desc">Pipeline optimization toward the ≥15 fps target; PWM frame-synchronization refinement.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Winter–Spring 2027</div>
+          <div class="timeline-title">Phantom Validation</div>
+          <div class="timeline-desc">Accuracy evaluation on bone phantoms against high-precision laser scans; error characterization.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Summer 2027</div>
+          <div class="timeline-title">Report &amp; Write-Up</div>
+          <div class="timeline-desc">Medical imaging internship report and project write-up for orthopedic &amp; ENT applications.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Links ── -->
+    <div class="project-section">
+      <h2 class="section-heading">Resources</h2>
+      <p>The internship report and technical write-up will be posted here as the project matures.</p>
+      <div class="cta-row">
+        <span class="cta-btn disabled" aria-disabled="true">Report — Coming Soon</span>
+        <a href="index.html#research" class="cta-btn secondary">← All Projects</a>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="script.js?v=6"></script>
+  <script src="chat.js?v=1"></script>
+</body>
+</html>

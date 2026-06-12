@@ -7,7 +7,17 @@
   const sections = document.querySelectorAll('.section');
   const navLinks = document.querySelectorAll('.nav-link, .drawer-link, .btn[data-section], .nav-logo');
 
-  window.showSection = function (id) {
+  const TITLES = {
+    home:      'Andy S. Ding — Aspiring Environmental Engineer',
+    about:     'About — Andy S. Ding',
+    blog:      'Blog — Andy S. Ding',
+    post:      'Blog — Andy S. Ding',
+    research:  'Research — Andy S. Ding',
+    resume:    'Résumé — Andy S. Ding',
+    interests: 'Interests — Andy S. Ding'
+  };
+
+  window.showSection = function (id, push) {
     sections.forEach(s => s.classList.remove('active'));
     const target = document.getElementById(id);
     if (target) {
@@ -19,22 +29,67 @@
       const navId = id === 'post' ? 'blog' : id;
       l.classList.toggle('active', l.dataset.section === navId);
     });
+    if (TITLES[id]) document.title = TITLES[id];
+    /* Keep the URL shareable and the back button working */
+    if (push !== false) history.pushState({ section: id }, '', '#' + id);
   };
 
   navLinks.forEach(link => {
     link.addEventListener('click', e => {
-      e.preventDefault();
       const id = link.dataset.section;
       if (id) {
+        e.preventDefault();
         showSection(id);
         closeMobileDrawer();
       }
     });
   });
 
-  const hash = window.location.hash.replace('#', '');
-  if (hash && document.getElementById(hash)) showSection(hash);
-  else showSection('home');
+  if (sections.length) {
+    window.addEventListener('popstate', () => {
+      const id = location.hash.replace('#', '') || 'home';
+      if (document.getElementById(id)) showSection(id, false);
+    });
+    const hash = window.location.hash.replace('#', '');
+    if (hash && document.getElementById(hash)) showSection(hash, false);
+    else showSection('home', false);
+  }
+})();
+
+/* ── Theme toggle (dark / light) ── */
+(function initTheme() {
+  const btn = document.getElementById('theme-toggle');
+  if (!btn) return;
+  const root = document.documentElement;
+  function paint() {
+    btn.textContent = root.dataset.theme === 'dark' ? '☀️' : '🌙';
+  }
+  btn.addEventListener('click', () => {
+    root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('asd-theme', root.dataset.theme);
+    paint();
+  });
+  paint();
+})();
+
+/* ── Scroll-reveal for cards ── */
+(function initReveal() {
+  const els = document.querySelectorAll(
+    '.blog-card, .project-card, .papers-block, .resume-block, .interest-card, .project-section'
+  );
+  if (!els.length || !('IntersectionObserver' in window)) return;
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('revealed');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08 });
+  els.forEach(el => {
+    el.classList.add('reveal');
+    observer.observe(el);
+  });
 })();
 
 /* ── Mobile hamburger / drawer ── */
@@ -43,276 +98,509 @@ const mobileDrawer  = document.getElementById('mobile-drawer');
 const drawerOverlay = document.getElementById('drawer-overlay');
 
 function closeMobileDrawer() {
+  if (!hamburger) return;
   hamburger.classList.remove('open');
   mobileDrawer.classList.remove('open');
   drawerOverlay.classList.remove('visible');
 }
-hamburger.addEventListener('click', () => {
-  const isOpen = mobileDrawer.classList.toggle('open');
-  hamburger.classList.toggle('open', isOpen);
-  drawerOverlay.classList.toggle('visible', isOpen);
-});
-drawerOverlay.addEventListener('click', closeMobileDrawer);
-
-/* ── Resume download button feedback ── */
-const dlBtn = document.getElementById('download-btn');
-if (dlBtn) {
-  dlBtn.addEventListener('click', e => {
-    if (dlBtn.getAttribute('href') === 'resume.pdf') {
-      e.preventDefault();
-      const original = dlBtn.innerHTML;
-      dlBtn.innerHTML = '✓ PDF coming soon!';
-      setTimeout(() => { dlBtn.innerHTML = original; }, 2200);
-    }
+if (hamburger && mobileDrawer && drawerOverlay) {
+  hamburger.addEventListener('click', () => {
+    const isOpen = mobileDrawer.classList.toggle('open');
+    hamburger.classList.toggle('open', isOpen);
+    drawerOverlay.classList.toggle('visible', isOpen);
   });
+  drawerOverlay.addEventListener('click', closeMobileDrawer);
 }
 
 /* ═══════════════════════════════════════════════
-   BLOG — single post with built-in editor
-   Saved in this browser via localStorage.
+   BLOG — published post loaded from blog.php
+   (Andy edits it from the private dev page;
+   the public site is read-only.)
 ═══════════════════════════════════════════════ */
 (function initBlog() {
-  const KEY = 'asd-blog-post-v1';
+  if (!document.getElementById('blog-card')) return; // not on this page
 
-  const DEFAULT_POST = {
+  var DEFAULT_POST = {
     title: 'Welcome to my blog',
     content:
-      '<p>This is my little corner of the internet for writing about Project Kymarion, ocean research, school, and whatever I’m curious about right now.</p>' +
-      '<h2>How this page works (note to self)</h2>' +
-      '<p>Hit the <strong>✏️ Edit</strong> button at the top right to start writing. While editing you can:</p>' +
-      '<ul>' +
-      '<li>Use the toolbar (or <strong>Ctrl+B</strong> / <strong>Ctrl+I</strong> / <strong>Ctrl+U</strong>) to format text</li>' +
-      '<li>Add headings, lists, quotes, and links</li>' +
-      '<li>Stop worrying about saving — it autosaves as you type</li>' +
-      '<li>Click <strong>⬇ Backup</strong> now and then to download a copy of your post</li>' +
-      '</ul>' +
-      '<blockquote>Replace all of this with your first real post whenever you’re ready!</blockquote>',
-    created: Date.now(),
+      '<p>Hi, I\'m Andy — welcome to my blog.</p>' +
+      '<p>This is where I\'ll be writing about the things I\'m working on and thinking about: ' +
+      'building and field-testing <strong>Project Kymarion</strong> (our autonomous boat that maps ' +
+      'microplastic pollution along the Massachusetts coast), what I\'m learning in robotics and ' +
+      'research, and the occasional detour into swimming, debate, or whatever else has my attention.</p>' +
+      '<h2>Why a blog?</h2>' +
+      '<p>Research generates a lot of stories that never make it into a paper — sensors that fail at ' +
+      'the worst possible moment, deployments that almost work, small wins that feel huge. I want to ' +
+      'document those while they\'re fresh, and hopefully make ocean research feel a little more ' +
+      'accessible along the way.</p>' +
+      '<blockquote>First real field log coming soon. In the meantime, say hi in the comments below — ' +
+      'I read every one.</blockquote>',
     updated: null
   };
 
   /* ── Elements ── */
-  const cardDate     = document.getElementById('card-date');
-  const cardTitle    = document.getElementById('card-title');
-  const cardExcerpt  = document.getElementById('card-excerpt');
-  const cardReadtime = document.getElementById('card-readtime');
-  const cardOpen     = document.getElementById('card-open');
+  var cardDate     = document.getElementById('card-date');
+  var cardTitle    = document.getElementById('card-title');
+  var cardExcerpt  = document.getElementById('card-excerpt');
+  var cardReadtime = document.getElementById('card-readtime');
+  var cardOpen     = document.getElementById('card-open');
 
-  const postSection  = document.getElementById('post');
-  const postBack     = document.getElementById('post-back');
-  const editToggle   = document.getElementById('edit-toggle');
-  const saveStatus   = document.getElementById('save-status');
-  const toolbar      = document.getElementById('editor-toolbar');
-  const postTitle    = document.getElementById('post-title');
-  const postDate     = document.getElementById('post-date');
-  const postStats    = document.getElementById('post-stats');
-  const postBody     = document.getElementById('post-body');
-  const editorFooter = document.getElementById('editor-footer');
-  const wordCount    = document.getElementById('word-count');
-  const backupBtn    = document.getElementById('backup-btn');
-  const restoreInput = document.getElementById('restore-input');
-  const resetBtn     = document.getElementById('reset-btn');
-  const linkBtn      = document.getElementById('link-btn');
-
-  let post = loadPost();
-  let editing = false;
-  let saveTimer = null;
-
-  /* ── Storage ── */
-  function loadPost() {
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) {
-        const p = JSON.parse(raw);
-        if (p && typeof p.title === 'string' && typeof p.content === 'string') return p;
-      }
-    } catch (e) { /* corrupted data — fall back to default */ }
-    return JSON.parse(JSON.stringify(DEFAULT_POST));
-  }
-
-  function persist() {
-    post.title = postTitle.textContent.trim();
-    post.content = postBody.innerHTML;
-    post.updated = Date.now();
-    try {
-      localStorage.setItem(KEY, JSON.stringify(post));
-      flashStatus('Saved ✓', true);
-    } catch (e) {
-      flashStatus('⚠ Could not save (storage full?)', false);
-    }
-    renderCard();
-    renderMeta();
-  }
-
-  function scheduleSave() {
-    saveStatus.textContent = 'Saving…';
-    saveStatus.classList.remove('saved');
-    clearTimeout(saveTimer);
-    saveTimer = setTimeout(persist, 600);
-  }
-
-  function flashStatus(msg, ok) {
-    saveStatus.textContent = msg;
-    saveStatus.classList.toggle('saved', !!ok);
-  }
+  var postBack     = document.getElementById('post-back');
+  var postTitle    = document.getElementById('post-title');
+  var postDate     = document.getElementById('post-date');
+  var postStats    = document.getElementById('post-stats');
+  var postBody     = document.getElementById('post-body');
 
   /* ── Helpers ── */
   function textOf(html) {
-    const div = document.createElement('div');
+    var div = document.createElement('div');
     div.innerHTML = html;
     return (div.textContent || '').trim();
   }
-  function words(html) {
-    const t = textOf(html);
-    return t ? t.split(/\s+/).length : 0;
+  function readTime(text) {
+    var words = text ? text.split(/\s+/).length : 0;
+    return Math.max(1, Math.round(words / 200));
   }
-  function readTime(html) {
-    return Math.max(1, Math.round(words(html) / 200));
-  }
-  function fmtDate(ts) {
-    return new Date(ts).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  function fmtDate(ms) {
+    return new Date(ms).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   }
 
-  /* ── Render ── */
-  function renderCard() {
-    cardTitle.textContent = post.title || 'Untitled post';
-    const t = textOf(post.content);
-    cardExcerpt.textContent = t.length > 200 ? t.slice(0, 200).trimEnd() + '…' : (t || 'Nothing written yet — open the post and start writing!');
-    cardDate.textContent = post.updated ? 'Updated ' + fmtDate(post.updated) : fmtDate(post.created);
-    cardReadtime.textContent = '🕐 ' + readTime(post.content) + ' min read';
-  }
+  /* ── Render the post + its card preview ── */
+  function render(post) {
+    var text = textOf(post.content);
+    var mins = readTime(text);
+    var dateText = post.updated ? fmtDate(post.updated) : fmtDate(Date.now());
 
-  function renderMeta() {
-    postDate.textContent = post.updated ? 'Updated ' + fmtDate(post.updated) : fmtDate(post.created);
-    postStats.textContent = readTime(post.content) + ' min read';
-    wordCount.textContent = words(post.content) + ' words';
-  }
+    cardTitle.textContent = post.title;
+    cardExcerpt.textContent = text.length > 200 ? text.slice(0, 200).trimEnd() + '…' : text;
+    cardDate.textContent = dateText;
+    cardReadtime.textContent = '🕐 ' + mins + ' min read';
 
-  function renderPost() {
     postTitle.textContent = post.title;
-    postBody.innerHTML = post.content;
-    renderMeta();
+    postBody.innerHTML = post.content; // trusted: authored by Andy, sanitized server-side
+    postDate.textContent = dateText;
+    postStats.textContent = mins + ' min read';
   }
 
-  /* ── Edit mode ── */
-  function setEditing(on) {
-    editing = on;
-    postSection.classList.toggle('editing', on);
-    toolbar.classList.toggle('hidden', !on);
-    editorFooter.classList.toggle('hidden', !on);
-    postTitle.contentEditable = on;
-    postBody.contentEditable = on;
-    editToggle.innerHTML = on ? '✓ Done' : '✏️ Edit';
-    editToggle.classList.toggle('btn-primary', on);
-    editToggle.classList.toggle('btn-ghost', !on);
-    if (on) {
-      flashStatus('Editing — changes save automatically', false);
-      postBody.focus();
-    } else {
-      clearTimeout(saveTimer);
-      persist();
-    }
+  render(DEFAULT_POST);
+
+  /* Load the published post from the server */
+  if (location.protocol !== 'file:') {
+    fetch('blog.php')
+      .then(function (r) { return r.json(); })
+      .then(function (d) {
+        if (d && d.title && d.content) {
+          render({ title: d.title, content: d.content, updated: d.updated ? d.updated * 1000 : null });
+        }
+      })
+      .catch(function () { /* keep the default post */ });
   }
 
   /* ── Wire up ── */
-  cardOpen.addEventListener('click', () => { renderPost(); showSection('post'); });
-  document.getElementById('blog-card').addEventListener('click', e => {
+  var openPost = function () { showSection('post'); };
+  cardOpen.addEventListener('click', openPost);
+  document.getElementById('blog-card').addEventListener('click', function (e) {
     if (e.target.closest('button')) return;
-    renderPost();
-    showSection('post');
+    openPost();
+  });
+  postBack.addEventListener('click', function () { showSection('blog'); });
+})();
+
+/* ═══════════════════════════════════════════════
+   LIKE + SHARE — likes stored server-side
+═══════════════════════════════════════════════ */
+(function initEngage() {
+  const likeBtn = document.getElementById('like-btn');
+  const shareBtn = document.getElementById('share-btn');
+  if (!likeBtn) return;
+
+  const LIKED_KEY = 'asd-liked-post-1';
+  let liked = localStorage.getItem(LIKED_KEY) === '1';
+  let count = null;
+
+  function paint() {
+    likeBtn.innerHTML = (liked ? '❤️' : '🤍') + ' <span id="like-count">' + (count === null ? '' : count) + '</span>';
+    likeBtn.classList.toggle('liked', liked);
+    likeBtn.setAttribute('aria-pressed', liked ? 'true' : 'false');
+  }
+
+  fetch('likes.php')
+    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+    .then(d => { count = d.likes || 0; paint(); })
+    .catch(() => { likeBtn.style.display = 'none'; });
+
+  likeBtn.addEventListener('click', () => {
+    liked = !liked;
+    localStorage.setItem(LIKED_KEY, liked ? '1' : '0');
+    if (count !== null) count = Math.max(0, count + (liked ? 1 : -1));
+    paint(); // optimistic
+    fetch('likes.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: liked ? 'like' : 'unlike' })
+    })
+      .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+      .then(d => { count = d.likes; paint(); })
+      .catch(() => {});
   });
 
-  postBack.addEventListener('click', () => {
-    if (editing) setEditing(false);
-    showSection('blog');
-  });
-
-  editToggle.addEventListener('click', () => setEditing(!editing));
-
-  postTitle.addEventListener('input', scheduleSave);
-  postBody.addEventListener('input', () => {
-    scheduleSave();
-    wordCount.textContent = words(postBody.innerHTML) + ' words';
-  });
-
-  /* Keep the title to a single line; Enter jumps into the body */
-  postTitle.addEventListener('keydown', e => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      postBody.focus();
-    }
-  });
-
-  /* Ctrl+S = save now (it autosaves anyway, but habits are habits) */
-  document.addEventListener('keydown', e => {
-    if (editing && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
-      e.preventDefault();
-      clearTimeout(saveTimer);
-      persist();
-    }
-  });
-
-  /* Toolbar commands */
-  toolbar.querySelectorAll('.tb-btn').forEach(btn => {
-    /* Keep focus/selection in the editor when clicking toolbar buttons */
-    btn.addEventListener('mousedown', e => e.preventDefault());
-    btn.addEventListener('click', () => {
-      const cmd = btn.dataset.cmd;
-      const block = btn.dataset.block;
-      if (cmd) document.execCommand(cmd, false, null);
-      else if (block) document.execCommand('formatBlock', false, '<' + block + '>');
-    });
-  });
-
-  linkBtn.addEventListener('click', () => {
-    const url = prompt('Link address (e.g. https://example.com):');
-    if (url) document.execCommand('createLink', false, url);
-  });
-
-  /* Backup — download the post as a small file */
-  backupBtn.addEventListener('click', () => {
-    const blob = new Blob([JSON.stringify(post, null, 2)], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'my-blog-post.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
-    flashStatus('Backup downloaded ✓', true);
-  });
-
-  /* Restore from a backup file */
-  restoreInput.addEventListener('change', () => {
-    const file = restoreInput.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try {
-        const p = JSON.parse(reader.result);
-        if (!p || typeof p.title !== 'string' || typeof p.content !== 'string') throw new Error('bad file');
-        post = p;
-        renderPost();
-        persist();
-        flashStatus('Restored from backup ✓', true);
-      } catch (e) {
-        flashStatus('⚠ That file doesn’t look like a blog backup', false);
+  if (shareBtn) {
+    shareBtn.addEventListener('click', () => {
+      const url = 'https://www.andysding.com/#post';
+      const data = { title: document.title, url: url };
+      if (navigator.share) {
+        navigator.share(data).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(url).then(() => {
+          const original = shareBtn.innerHTML;
+          shareBtn.innerHTML = '✓ Link copied';
+          setTimeout(() => { shareBtn.innerHTML = original; }, 1800);
+        });
       }
-      restoreInput.value = '';
-    };
-    reader.readAsText(file);
+    });
+  }
+
+  paint();
+})();
+
+/* ═══════════════════════════════════════════════
+   COMMENTS v2 — threaded replies + up/down votes
+   Stored server-side via comments.php
+═══════════════════════════════════════════════ */
+(function initComments() {
+  var list      = document.getElementById('comments-list');
+  if (!list) return;
+
+  var form      = document.getElementById('comment-form');
+  var nameInput = document.getElementById('comment-name');
+  var textInput = document.getElementById('comment-text');
+  var honeypot  = document.getElementById('comment-website');
+  var charCount = document.getElementById('char-count');
+  var countEl   = document.getElementById('comments-count');
+  var statusEl  = document.getElementById('comment-status');
+  var submitBtn = document.getElementById('comment-submit');
+
+  var NAME_KEY  = 'asd-comment-name';
+  var VOTES_KEY = 'asd-comment-votes';
+
+  nameInput.value = localStorage.getItem(NAME_KEY) || '';
+
+  function getLocalVotes() {
+    try { return JSON.parse(localStorage.getItem(VOTES_KEY) || '{}'); } catch (e) { return {}; }
+  }
+  function setLocalVote(id, dir) {
+    var v = getLocalVotes();
+    if (dir === 0) delete v[id]; else v[id] = dir;
+    localStorage.setItem(VOTES_KEY, JSON.stringify(v));
+  }
+
+  function setStatus(msg, kind) {
+    statusEl.textContent = msg;
+    statusEl.className = 'comment-status' + (kind ? ' ' + kind : '');
+  }
+
+  function fmtTime(seconds) {
+    var d    = new Date(seconds * 1000);
+    var diff = Math.floor(Date.now() / 1000) - seconds;
+    var abs  = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    var rel;
+    if (diff < 60)       rel = 'just now';
+    else if (diff < 3600)  rel = Math.floor(diff / 60) + 'm ago';
+    else if (diff < 86400) rel = Math.floor(diff / 3600) + 'h ago';
+    else if (diff < 604800) rel = Math.floor(diff / 86400) + 'd ago';
+    else rel = null;
+    return rel ? (rel + ' · ' + abs) : abs;
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function commentEl(c, depth) {
+    depth = depth || 0;
+    var localVotes = getLocalVotes();
+    var myVote     = localVotes[c.id] || 0;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'comment' + (depth > 0 ? ' comment-reply' : '');
+    wrap.dataset.id = c.id;
+
+    var head = document.createElement('div');
+    head.className = 'comment-head';
+
+    var name = document.createElement('span');
+    name.className = 'comment-name';
+    name.textContent = c.name;
+
+    var time = document.createElement('span');
+    time.className = 'comment-time';
+    time.title = new Date(c.time * 1000).toLocaleString();
+    time.textContent = fmtTime(c.time);
+
+    head.appendChild(name);
+    head.appendChild(time);
+
+    var body = document.createElement('p');
+    body.className = 'comment-body';
+    body.textContent = c.text;
+
+    var actions = document.createElement('div');
+    actions.className = 'comment-actions';
+
+    var voteWrap = document.createElement('span');
+    voteWrap.className = 'comment-votes';
+
+    var upBtn = document.createElement('button');
+    upBtn.type = 'button';
+    upBtn.className = 'vote-btn vote-up' + (myVote === 1 ? ' active' : '');
+    upBtn.setAttribute('aria-label', 'Upvote');
+    upBtn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3l5 5H3l5-5z"/></svg>';
+
+    var score = document.createElement('span');
+    score.className = 'vote-score' + (c.votes > 0 ? ' pos' : c.votes < 0 ? ' neg' : '');
+    score.textContent = c.votes;
+
+    var downBtn = document.createElement('button');
+    downBtn.type = 'button';
+    downBtn.className = 'vote-btn vote-down' + (myVote === -1 ? ' active' : '');
+    downBtn.setAttribute('aria-label', 'Downvote');
+    downBtn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13l5-5H3l5 5z"/></svg>';
+
+    voteWrap.appendChild(upBtn);
+    voteWrap.appendChild(score);
+    voteWrap.appendChild(downBtn);
+
+    var replyBtn = document.createElement('button');
+    replyBtn.type = 'button';
+    replyBtn.className = 'reply-btn';
+    replyBtn.textContent = '↩ Reply';
+    replyBtn.setAttribute('aria-label', 'Reply to ' + c.name);
+
+    actions.appendChild(voteWrap);
+    actions.appendChild(replyBtn);
+
+    var replyFormWrap = document.createElement('div');
+    replyFormWrap.className = 'reply-form-wrap hidden';
+    replyFormWrap.innerHTML =
+      '<form class="comment-form comment-form-reply">' +
+        '<input type="text" class="reply-name" maxlength="60" placeholder="Your name (optional)" autocomplete="name" />' +
+        '<textarea class="reply-text" maxlength="1500" placeholder="Replying to ' + escHtml(c.name) + '…" required></textarea>' +
+        '<div class="comment-form-foot">' +
+          '<span class="char-count reply-char-count">0 / 1500</span>' +
+          '<div style="display:flex;gap:8px">' +
+            '<button type="button" class="btn btn-small btn-ghost reply-cancel">Cancel</button>' +
+            '<button type="submit" class="btn btn-primary btn-small reply-submit">Post reply</button>' +
+          '</div>' +
+        '</div>' +
+      '</form>';
+
+    var children = document.createElement('div');
+    children.className = 'comment-children';
+
+    wrap.appendChild(head);
+    wrap.appendChild(body);
+    wrap.appendChild(actions);
+    wrap.appendChild(replyFormWrap);
+    wrap.appendChild(children);
+
+    function handleVote(dir) {
+      var current = getLocalVotes()[c.id] || 0;
+      var newDir  = (current === dir) ? 0 : dir;
+      var delta   = newDir - current;
+      c.votes += delta;
+      score.textContent = c.votes;
+      score.className   = 'vote-score' + (c.votes > 0 ? ' pos' : c.votes < 0 ? ' neg' : '');
+      upBtn.classList.toggle('active',   newDir === 1);
+      downBtn.classList.toggle('active', newDir === -1);
+      setLocalVote(c.id, newDir);
+      if (location.protocol === 'file:') return;
+      fetch('comments.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'vote', id: c.id, dir: dir })
+      })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (typeof data.votes === 'number') {
+            c.votes = data.votes;
+            score.textContent = c.votes;
+            score.className   = 'vote-score' + (c.votes > 0 ? ' pos' : c.votes < 0 ? ' neg' : '');
+          }
+          if (typeof data.voted === 'number') {
+            upBtn.classList.toggle('active',   data.voted === 1);
+            downBtn.classList.toggle('active', data.voted === -1);
+            setLocalVote(c.id, data.voted);
+          }
+        })
+        .catch(function() {});
+    }
+
+    upBtn.addEventListener('click',   function() { handleVote(1);  });
+    downBtn.addEventListener('click', function() { handleVote(-1); });
+
+    replyBtn.addEventListener('click', function() {
+      replyFormWrap.classList.toggle('hidden');
+      if (!replyFormWrap.classList.contains('hidden')) {
+        replyFormWrap.querySelector('.reply-name').value = localStorage.getItem(NAME_KEY) || '';
+        replyFormWrap.querySelector('.reply-text').focus();
+      }
+    });
+
+    replyFormWrap.querySelector('.reply-cancel').addEventListener('click', function() {
+      replyFormWrap.classList.add('hidden');
+    });
+
+    replyFormWrap.querySelector('.reply-text').addEventListener('input', function() {
+      replyFormWrap.querySelector('.reply-char-count').textContent = this.value.length + ' / 1500';
+    });
+
+    replyFormWrap.querySelector('form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var rText   = replyFormWrap.querySelector('.reply-text').value.trim();
+      if (!rText) return;
+      var rName   = replyFormWrap.querySelector('.reply-name').value.trim();
+      var rSubmit = replyFormWrap.querySelector('.reply-submit');
+      rSubmit.disabled    = true;
+      rSubmit.textContent = 'Posting…';
+      localStorage.setItem(NAME_KEY, rName);
+      fetch('comments.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: rName, text: rText, parentId: c.id, website: '' })
+      })
+        .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+        .then(function(result) {
+          if (!result.ok) throw new Error(result.data.error || 'Something went wrong');
+          replyFormWrap.classList.add('hidden');
+          replyFormWrap.querySelector('.reply-text').value = '';
+          replyFormWrap.querySelector('.reply-char-count').textContent = '0 / 1500';
+          loadComments();
+        })
+        .catch(function(err) {
+          var errEl = replyFormWrap.querySelector('.reply-err') || document.createElement('p');
+          errEl.className = 'comment-status err reply-err';
+          errEl.textContent = '⚠ ' + (err.message || 'Could not post — try again.');
+          if (!replyFormWrap.querySelector('.reply-err')) replyFormWrap.querySelector('form').appendChild(errEl);
+        })
+        .finally(function() {
+          rSubmit.disabled    = false;
+          rSubmit.textContent = 'Post reply';
+        });
+    });
+
+    return { wrap: wrap, children: children };
+  }
+
+  function render(comments) {
+    list.innerHTML = '';
+    var total = comments.length;
+    countEl.textContent = total ? '(' + total + ')' : '';
+
+    if (!total) {
+      var empty = document.createElement('p');
+      empty.className = 'comments-empty';
+      empty.textContent = 'No comments yet — be the first!';
+      list.appendChild(empty);
+      return;
+    }
+
+    var nodes    = {};
+    var topLevel = [];
+    var i, c, built;
+
+    /* skip legacy comments that have no id (old flat format) */
+    var valid = [];
+    for (i = 0; i < comments.length; i++) {
+      if (comments[i].id) valid.push(comments[i]);
+    }
+    comments = valid;
+
+    for (i = 0; i < comments.length; i++) {
+      c = comments[i];
+      built = commentEl(c, c.parentId ? 1 : 0);
+      nodes[c.id] = built;
+      if (!c.parentId) topLevel.push(built);
+    }
+
+    for (i = 0; i < comments.length; i++) {
+      c = comments[i];
+      if (c.parentId && nodes[c.parentId]) {
+        nodes[c.parentId].children.appendChild(nodes[c.id].wrap);
+      }
+    }
+
+    topLevel.sort(function(a, b) {
+      var ca = null, cb = null, j;
+      for (j = 0; j < comments.length; j++) {
+        if (comments[j].id === a.wrap.dataset.id) ca = comments[j];
+        if (comments[j].id === b.wrap.dataset.id) cb = comments[j];
+      }
+      if (!ca || !cb) return 0;
+      if (cb.votes !== ca.votes) return cb.votes - ca.votes;
+      return ca.time - cb.time;
+    });
+
+    for (i = 0; i < topLevel.length; i++) {
+      list.appendChild(topLevel[i].wrap);
+    }
+  }
+
+  function loadComments() {
+    fetch('comments.php')
+      .then(function(r) { if (!r.ok) throw new Error(); return r.json(); })
+      .then(function(data) { render(data.comments || []); })
+      .catch(function() {
+        render([]);
+        list.innerHTML = '';
+        if (location.protocol === 'file:') {
+          setStatus('\U0001f4ac Comments work on the live site (they need the server).', '');
+          form.classList.add('hidden');
+        } else {
+          setStatus('⚠ Comments couldn\'t load — try refreshing.', 'err');
+        }
+      });
+  }
+
+  textInput.addEventListener('input', function() {
+    charCount.textContent = textInput.value.length + ' / 1500';
   });
 
-  /* Start over */
-  resetBtn.addEventListener('click', () => {
-    if (!confirm('Erase this post and start with a blank page?\n(Tip: download a Backup first if you might want it back.)')) return;
-    post = { title: '', content: '', created: Date.now(), updated: null };
-    postTitle.textContent = '';
-    postBody.innerHTML = '';
-    persist();
-    flashStatus('Fresh page ready ✓', true);
-    postTitle.focus();
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var text = textInput.value.trim();
+    if (!text) return;
+
+    submitBtn.disabled    = true;
+    submitBtn.textContent = 'Posting…';
+    setStatus('', '');
+    localStorage.setItem(NAME_KEY, nameInput.value.trim());
+
+    fetch('comments.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name:     nameInput.value.trim(),
+        text:     text,
+        parentId: '',
+        website:  honeypot.value
+      })
+    })
+      .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+      .then(function(result) {
+        if (!result.ok) throw new Error(result.data.error || 'Something went wrong');
+        textInput.value = '';
+        charCount.textContent = '0 / 1500';
+        setStatus('✓ Comment posted — thanks!', 'ok');
+        loadComments();
+      })
+      .catch(function(err) {
+        setStatus('⚠ ' + (err.message || 'Could not post your comment — try again.'), 'err');
+      })
+      .finally(function() {
+        submitBtn.disabled    = false;
+        submitBtn.textContent = 'Post comment';
+      });
   });
 
-  /* ── First paint ── */
-  renderCard();
-  renderPost();
+  loadComments();
 })();

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Kymarion — Andy S. Ding</title>
+  <meta name="description" content="Project Kymarion: a low-cost autonomous surface vehicle mapping nearshore microplastic accumulation at current-convergence zones along the Massachusetts coast." />
+  <link rel="canonical" href="https://www.andysding.com/kymarion.html" />
+  <meta name="theme-color" content="#2e6b4e" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌊%3C/text%3E%3C/svg%3E" />
+  <meta property="og:title" content="Project Kymarion — Andy S. Ding" />
+  <meta property="og:description" content="A low-cost autonomous surface vehicle mapping ocean microplastic accumulation along the Massachusetts coast." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.andysding.com/kymarion.html" />
+  <meta property="og:image" content="https://www.andysding.com/photo.jpg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://www.andysding.com/photo.jpg" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css?v=6" />
+  <style>
+    /* ── Page-level overrides for the project detail layout ── */
+    .project-page {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 110px 24px 80px;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--ink-3);
+      font-size: 0.86rem;
+      font-weight: 600;
+      margin-bottom: 40px;
+      transition: var(--transition);
+    }
+    .back-link:hover { color: var(--green-deep); }
+    .back-link svg { width: 14px; height: 14px; }
+
+    .project-hero { margin-bottom: 44px; }
+
+    .project-badges {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    .research-badge.ongoing {
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: var(--clay-soft);
+      color: var(--clay);
+    }
+    .research-year { color: var(--ink-3); font-size: 0.82rem; }
+
+    .project-title {
+      font-family: var(--font-display);
+      font-size: clamp(1.9rem, 5vw, 2.8rem);
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+
+    .project-subtitle {
+      font-size: 1.05rem;
+      color: var(--ink-2);
+      line-height: 1.75;
+      max-width: 700px;
+    }
+
+    .project-meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 26px;
+      padding: 20px 26px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 44px;
+      font-size: 0.85rem;
+    }
+    .meta-item { display: flex; flex-direction: column; gap: 4px; }
+    .meta-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--ink-3);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .meta-value { font-weight: 600; color: var(--ink); }
+
+    .section-heading {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--green-deep);
+      margin-bottom: 14px;
+    }
+
+    .project-section { margin-bottom: 44px; }
+
+    .project-section p {
+      color: var(--ink-2);
+      line-height: 1.85;
+      margin-bottom: 12px;
+    }
+
+    .project-section ul {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .project-section ul li {
+      display: flex;
+      gap: 10px;
+      color: var(--ink-2);
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+    .project-section ul li::before {
+      content: '→';
+      color: var(--green);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .tech-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .tech-tag {
+      padding: 5px 14px;
+      border-radius: 999px;
+      background: var(--green-soft);
+      border: 1px solid rgba(46, 107, 78, 0.2);
+      color: var(--green-deep);
+      font-size: 0.82rem;
+      font-weight: 500;
+    }
+
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+    .spec-table td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .spec-table tr:last-child td { border-bottom: none; }
+    .spec-table td:first-child {
+      color: var(--ink-3);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+      width: 35%;
+    }
+    .spec-table td:last-child { color: var(--ink); }
+
+    .timeline {
+      position: relative;
+      padding-left: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background: var(--border-strong);
+    }
+    .timeline-item { position: relative; }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -21px;
+      top: 6px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      border: 2px solid var(--paper);
+    }
+    .timeline-date {
+      font-size: 0.74rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--clay);
+      margin-bottom: 4px;
+    }
+    .timeline-title {
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+    .timeline-desc { color: var(--ink-2); font-size: 0.9rem; line-height: 1.6; }
+
+    .status-note {
+      padding: 15px 20px;
+      background: var(--green-soft);
+      border: 1px solid rgba(46, 107, 78, 0.25);
+      border-radius: var(--radius);
+      color: var(--ink-2);
+      font-size: 0.9rem;
+      line-height: 1.65;
+      margin-bottom: 44px;
+    }
+    .status-note strong { color: var(--green-deep); }
+
+    .cta-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+    .cta-btn {
+      padding: 11px 24px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .cta-btn.primary {
+      background: var(--green);
+      color: #fff;
+    }
+    .cta-btn.primary:hover { background: var(--green-deep); transform: translateY(-1px); }
+    .cta-btn.secondary {
+      background: transparent;
+      color: var(--green-deep);
+      border: 1.5px solid var(--green);
+    }
+    .cta-btn.secondary:hover { background: var(--green-soft); transform: translateY(-1px); }
+    .cta-btn.disabled {
+      background: var(--paper-2);
+      color: var(--ink-3);
+      border: 1.5px dashed var(--border-strong);
+      cursor: default;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav id="navbar">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-leaf">🌊</span> Andy S. Ding
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html#home"     class="nav-link">Home</a></li>
+      <li><a href="index.html#about"    class="nav-link">About</a></li>
+      <li><a href="index.html#blog"     class="nav-link">Blog</a></li>
+      <li><a href="index.html#research" class="nav-link active">Research</a></li>
+      <li><a href="index.html#resume"   class="nav-link">Résumé</a></li>
+      <li><a href="index.html#interests" class="nav-link">Interests</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── Mobile drawer ─── -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <ul>
+      <li><a href="index.html#home"      class="drawer-link">Home</a></li>
+      <li><a href="index.html#about"     class="drawer-link">About</a></li>
+      <li><a href="index.html#blog"      class="drawer-link">Blog</a></li>
+      <li><a href="index.html#research"  class="drawer-link">Research</a></li>
+      <li><a href="index.html#resume"    class="drawer-link">Résumé</a></li>
+      <li><a href="index.html#interests" class="drawer-link">Interests</a></li>
+    </ul>
+  </div>
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <main class="project-page" id="main">
+
+    <a href="index.html#research" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 3L5 8l5 5"/>
+      </svg>
+      Back to Research
+    </a>
+
+    <!-- ── Hero ── -->
+    <div class="project-hero">
+      <div class="project-badges">
+        <span class="research-badge ongoing">Ongoing</span>
+        <span class="research-year">Summer 2026 – Summer 2027</span>
+      </div>
+      <h1 class="project-title">Project Kymarion</h1>
+      <p class="project-subtitle">
+        An ISEF autonomous surface vehicle designed to map nearshore microplastic accumulation
+        at current-convergence zones along the Massachusetts coast — using low-cost GPS-tagged
+        sensors and hydrodynamic modeling to find where plastic piles up.
+      </p>
+    </div>
+
+    <!-- ── Meta bar ── -->
+    <div class="project-meta-bar">
+      <div class="meta-item">
+        <span class="meta-label">Competition</span>
+        <span class="meta-value">ISEF</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Category</span>
+        <span class="meta-value">Environmental Science &amp; Earth/Ocean Sciences</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Role</span>
+        <span class="meta-value">Co-Investigator</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Timeline</span>
+        <span class="meta-value">Summer 2026 – Summer 2027</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Partner</span>
+        <span class="meta-value"><a href="https://ethan-zhang.lightsdarke.workers.dev/research/" target="_blank" rel="noopener" class="partner-badge-link">Ethan Zhang ↗</a></span>
+      </div>
+    </div>
+
+    <!-- ── Current status ── -->
+    <div class="status-note">
+      <strong>Status:</strong> Active development — ASV hardware complete, field trials underway along the
+      Massachusetts coast. Statistical analysis in progress. Paper draft in progress, targeting the
+      2026–27 ISEF cycle with submission in summer 2027.
+    </div>
+
+    <!-- ── The Problem ── -->
+    <div class="project-section">
+      <h2 class="section-heading">The Problem</h2>
+      <p>
+        Microplastics are distributed unevenly across coastal waters, but predicting <em>where</em>
+        they concentrate is hard. We hypothesize that sites where opposing nearshore currents converge
+        act as natural traps — accumulating floating plastic debris the same way they accumulate
+        biological matter. If the pattern is real and predictable, it opens the door to targeted
+        capture station deployment rather than expensive, spray-and-pray ocean cleanup.
+      </p>
+      <p>
+        Existing research on coastal microplastic distribution relies on manual trawl sampling,
+        which is too sparse to characterize convergence-zone dynamics. We needed a cheap, repeatable,
+        GPS-accurate survey platform that could run 15–20 waypoints per deployment without requiring
+        a crew.
+      </p>
+    </div>
+
+    <!-- ── The Vehicle ── -->
+    <div class="project-section">
+      <h2 class="section-heading">The Vehicle</h2>
+      <p>
+        Kymarion is a low-cost catamaran-hull ASV built around open-source autopilot firmware.
+        Each hull houses a bilge pump thruster; a Raspberry Pi flight controller runs ArduPilot
+        in GUIDED mode to execute GPS waypoint missions autonomously. A custom sensor payload
+        samples water during transit.
+      </p>
+      <table class="spec-table">
+        <tr><td>Hull</td><td>Twin PVC catamaran, ~90 cm LOA</td></tr>
+        <tr><td>Propulsion</td><td>2× bilge pump thrusters, differential steering</td></tr>
+        <tr><td>Autopilot</td><td>ArduPilot (Rover) on Raspberry Pi</td></tr>
+        <tr><td>Navigation</td><td>GPS + compass, waypoint missions via MAVLink</td></tr>
+        <tr><td>Sensor payload</td><td>Niskin-style water sampler, turbidity + conductivity probes</td></tr>
+        <tr><td>Power</td><td>3S LiPo, ~2 hr endurance per charge</td></tr>
+        <tr><td>Mission profile</td><td>15–20 GPS waypoints, ~500 m survey transect</td></tr>
+        <tr><td>Cost</td><td>&lt; $400 total build</td></tr>
+      </table>
+    </div>
+
+    <!-- ── Methodology ── -->
+    <div class="project-section">
+      <h2 class="section-heading">Methodology</h2>
+      <ul>
+        <li>Identify candidate convergence zones along the Massachusetts coast using NOAA current charts and satellite SST data.</li>
+        <li>Deploy Kymarion on repeated survey transects at each site; collect GPS-tagged water samples and in-situ sensor data.</li>
+        <li>Quantify microplastic concentration from samples via microscopy and spectroscopy (FTIR).</li>
+        <li>Compute a convergence-strength metric for each site from current velocity field data.</li>
+        <li>Run ANOVA across site categories and regression of microplastic concentration against convergence strength to test the hypothesis.</li>
+      </ul>
+    </div>
+
+    <!-- ── Tech Stack ── -->
+    <div class="project-section">
+      <h2 class="section-heading">Tech &amp; Tools</h2>
+      <div class="tech-grid">
+        <span class="tech-tag">ArduPilot / MAVLink</span>
+        <span class="tech-tag">Raspberry Pi</span>
+        <span class="tech-tag">GPS / GNSS</span>
+        <span class="tech-tag">Python</span>
+        <span class="tech-tag">R (statistics)</span>
+        <span class="tech-tag">NOAA current data</span>
+        <span class="tech-tag">FTIR spectroscopy</span>
+        <span class="tech-tag">Mission Planner</span>
+        <span class="tech-tag">OpenCV (sample imaging)</span>
+        <span class="tech-tag">3D printing (PLA/PETG)</span>
+      </div>
+    </div>
+
+    <!-- ── Timeline ── -->
+    <div class="project-section">
+      <h2 class="section-heading">Timeline</h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-date">Fall 2024</div>
+          <div class="timeline-title">Concept &amp; Proposal</div>
+          <div class="timeline-desc">Hypothesis formulated, ISEF project proposal submitted, site survey begun.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Winter 2024–25</div>
+          <div class="timeline-title">ASV Design &amp; Build</div>
+          <div class="timeline-desc">Hull fabricated, electronics integrated, ArduPilot firmware tuned in pool trials.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Spring 2025</div>
+          <div class="timeline-title">First Field Deployments</div>
+          <div class="timeline-desc">Initial coastal surveys at two candidate convergence sites; sensor calibration refined.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Summer–Fall 2025</div>
+          <div class="timeline-title">Full Survey Campaign</div>
+          <div class="timeline-desc">15+ deployments across all target sites; sample processing and data collection ongoing.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Summer 2026 – Summer 2027</div>
+          <div class="timeline-title">Extended Study &amp; ISEF Submission</div>
+          <div class="timeline-desc">Continued data collection and analysis; full research paper and ISEF submission targeting summer 2027.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Links ── -->
+    <div class="project-section">
+      <h2 class="section-heading">Resources</h2>
+      <p>Paper and full build guide will be posted here as the project matures. Check back closer to the ISEF submission window.</p>
+      <div class="cta-row">
+        <span class="cta-btn disabled" aria-disabled="true">Paper — Coming Soon</span>
+        <span class="cta-btn disabled" aria-disabled="true">Build Guide — Coming Soon</span>
+        <a href="index.html#research" class="cta-btn secondary">← All Projects</a>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="script.js?v=6"></script>
+  <script src="chat.js?v=1"></script>
+</body>
+</html>

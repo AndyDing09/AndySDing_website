@@ -5,12 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Andy S. Ding — Aspiring Environmental Engineer</title>
   <meta name="description" content="Personal website of Andy S. Ding — student researcher mapping ocean microplastics with autonomous robotics, and future environmental engineer." />
+  <link rel="canonical" href="https://www.andysding.com/" />
+  <meta name="theme-color" content="#2e6b4e" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌊%3C/text%3E%3C/svg%3E" />
+
+  <!-- Link previews (Discord, iMessage, social) -->
+  <meta property="og:title" content="Andy S. Ding — Aspiring Environmental Engineer" />
+  <meta property="og:description" content="Student researcher mapping ocean microplastics with an autonomous boat — Project Kymarion, robotics, and field notes from the Massachusetts coast." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.andysding.com/" />
+  <meta property="og:site_name" content="Andy S. Ding" />
+  <meta property="og:image" content="https://www.andysding.com/photo.jpg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://www.andysding.com/photo.jpg" />
+  <meta name="twitter:title" content="Andy S. Ding — Aspiring Environmental Engineer" />
+  <meta name="twitter:description" content="Student researcher mapping ocean microplastics with an autonomous boat — Project Kymarion, robotics, and field notes." />
+
+  <!-- Structured data for search engines -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Andy S. Ding",
+    "url": "https://www.andysding.com/",
+    "email": "mailto:andyding09@gmail.com",
+    "affiliation": { "@type": "EducationalOrganization", "name": "Weston High School" },
+    "knowsAbout": ["Environmental engineering", "Autonomous surface vehicles", "Microplastic detection", "Robotics", "Medical imaging"],
+    "sameAs": [
+      "https://github.com/andyding09",
+      "https://www.linkedin.com/in/andy-ding-a5b352317/"
+    ]
+  }
+  </script>
+
+  <!-- Apply saved theme before first paint (prevents flash) -->
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css?v=6" />
 </head>
 <body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
 
   <!-- ─── Navigation ─── -->
   <nav id="navbar">
@@ -25,9 +69,12 @@
       <li><a href="#resume"    class="nav-link"        data-section="resume">Résumé</a></li>
       <li><a href="#interests" class="nav-link"        data-section="interests">Interests</a></li>
     </ul>
-    <button class="hamburger" id="hamburger" aria-label="Toggle menu">
-      <span></span><span></span><span></span>
-    </button>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
   </nav>
 
   <!-- ─── Mobile drawer ─── -->
@@ -52,7 +99,7 @@
         <h1 class="hero-name">Future<br /><em>environmental</em><br />engineer.</h1>
         <p class="hero-tagline">
           I build autonomous robots that study the ocean. My current project,
-          <strong>Project Kymarion</strong>, is a self-navigating boat I designed and built
+          <strong>Project Kymarion</strong>, is a self-navigating boat we designed and built
           to map microplastic pollution along the Massachusetts coast. This site is where
           I share my research, my writing, and what I'm learning along the way.
         </p>
@@ -66,6 +113,14 @@
           <span class="topic-chip">💧 Microplastic detection</span>
           <span class="topic-chip">♻️ Sustainability</span>
         </div>
+      </div>
+      <div class="hero-waves" aria-hidden="true">
+        <svg class="wave-back" viewBox="0 0 2880 120" preserveAspectRatio="none">
+          <path d="M0,72 C240,104 480,40 720,72 C960,104 1200,40 1440,72 C1680,104 1920,40 2160,72 C2400,104 2640,40 2880,72 L2880,120 L0,120 Z"/>
+        </svg>
+        <svg class="wave-front" viewBox="0 0 2880 120" preserveAspectRatio="none">
+          <path d="M0,84 C240,116 480,52 720,84 C960,116 1200,52 1440,84 C1680,116 1920,52 2160,84 C2400,116 2640,52 2880,84 L2880,120 L0,120 Z"/>
+        </svg>
       </div>
     </section>
 
@@ -81,29 +136,30 @@
         <div class="about-grid">
           <div class="about-photo-col">
             <div class="photo-frame">
-              <div class="photo-placeholder">
-                <span class="photo-emoji">🌄</span>
-                <span>Photo coming soon</span>
-              </div>
+              <img src="photo.jpg" alt="Andy Ding" class="about-photo-img" />
             </div>
-            <a href="mailto:andyding09@gmail.com" class="btn btn-ghost btn-small contact-btn">
-              ✉️ Say hello
-            </a>
+            <div class="social-row">
+              <a href="https://github.com/andyding09" class="social-link" target="_blank" rel="noopener">GitHub</a>
+              <a href="https://www.linkedin.com/in/andy-ding-a5b352317/" class="social-link" target="_blank" rel="noopener">LinkedIn</a>
+              <a href="https://mail.google.com/mail/?view=cm&to=andyding09@gmail.com" class="social-link" target="_blank" rel="noopener">Email</a>
+            </div>
           </div>
 
           <div class="about-text-col">
             <p class="about-bio">
-              I'm <strong>Andy Ding</strong>, a student at Weston High School (Class of 2028)
-              planning to major in <strong>environmental engineering</strong>. I'm the principal
-              investigator behind <strong>Project Kymarion</strong> — an ISEF-targeting autonomous
-              surface vehicle I designed and built from scratch to map nearshore microplastic
-              concentrations along the Massachusetts coast.
+              I'm <strong>Andy Ding</strong>, a 10th grader at Weston High School (Class of 2028)
+              planning to major in <strong>environmental engineering</strong>. I'm passionate about
+              engineering, environmental science, and building things that matter — and I thrive at
+              the intersection of hardware, software, and real-world impact.
             </p>
             <p class="about-bio">
-              My work sits at the crossroads of robotics, environmental science, and hardware
-              engineering. Outside the lab, I captain my FTC robotics team, compete in DECA and
-              debate, swim competitively, and write about my research for public audiences.
-              I believe in building things that matter — and sharing the process along the way.
+              My current research includes <strong>Project Kymarion</strong>, an ISEF project I'm
+              co-developing with a partner to map nearshore microplastic concentrations using a
+              low-cost autonomous surface vehicle along the Massachusetts coast, and
+              <strong>LuminaBone</strong>, a medical imaging project developing a shading-based 3D
+              bone endoscope for orthopedic surgery. Beyond research, I captain my FTC robotics
+              team, compete in DECA and debate, swim at the varsity level, and write about my work
+              for public audiences. <a href="https://ethan-zhang.lightsdarke.workers.dev/research/" target="_blank" rel="noopener" class="partner-badge-link">Co-researcher: Ethan Zhang — view his work ↗</a>
             </p>
 
             <div class="skills-section">
@@ -168,62 +224,51 @@
           <p class="blog-card-excerpt" id="card-excerpt"></p>
           <div class="blog-card-footer">
             <span class="blog-read-time" id="card-readtime"></span>
-            <button class="btn btn-primary" id="card-open">See more →</button>
+            <button class="btn btn-primary" id="card-open" aria-label="Open the latest blog post">See more →</button>
           </div>
         </article>
 
-        <p class="blog-hint">✏️ This is your journal. Open it and hit <strong>Edit</strong> to write — everything saves automatically in your browser.</p>
+        <p class="blog-hint">💬 Comments are open on every post — I read all of them.</p>
       </div>
     </section>
 
-    <!-- ─── POST (full blog view + editor — not in nav) ─── -->
+    <!-- ─── POST (full blog view — not in nav) ─── -->
     <section id="post" class="section">
       <div class="section-inner post-inner">
 
         <div class="post-topbar">
           <button class="link-btn" id="post-back">← Back to blog</button>
-          <div class="post-actions">
-            <span class="save-status" id="save-status"></span>
-            <button class="btn btn-ghost btn-small" id="edit-toggle">✏️ Edit</button>
-          </div>
         </div>
 
-        <div class="editor-toolbar hidden" id="editor-toolbar">
-          <button class="tb-btn" data-cmd="bold"          title="Bold (Ctrl+B)"><strong>B</strong></button>
-          <button class="tb-btn" data-cmd="italic"        title="Italic (Ctrl+I)"><em>I</em></button>
-          <button class="tb-btn" data-cmd="underline"     title="Underline (Ctrl+U)"><u>U</u></button>
-          <span class="tb-sep"></span>
-          <button class="tb-btn" data-block="h2"          title="Big heading">H2</button>
-          <button class="tb-btn" data-block="h3"          title="Small heading">H3</button>
-          <button class="tb-btn" data-block="p"           title="Normal text">¶</button>
-          <button class="tb-btn" data-block="blockquote"  title="Quote">❝</button>
-          <span class="tb-sep"></span>
-          <button class="tb-btn" data-cmd="insertUnorderedList" title="Bullet list">•≡</button>
-          <button class="tb-btn" data-cmd="insertOrderedList"   title="Numbered list">1≡</button>
-          <button class="tb-btn" id="link-btn"            title="Add link">🔗</button>
-          <span class="tb-sep"></span>
-          <button class="tb-btn" data-cmd="removeFormat"  title="Clear formatting">✕fmt</button>
-          <button class="tb-btn" data-cmd="undo"          title="Undo (Ctrl+Z)">↺</button>
-          <button class="tb-btn" data-cmd="redo"          title="Redo (Ctrl+Y)">↻</button>
-        </div>
-
-        <h1 class="post-title" id="post-title" data-placeholder="Give your post a title…"></h1>
+        <h1 class="post-title" id="post-title"></h1>
         <div class="post-meta">
           <span id="post-date"></span>
           <span class="meta-dot">·</span>
           <span id="post-stats"></span>
         </div>
-        <article class="post-body" id="post-body" data-placeholder="Start writing here…"></article>
+        <div class="post-engage">
+          <button class="engage-btn" id="like-btn" aria-pressed="false">🤍 <span id="like-count"></span></button>
+          <button class="engage-btn" id="share-btn">🔗 Share</button>
+        </div>
+        <article class="post-body" id="post-body"></article>
 
-        <div class="editor-footer hidden" id="editor-footer">
-          <span class="word-count" id="word-count"></span>
-          <div class="editor-footer-actions">
-            <button class="link-btn" id="backup-btn" title="Download a copy of your post as a file">⬇ Backup</button>
-            <label class="link-btn restore-label" title="Load a post from a backup file">
-              ⬆ Restore<input type="file" id="restore-input" accept=".json" hidden />
-            </label>
-            <button class="link-btn danger" id="reset-btn" title="Erase everything and start a blank post">🗑 Start over</button>
-          </div>
+        <!-- ── Comments ── -->
+        <div class="comments-section">
+          <h2 class="comments-title">Comments <span id="comments-count"></span></h2>
+          <div class="comments-list" id="comments-list"></div>
+
+          <!-- Top-level post form -->
+          <form class="comment-form" id="comment-form" data-parent="">
+            <p class="comment-form-label">Leave a comment</p>
+            <input type="text" id="comment-name" maxlength="60" placeholder="Your name (optional)" autocomplete="name" />
+            <textarea id="comment-text" maxlength="1500" placeholder="Share your thoughts…" required></textarea>
+            <input type="text" id="comment-website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            <div class="comment-form-foot">
+              <span class="char-count" id="char-count">0 / 1500</span>
+              <button type="submit" class="btn btn-primary btn-small" id="comment-submit">Post comment</button>
+            </div>
+          </form>
+          <p class="comment-status" id="comment-status"></p>
         </div>
 
       </div>
@@ -240,60 +285,54 @@
         <p class="section-subtitle">Independent research in environmental engineering, robotics, and ocean science.</p>
 
         <div class="projects-grid">
-          <div class="project-card">
+          <a class="project-card project-card-link" href="kymarion.html" aria-label="Project Kymarion — ISEF autonomous surface vehicle: read the full project page">
             <div class="project-card-header">
               <span class="project-badge ongoing">Ongoing</span>
-              <span class="project-year">2025 – Present</span>
+              <span class="project-year">Summer 2026 – Summer 2027</span>
             </div>
             <h3 class="project-card-title">Project Kymarion — ISEF Autonomous Surface Vehicle</h3>
             <p class="project-card-desc">
-              Principal investigator on an independent ISEF research project. Built an HDPE
-              trimaran autonomous surface vehicle to map nearshore microplastic concentrations
-              along the Massachusetts coast. Designed the full ESP32/NEO-M8N navigation and
-              sensor stack; currently conducting fieldwork in MA coastal waters. Targeting
-              ISEF international.
+              A collaborative ISEF research project investigating whether nearshore microplastic
+              concentrations peak at sites where opposing coastal currents converge. We designed
+              and built a low-cost autonomous surface vehicle equipped with GPS-tagged sensors
+              that conducts 15–20 waypoint surveys per deployment across candidate convergence
+              zones along the Massachusetts coast. Statistical analysis will test whether
+              microplastic accumulation is governed by predictable hydrodynamic features.
             </p>
-          </div>
+            <span class="project-card-meta">ISEF — Environmental Science &amp; Earth/Ocean Sciences · Co-investigator</span>
+            <span class="project-more">Learn more →</span>
+          </a>
 
-          <div class="project-card">
+          <a class="project-card project-card-link" href="luminabone.html" aria-label="LuminaBone — low-cost shading-based 3D bone endoscope: read the full project page">
             <div class="project-card-header">
               <span class="project-badge ongoing">Ongoing</span>
-              <span class="project-year">2025 – Present</span>
+              <span class="project-year">Summer 2026 – Summer 2027</span>
             </div>
-            <h3 class="project-card-title">Low-Cost ASV for Spatial Microplastic Mapping in Coastal Waters</h3>
+            <h3 class="project-card-title">LuminaBone — Low-Cost Shading-Based 3D Bone Endoscope</h3>
             <p class="project-card-desc">
-              Authored independent research paper on ASV-based microplastic mapping methodology.
-              Designed a stratified paired transect sampling protocol and conducted fieldwork in
-              coastal Massachusetts to validate spatial mapping accuracy using a low-cost
-              autonomous platform. Targeting journal submission.
+              A medical imaging project developing a 6 mm endoscope that uses near-light
+              photometric stereo to reconstruct accurate 3D bone topography in real time —
+              without dye or expensive stereo cameras. Two off-axis micro-LEDs driven
+              sequentially via PWM capture shading gradients across rigid bone surfaces;
+              a Lambertian + inverse-square pipeline then solves surface normals and integrates
+              them into a full 3D map. Targeting ≥15 fps on bone phantoms and validated against
+              high-precision laser scans.
             </p>
-          </div>
-
-          <div class="project-card">
-            <div class="project-card-header">
-              <span class="project-badge ongoing">Ongoing</span>
-              <span class="project-year">2025 – Present</span>
-            </div>
-            <h3 class="project-card-title">Endoscope LED Imaging System for Dye-Free Microplastic Detection</h3>
-            <p class="project-card-desc">
-              Developed a computerized digital potentiometer control system for endoscope LED
-              brightness regulation, targeting 120 fps optical imaging for dye-free microplastic
-              detection. Built on an OV9281-based imaging pipeline as a low-cost alternative to
-              fluorescence staining methods.
-            </p>
-          </div>
+            <span class="project-card-meta">Summer 2026 Medical Imaging Internship — orthopedic &amp; ENT applications</span>
+            <span class="project-more">Learn more →</span>
+          </a>
         </div>
 
         <div class="papers-block">
           <h3 class="papers-title">📄 Papers in progress</h3>
           <ul class="papers-list">
             <li>
-              <strong>Low-Cost ASV for Spatial Microplastic Mapping in Coastal Waters</strong>
-              <span class="paper-meta">Andy S. Ding — independent research, 2025 · draft</span>
+              <strong>Nearshore Microplastic Accumulation at Current-Convergence Zones: A Low-Cost ASV Mapping Study</strong>
+              <span class="paper-meta">Andy S. Ding, Co-investigator — ISEF research paper · 2025–2026 · draft</span>
             </li>
             <li>
-              <strong>Computerized LED Brightness Control via Digital Potentiometer for Dye-Free Endoscopic Microplastic Detection</strong>
-              <span class="paper-meta">Andy S. Ding — independent research, 2025 · draft</span>
+              <strong>LuminaBone: Development of a Low-Cost Shading-Based 3D Bone Endoscope Using a Near-Light Photometric Stereo Approach</strong>
+              <span class="paper-meta">Andy S. Ding — medical imaging internship report · Summer 2026 · proposal</span>
             </li>
           </ul>
         </div>
@@ -310,7 +349,7 @@
         </div>
 
         <div class="resume-actions">
-          <a href="resume.pdf" download class="btn btn-primary" id="download-btn">⬇ Download PDF</a>
+          <a href="resume.pdf" download="Andy_Ding_Resume.pdf" class="btn btn-primary" id="download-btn">⬇ Download PDF</a>
           <span class="resume-updated">Last updated: June 2026</span>
         </div>
 
@@ -336,14 +375,14 @@
               <h3 class="resume-block-title">💼 Experience</h3>
               <div class="resume-entry">
                 <div class="resume-entry-header">
-                  <strong>Principal Investigator — Project Kymarion</strong>
-                  <span class="resume-date">2025 – Present</span>
+                  <strong>Co-Investigator — Project Kymarion</strong>
+                  <span class="resume-date">Summer 2026 – Summer 2027</span>
                 </div>
-                <div class="resume-entry-sub">Independent ISEF Research, Coastal Massachusetts</div>
+                <div class="resume-entry-sub">ISEF Research, Coastal Massachusetts</div>
                 <ul class="resume-bullets">
-                  <li>Designed and built HDPE trimaran ASV for autonomous nearshore microplastic mapping</li>
-                  <li>Engineered full ESP32/NEO-M8N navigation stack; conducting fieldwork in MA coastal waters</li>
-                  <li>Authoring two independent research papers; targeting ISEF international</li>
+                  <li>Co-designed and built a low-cost ASV for autonomous nearshore microplastic mapping</li>
+                  <li>Runs 15–20 GPS waypoint surveys per deployment; fieldwork underway in MA coastal waters</li>
+                  <li>Authoring research paper on convergence-zone microplastic accumulation; targeting ISEF</li>
                 </ul>
               </div>
               <div class="resume-entry">
@@ -492,10 +531,17 @@
     <div class="footer-inner">
       <span class="footer-logo">🌊 Andy S. Ding</span>
       <p class="footer-copy">© 2026 Andy S. Ding</p>
-      <a class="footer-mail" href="mailto:andyding09@gmail.com">andyding09@gmail.com</a>
+      <div class="footer-links">
+        <a href="https://github.com/andyding09" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/andy-ding-a5b352317/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://mail.google.com/mail/?view=cm&to=andyding09@gmail.com" target="_blank" rel="noopener">Email</a>
+      </div>
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  
+
+  <script src="script.js?v=6"></script>
+  <script src="chat.js?v=1"></script>
 </body>
 </html>
