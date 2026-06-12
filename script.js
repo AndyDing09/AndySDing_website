@@ -103,12 +103,14 @@ function closeMobileDrawer() {
   mobileDrawer.classList.remove('open');
   drawerOverlay.classList.remove('visible');
 }
-hamburger.addEventListener('click', () => {
-  const isOpen = mobileDrawer.classList.toggle('open');
-  hamburger.classList.toggle('open', isOpen);
-  drawerOverlay.classList.toggle('visible', isOpen);
-});
-drawerOverlay.addEventListener('click', closeMobileDrawer);
+if (hamburger && mobileDrawer && drawerOverlay) {
+  hamburger.addEventListener('click', () => {
+    const isOpen = mobileDrawer.classList.toggle('open');
+    hamburger.classList.toggle('open', isOpen);
+    drawerOverlay.classList.toggle('visible', isOpen);
+  });
+  drawerOverlay.addEventListener('click', closeMobileDrawer);
+}
 
 /* ═══════════════════════════════════════════════
    BLOG — published post loaded from blog.php

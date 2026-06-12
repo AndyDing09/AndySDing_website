@@ -15,7 +15,9 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.andysding.com/" />
   <meta property="og:site_name" content="Andy S. Ding" />
+  <meta property="og:image" content="https://www.andysding.com/photo.jpg" />
   <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://www.andysding.com/photo.jpg" />
   <meta name="twitter:title" content="Andy S. Ding — Aspiring Environmental Engineer" />
   <meta name="twitter:description" content="Student researcher mapping ocean microplastics with an autonomous boat — Project Kymarion, robotics, and field notes." />
 
@@ -28,7 +30,7 @@
     "url": "https://www.andysding.com/",
     "email": "mailto:andyding09@gmail.com",
     "affiliation": { "@type": "EducationalOrganization", "name": "Weston High School" },
-    "knowsAbout": ["Environmental engineering", "Autonomous surface vehicles", "Microplastic detection", "Robotics"],
+    "knowsAbout": ["Environmental engineering", "Autonomous surface vehicles", "Microplastic detection", "Robotics", "Medical imaging"],
     "sameAs": [
       "https://github.com/andyding09",
       "https://www.linkedin.com/in/andy-ding-a5b352317/"
@@ -222,7 +224,7 @@
           <p class="blog-card-excerpt" id="card-excerpt"></p>
           <div class="blog-card-footer">
             <span class="blog-read-time" id="card-readtime"></span>
-            <button class="btn btn-primary" id="card-open">See more →</button>
+            <button class="btn btn-primary" id="card-open" aria-label="Open the latest blog post">See more →</button>
           </div>
         </article>
 
@@ -281,7 +283,7 @@
         <p class="section-subtitle">Independent research in environmental engineering, robotics, and ocean science.</p>
 
         <div class="projects-grid">
-          <a class="project-card project-card-link" href="kymarion.html">
+          <a class="project-card project-card-link" href="kymarion.html" aria-label="Project Kymarion — ISEF autonomous surface vehicle: read the full project page">
             <div class="project-card-header">
               <span class="project-badge ongoing">Ongoing</span>
               <span class="project-year">Summer 2026 – Summer 2027</span>
@@ -299,7 +301,7 @@
             <span class="project-more">Learn more →</span>
           </a>
 
-          <div class="project-card">
+          <a class="project-card project-card-link" href="luminabone.html" aria-label="LuminaBone — low-cost shading-based 3D bone endoscope: read the full project page">
             <div class="project-card-header">
               <span class="project-badge ongoing">Ongoing</span>
               <span class="project-year">Summer 2026 – Summer 2027</span>
@@ -315,7 +317,8 @@
               high-precision laser scans.
             </p>
             <span class="project-card-meta">Summer 2026 Medical Imaging Internship — orthopedic &amp; ENT applications</span>
-          </div>
+            <span class="project-more">Learn more →</span>
+          </a>
         </div>
 
         <div class="papers-block">
