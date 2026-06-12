@@ -264,9 +264,9 @@ if (hamburger && mobileDrawer && drawerOverlay) {
 })();
 
 /* ═══════════════════════════════════════════════
-   COMMENTS v2 — threaded replies + up/down votes
-   Stored server-side via comments.php
-═══════════════════════════════════════════════ */
+   COMMENTS v3 — Reddit-style: columns, avatars,
+   thread lines, collapse, sort by top/new
+════════════════════════════════════════════════ */
 (function initComments() {
   var list      = document.getElementById('comments-list');
   if (!list) return;
@@ -282,51 +282,98 @@ if (hamburger && mobileDrawer && drawerOverlay) {
 
   var NAME_KEY  = 'asd-comment-name';
   var VOTES_KEY = 'asd-comment-votes';
+  var currentSort = 'top';
 
   nameInput.value = localStorage.getItem(NAME_KEY) || '';
 
+  document.querySelectorAll('.sort-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.sort-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentSort = btn.dataset.sort;
+      loadComments();
+    });
+  });
+
   function getLocalVotes() {
-    try { return JSON.parse(localStorage.getItem(VOTES_KEY) || '{}'); } catch (e) { return {}; }
+    try { return JSON.parse(localStorage.getItem(VOTES_KEY) || '{}'); } catch(e) { return {}; }
   }
   function setLocalVote(id, dir) {
     var v = getLocalVotes();
     if (dir === 0) delete v[id]; else v[id] = dir;
     localStorage.setItem(VOTES_KEY, JSON.stringify(v));
   }
-
   function setStatus(msg, kind) {
     statusEl.textContent = msg;
     statusEl.className = 'comment-status' + (kind ? ' ' + kind : '');
   }
-
   function fmtTime(seconds) {
-    var d    = new Date(seconds * 1000);
+    var d = new Date(seconds * 1000);
     var diff = Math.floor(Date.now() / 1000) - seconds;
-    var abs  = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-    var rel;
-    if (diff < 60)       rel = 'just now';
-    else if (diff < 3600)  rel = Math.floor(diff / 60) + 'm ago';
-    else if (diff < 86400) rel = Math.floor(diff / 3600) + 'h ago';
-    else if (diff < 604800) rel = Math.floor(diff / 86400) + 'd ago';
-    else rel = null;
-    return rel ? (rel + ' · ' + abs) : abs;
+    var abs = d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    if (diff < 60)     return 'just now';
+    if (diff < 3600)   return Math.floor(diff / 60) + 'm ago';
+    if (diff < 86400)  return Math.floor(diff / 3600) + 'h ago';
+    if (diff < 604800) return Math.floor(diff / 86400) + 'd ago';
+    return abs;
   }
-
   function escHtml(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  var AVATAR_COLORS = ['#2e6b4e','#b85c38','#5b7fa6','#7a5c8a','#8a7a2e','#3a7a6e'];
+  function avatarColor(name) {
+    var h = 0, i;
+    for (i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) | 0;
+    return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+  }
+  function makeIcon(path) {
+    return '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + path + '"/></svg>';
   }
 
   function commentEl(c, depth) {
     depth = depth || 0;
-    var localVotes = getLocalVotes();
-    var myVote     = localVotes[c.id] || 0;
+    var myVote = getLocalVotes()[c.id] || 0;
 
     var wrap = document.createElement('div');
-    wrap.className = 'comment' + (depth > 0 ? ' comment-reply' : '');
+    wrap.className = 'comment';
+    wrap.id = 'comment-' + c.id;
     wrap.dataset.id = c.id;
+
+    /* vote column */
+    var voteCol = document.createElement('div');
+    voteCol.className = 'comment-vote-col';
+
+    var upBtn = document.createElement('button');
+    upBtn.type = 'button';
+    upBtn.className = 'vote-btn vote-up' + (myVote === 1 ? ' active' : '');
+    upBtn.setAttribute('aria-label', 'Upvote');
+    upBtn.innerHTML = makeIcon('M8 3l5 5H3l5-5z');
+
+    var score = document.createElement('span');
+    score.className = 'vote-score' + (c.votes > 0 ? ' pos' : c.votes < 0 ? ' neg' : '');
+    score.textContent = c.votes;
+
+    var downBtn = document.createElement('button');
+    downBtn.type = 'button';
+    downBtn.className = 'vote-btn vote-down' + (myVote === -1 ? ' active' : '');
+    downBtn.setAttribute('aria-label', 'Downvote');
+    downBtn.innerHTML = makeIcon('M8 13l5-5H3l5 5z');
+
+    voteCol.appendChild(upBtn);
+    voteCol.appendChild(score);
+    voteCol.appendChild(downBtn);
+
+    /* body column */
+    var bodyCol = document.createElement('div');
+    bodyCol.className = 'comment-body-col';
 
     var head = document.createElement('div');
     head.className = 'comment-head';
+
+    var avatar = document.createElement('span');
+    avatar.className = 'comment-avatar';
+    avatar.style.background = avatarColor(c.name);
+    avatar.textContent = (c.name || 'A').charAt(0);
 
     var name = document.createElement('span');
     name.className = 'comment-name';
@@ -337,54 +384,50 @@ if (hamburger && mobileDrawer && drawerOverlay) {
     time.title = new Date(c.time * 1000).toLocaleString();
     time.textContent = fmtTime(c.time);
 
+    var collapseBtn = document.createElement('button');
+    collapseBtn.className = 'collapse-btn';
+    collapseBtn.setAttribute('aria-label', 'Collapse thread');
+    collapseBtn.innerHTML = makeIcon('M4 6l4 4 4-4') + ' [&#8211;]';
+
+    head.appendChild(avatar);
     head.appendChild(name);
+    if (c.name.toLowerCase().indexOf('andy') !== -1 || c.name.toLowerCase().indexOf('ding') !== -1) {
+      var flair = document.createElement('span');
+      flair.className = 'comment-flair';
+      flair.textContent = 'OP';
+      head.appendChild(flair);
+    }
     head.appendChild(time);
+    head.appendChild(collapseBtn);
 
-    var body = document.createElement('p');
-    body.className = 'comment-body';
-    body.textContent = c.text;
+    var text = document.createElement('p');
+    text.className = 'comment-text';
+    text.textContent = c.text;
 
+    /* actions */
     var actions = document.createElement('div');
     actions.className = 'comment-actions';
 
-    var voteWrap = document.createElement('span');
-    voteWrap.className = 'comment-votes';
-
-    var upBtn = document.createElement('button');
-    upBtn.type = 'button';
-    upBtn.className = 'vote-btn vote-up' + (myVote === 1 ? ' active' : '');
-    upBtn.setAttribute('aria-label', 'Upvote');
-    upBtn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3l5 5H3l5-5z"/></svg>';
-
-    var score = document.createElement('span');
-    score.className = 'vote-score' + (c.votes > 0 ? ' pos' : c.votes < 0 ? ' neg' : '');
-    score.textContent = c.votes;
-
-    var downBtn = document.createElement('button');
-    downBtn.type = 'button';
-    downBtn.className = 'vote-btn vote-down' + (myVote === -1 ? ' active' : '');
-    downBtn.setAttribute('aria-label', 'Downvote');
-    downBtn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 13l5-5H3l5 5z"/></svg>';
-
-    voteWrap.appendChild(upBtn);
-    voteWrap.appendChild(score);
-    voteWrap.appendChild(downBtn);
-
     var replyBtn = document.createElement('button');
     replyBtn.type = 'button';
-    replyBtn.className = 'reply-btn';
-    replyBtn.textContent = '↩ Reply';
-    replyBtn.setAttribute('aria-label', 'Reply to ' + c.name);
+    replyBtn.className = 'action-btn reply-btn';
+    replyBtn.setAttribute('aria-label', 'Reply to ' + escHtml(c.name));
+    replyBtn.innerHTML = makeIcon('M2 8s2-4 6-4 6 2 6 4-2 4-6 4c-1 0-2-.2-3-.6L2 14V8z') + ' Reply';
 
-    actions.appendChild(voteWrap);
+    var shareBtn2 = document.createElement('button');
+    shareBtn2.type = 'button';
+    shareBtn2.className = 'action-btn';
+    shareBtn2.innerHTML = makeIcon('M10 3H6a2 2 0 00-2 2v8a2 2 0 002 2h4') + ' Share';
+
     actions.appendChild(replyBtn);
+    actions.appendChild(shareBtn2);
 
     var replyFormWrap = document.createElement('div');
     replyFormWrap.className = 'reply-form-wrap hidden';
     replyFormWrap.innerHTML =
       '<form class="comment-form comment-form-reply">' +
         '<input type="text" class="reply-name" maxlength="60" placeholder="Your name (optional)" autocomplete="name" />' +
-        '<textarea class="reply-text" maxlength="1500" placeholder="Replying to ' + escHtml(c.name) + '…" required></textarea>' +
+        '<textarea class="reply-text" maxlength="1500" placeholder="Replying to ' + escHtml(c.name) + '\u2026" required></textarea>' +
         '<div class="comment-form-foot">' +
           '<span class="char-count reply-char-count">0 / 1500</span>' +
           '<div style="display:flex;gap:8px">' +
@@ -397,17 +440,38 @@ if (hamburger && mobileDrawer && drawerOverlay) {
     var children = document.createElement('div');
     children.className = 'comment-children';
 
-    wrap.appendChild(head);
-    wrap.appendChild(body);
-    wrap.appendChild(actions);
-    wrap.appendChild(replyFormWrap);
-    wrap.appendChild(children);
+    bodyCol.appendChild(head);
+    bodyCol.appendChild(text);
+    bodyCol.appendChild(actions);
+    bodyCol.appendChild(replyFormWrap);
+    bodyCol.appendChild(children);
+    wrap.appendChild(voteCol);
+    wrap.appendChild(bodyCol);
 
+    /* collapse */
+    collapseBtn.addEventListener('click', function() {
+      wrap.classList.toggle('collapsed');
+      collapseBtn.innerHTML = wrap.classList.contains('collapsed')
+        ? makeIcon('M4 10l4-4 4 4') + ' [+]'
+        : makeIcon('M4 6l4 4 4-4') + ' [&#8211;]';
+    });
+
+    /* share */
+    shareBtn2.addEventListener('click', function() {
+      var url = window.location.href.split('#')[0] + '#comment-' + c.id;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(function() {
+          shareBtn2.innerHTML = makeIcon('M5 8l4 4 6-6') + ' Copied!';
+          setTimeout(function() { shareBtn2.innerHTML = makeIcon('M10 3H6a2 2 0 00-2 2v8a2 2 0 002 2h4') + ' Share'; }, 1800);
+        });
+      }
+    });
+
+    /* votes */
     function handleVote(dir) {
       var current = getLocalVotes()[c.id] || 0;
       var newDir  = (current === dir) ? 0 : dir;
-      var delta   = newDir - current;
-      c.votes += delta;
+      c.votes += newDir - current;
       score.textContent = c.votes;
       score.className   = 'vote-score' + (c.votes > 0 ? ' pos' : c.votes < 0 ? ' neg' : '');
       upBtn.classList.toggle('active',   newDir === 1);
@@ -415,29 +479,19 @@ if (hamburger && mobileDrawer && drawerOverlay) {
       setLocalVote(c.id, newDir);
       if (location.protocol === 'file:') return;
       fetch('comments.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ action: 'vote', id: c.id, dir: dir })
       })
         .then(function(r) { return r.json(); })
-        .then(function(data) {
-          if (typeof data.votes === 'number') {
-            c.votes = data.votes;
-            score.textContent = c.votes;
-            score.className   = 'vote-score' + (c.votes > 0 ? ' pos' : c.votes < 0 ? ' neg' : '');
-          }
-          if (typeof data.voted === 'number') {
-            upBtn.classList.toggle('active',   data.voted === 1);
-            downBtn.classList.toggle('active', data.voted === -1);
-            setLocalVote(c.id, data.voted);
-          }
-        })
-        .catch(function() {});
+        .then(function(d) {
+          if (typeof d.votes === 'number') { c.votes = d.votes; score.textContent = c.votes; score.className = 'vote-score' + (c.votes > 0 ? ' pos' : c.votes < 0 ? ' neg' : ''); }
+          if (typeof d.voted === 'number') { upBtn.classList.toggle('active', d.voted === 1); downBtn.classList.toggle('active', d.voted === -1); setLocalVote(c.id, d.voted); }
+        }).catch(function() {});
     }
-
     upBtn.addEventListener('click',   function() { handleVote(1);  });
     downBtn.addEventListener('click', function() { handleVote(-1); });
 
+    /* reply form */
     replyBtn.addEventListener('click', function() {
       replyFormWrap.classList.toggle('hidden');
       if (!replyFormWrap.classList.contains('hidden')) {
@@ -445,161 +499,111 @@ if (hamburger && mobileDrawer && drawerOverlay) {
         replyFormWrap.querySelector('.reply-text').focus();
       }
     });
-
-    replyFormWrap.querySelector('.reply-cancel').addEventListener('click', function() {
-      replyFormWrap.classList.add('hidden');
-    });
-
+    replyFormWrap.querySelector('.reply-cancel').addEventListener('click', function() { replyFormWrap.classList.add('hidden'); });
     replyFormWrap.querySelector('.reply-text').addEventListener('input', function() {
       replyFormWrap.querySelector('.reply-char-count').textContent = this.value.length + ' / 1500';
     });
-
     replyFormWrap.querySelector('form').addEventListener('submit', function(e) {
       e.preventDefault();
-      var rText   = replyFormWrap.querySelector('.reply-text').value.trim();
+      var rText = replyFormWrap.querySelector('.reply-text').value.trim();
       if (!rText) return;
       var rName   = replyFormWrap.querySelector('.reply-name').value.trim();
       var rSubmit = replyFormWrap.querySelector('.reply-submit');
-      rSubmit.disabled    = true;
-      rSubmit.textContent = 'Posting…';
+      rSubmit.disabled = true; rSubmit.textContent = 'Posting\u2026';
       localStorage.setItem(NAME_KEY, rName);
       fetch('comments.php', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ name: rName, text: rText, parentId: c.id, website: '' })
       })
         .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
-        .then(function(result) {
-          if (!result.ok) throw new Error(result.data.error || 'Something went wrong');
+        .then(function(res) {
+          if (!res.ok) throw new Error(res.data.error || 'Something went wrong');
           replyFormWrap.classList.add('hidden');
           replyFormWrap.querySelector('.reply-text').value = '';
           replyFormWrap.querySelector('.reply-char-count').textContent = '0 / 1500';
           loadComments();
         })
         .catch(function(err) {
-          var errEl = replyFormWrap.querySelector('.reply-err') || document.createElement('p');
-          errEl.className = 'comment-status err reply-err';
-          errEl.textContent = '⚠ ' + (err.message || 'Could not post — try again.');
-          if (!replyFormWrap.querySelector('.reply-err')) replyFormWrap.querySelector('form').appendChild(errEl);
+          var errEl = replyFormWrap.querySelector('.reply-err');
+          if (!errEl) { errEl = document.createElement('p'); errEl.className = 'comment-status err reply-err'; replyFormWrap.querySelector('form').appendChild(errEl); }
+          errEl.textContent = '\u26a0 ' + (err.message || 'Could not post.');
         })
-        .finally(function() {
-          rSubmit.disabled    = false;
-          rSubmit.textContent = 'Post reply';
-        });
+        .finally(function() { rSubmit.disabled = false; rSubmit.textContent = 'Post reply'; });
     });
 
     return { wrap: wrap, children: children };
   }
 
-  function render(comments) {
+  function render(allComments) {
     list.innerHTML = '';
+    var comments = allComments.filter(function(c) { return !!c.id; });
     var total = comments.length;
-    countEl.textContent = total ? '(' + total + ')' : '';
+    countEl.textContent = total ? String(total) : '';
 
     if (!total) {
       var empty = document.createElement('p');
       empty.className = 'comments-empty';
-      empty.textContent = 'No comments yet — be the first!';
+      empty.textContent = '\U0001f33f No comments yet \u2014 start the discussion!';
       list.appendChild(empty);
       return;
     }
 
-    var nodes    = {};
-    var topLevel = [];
-    var i, c, built;
-
-    /* skip legacy comments that have no id (old flat format) */
-    var valid = [];
-    for (i = 0; i < comments.length; i++) {
-      if (comments[i].id) valid.push(comments[i]);
-    }
-    comments = valid;
-
+    var nodes = {}, topLevel = [], i, c, built;
     for (i = 0; i < comments.length; i++) {
       c = comments[i];
       built = commentEl(c, c.parentId ? 1 : 0);
       nodes[c.id] = built;
-      if (!c.parentId) topLevel.push(built);
+      if (!c.parentId) topLevel.push({ node: built, data: c });
     }
-
     for (i = 0; i < comments.length; i++) {
       c = comments[i];
-      if (c.parentId && nodes[c.parentId]) {
-        nodes[c.parentId].children.appendChild(nodes[c.id].wrap);
-      }
+      if (c.parentId && nodes[c.parentId]) nodes[c.parentId].children.appendChild(nodes[c.id].wrap);
     }
-
     topLevel.sort(function(a, b) {
-      var ca = null, cb = null, j;
-      for (j = 0; j < comments.length; j++) {
-        if (comments[j].id === a.wrap.dataset.id) ca = comments[j];
-        if (comments[j].id === b.wrap.dataset.id) cb = comments[j];
-      }
-      if (!ca || !cb) return 0;
-      if (cb.votes !== ca.votes) return cb.votes - ca.votes;
-      return ca.time - cb.time;
+      if (currentSort === 'new') return b.data.time - a.data.time;
+      if (b.data.votes !== a.data.votes) return b.data.votes - a.data.votes;
+      return a.data.time - b.data.time;
     });
-
-    for (i = 0; i < topLevel.length; i++) {
-      list.appendChild(topLevel[i].wrap);
-    }
+    var frag = document.createDocumentFragment();
+    for (i = 0; i < topLevel.length; i++) frag.appendChild(topLevel[i].node.wrap);
+    list.appendChild(frag);
   }
 
   function loadComments() {
+    if (location.protocol === 'file:') {
+      render([]);
+      setStatus('\U0001f4ac Comments work on the live site (they need the server).', '');
+      form.classList.add('hidden');
+      return;
+    }
     fetch('comments.php')
       .then(function(r) { if (!r.ok) throw new Error(); return r.json(); })
-      .then(function(data) { render(data.comments || []); })
-      .catch(function() {
-        render([]);
-        list.innerHTML = '';
-        if (location.protocol === 'file:') {
-          setStatus('\U0001f4ac Comments work on the live site (they need the server).', '');
-          form.classList.add('hidden');
-        } else {
-          setStatus('⚠ Comments couldn\'t load — try refreshing.', 'err');
-        }
-      });
+      .then(function(d) { render(d.comments || []); })
+      .catch(function() { render([]); setStatus('\u26a0 Comments couldn\u2019t load \u2014 try refreshing.', 'err'); });
   }
 
-  textInput.addEventListener('input', function() {
-    charCount.textContent = textInput.value.length + ' / 1500';
-  });
+  textInput.addEventListener('input', function() { charCount.textContent = textInput.value.length + ' / 1500'; });
 
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     var text = textInput.value.trim();
     if (!text) return;
-
-    submitBtn.disabled    = true;
-    submitBtn.textContent = 'Posting…';
+    submitBtn.disabled = true; submitBtn.textContent = 'Posting\u2026';
     setStatus('', '');
     localStorage.setItem(NAME_KEY, nameInput.value.trim());
-
     fetch('comments.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name:     nameInput.value.trim(),
-        text:     text,
-        parentId: '',
-        website:  honeypot.value
-      })
+      method: 'POST', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ name: nameInput.value.trim(), text: text, parentId: '', website: honeypot.value })
     })
       .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
-      .then(function(result) {
-        if (!result.ok) throw new Error(result.data.error || 'Something went wrong');
-        textInput.value = '';
-        charCount.textContent = '0 / 1500';
-        setStatus('✓ Comment posted — thanks!', 'ok');
+      .then(function(res) {
+        if (!res.ok) throw new Error(res.data.error || 'Something went wrong');
+        textInput.value = ''; charCount.textContent = '0 / 1500';
+        setStatus('\u2713 Comment posted \u2014 thanks!', 'ok');
         loadComments();
       })
-      .catch(function(err) {
-        setStatus('⚠ ' + (err.message || 'Could not post your comment — try again.'), 'err');
-      })
-      .finally(function() {
-        submitBtn.disabled    = false;
-        submitBtn.textContent = 'Post comment';
-      });
+      .catch(function(err) { setStatus('\u26a0 ' + (err.message || 'Could not post \u2014 try again.'), 'err'); })
+      .finally(function() { submitBtn.disabled = false; submitBtn.textContent = 'Post comment'; });
   });
 
   loadComments();
