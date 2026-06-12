@@ -348,7 +348,7 @@ body::before {
   align-items: start;
 }
 
-/* ── Photo column ── */
+/* ── Photo column — professional portrait treatment ── */
 .about-photo-col {
   position: relative;
 }
@@ -357,35 +357,39 @@ body::before {
   position: relative;
   width: 100%;
   margin: 0;
-  border-radius: 20px;
+  border-radius: 16px;
   overflow: hidden;
-  /* Decorative offset shadow — gives depth without looking like a drop-shadow filter */
+  /* Layered shadow for depth (not a flat drop-shadow) */
   box-shadow:
-    0 1px 2px rgba(33, 48, 42, 0.04),
-    0 8px 24px rgba(33, 48, 42, 0.10),
-    0 24px 48px rgba(33, 48, 42, 0.08);
-  /* Subtle accent glow from bottom-right */
-  background: linear-gradient(145deg, var(--green-soft) 0%, transparent 60%);
+    0 1px 3px rgba(33, 48, 42, 0.06),
+    0 4px 12px rgba(33, 48, 42, 0.08),
+    0 8px 28px rgba(33, 48, 42, 0.10);
+  /* Subtle warm tint at edges */
+  background: linear-gradient(160deg, rgba(184, 92, 56, 0.04) 0%, transparent 50%);
 }
 
-/* Pseudo-element for a soft tint/gradient over the photo bottom */
+/* Soft vignette overlay */
 .photo-frame::after {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 20px;
+  border-radius: 16px;
   pointer-events: none;
-  /* Very subtle vignette at edges */
-  box-shadow: inset 0 0 60px rgba(33, 48, 42, 0.06);
+  box-shadow: inset 0 0 80px rgba(33, 48, 42, 0.07);
 }
 
 .about-photo-img {
   display: block;
   width: 100%;
   height: auto;
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
-  object-position: center 25%;
+  /* No forced aspect-ratio — let the image breathe naturally */
+  border-radius: 16px;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Gentle zoom on hover — feels alive, not static */
+.photo-frame:hover .about-photo-img {
+  transform: scale(1.03);
 }
 .social-row {
   display: flex;
