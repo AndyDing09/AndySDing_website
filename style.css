@@ -374,6 +374,14 @@ body::before {
 }
 
 .photo-frame { width: 240px; margin: 0 auto; }
+.about-photo-img {
+  width: 240px;
+  height: 280px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
 .photo-placeholder {
   width: 240px; height: 280px;
   border-radius: var(--radius);
