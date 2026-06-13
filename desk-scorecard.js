@@ -27,10 +27,13 @@
       'screen over the trailing ~year — no fees, slippage, taxes, or emotion. Short samples are noisy; this is <em>not</em> ' +
       'evidence the desk can beat the market, and most active strategies underperform a simple index fund.</p>' +
       '<div id="sc-body"></div>';
-    var brief = document.querySelector('.desk-brief');
-    var anchor = brief || document.getElementById('desk-account') || document.getElementById('sa-disclaimer');
-    if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(panel, anchor.nextSibling);
-    else stocks.querySelector('.stocks-inner').prepend(panel);
+    var slot = document.getElementById('desk-slot-score');
+    if (slot) { slot.appendChild(panel); }
+    else {
+      var anchor = document.querySelector('.desk-brief') || document.getElementById('desk-account') || document.getElementById('sa-disclaimer');
+      if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(panel, anchor.nextSibling);
+      else stocks.querySelector('.stocks-inner').prepend(panel);
+    }
     document.getElementById('sc-run').addEventListener('click', run);
   }
 

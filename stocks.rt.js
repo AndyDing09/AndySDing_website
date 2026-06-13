@@ -26,6 +26,8 @@
   /* Find the symbols currently on screen and the elements that show them. */
   function targets() {
     var out = [];
+    var lookup = document.getElementById('sa-pane-lookup');
+    if (lookup && lookup.classList.contains('hidden')) return out; // on the desk tab — nothing to live-update
     var dash = document.getElementById('sa-dash-view');
     var wl = document.getElementById('sa-watchlist-view');
     if (dash && !dash.classList.contains('hidden') && dash.getAttribute('data-symbol')) {

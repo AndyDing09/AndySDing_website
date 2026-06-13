@@ -19,10 +19,13 @@
   function mount() {
     if (panel) return;
     panel = el('section', 'desk-trade');
-    var sc = document.querySelector('.desk-score');
-    var anchor = sc || document.querySelector('.desk-brief') || document.getElementById('desk-account');
-    if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(panel, anchor.nextSibling);
-    else stocks.querySelector('.stocks-inner').prepend(panel);
+    var slot = document.getElementById('desk-slot-trade');
+    if (slot) { slot.appendChild(panel); }
+    else {
+      var anchor = document.querySelector('.desk-score') || document.querySelector('.desk-brief') || document.getElementById('desk-account');
+      if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(panel, anchor.nextSibling);
+      else stocks.querySelector('.stocks-inner').prepend(panel);
+    }
   }
 
   function render() {

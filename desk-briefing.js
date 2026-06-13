@@ -28,11 +28,13 @@
       'Entry/stop levels are <em>illustrative examples of what a trader might watch</em>, not recommendations. ' +
       'Most active traders underperform a simple index fund.</p>' +
       '<div id="db-body"></div>';
-    var acct = document.getElementById('desk-account');
-    var disc = document.getElementById('sa-disclaimer');
-    var anchor = acct || disc;
-    if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(panel, anchor.nextSibling);
-    else stocks.querySelector('.stocks-inner').prepend(panel);
+    var slot = document.getElementById('desk-slot-brief');
+    if (slot) { slot.appendChild(panel); }
+    else {
+      var anchor = document.getElementById('desk-account') || document.getElementById('sa-disclaimer');
+      if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(panel, anchor.nextSibling);
+      else stocks.querySelector('.stocks-inner').prepend(panel);
+    }
     document.getElementById('db-run').addEventListener('click', run);
   }
 
@@ -158,6 +160,7 @@
       .finally(function () { btn.disabled = false; btn.textContent = '✨ Written synthesis (AI)'; });
   }
 
+  window.AndyDeskBriefingRun = function () { run(); };
   function boot() { if (built) return; built = true; mount(); }
   function maybe() { if (stocks.classList.contains('active')) boot(); }
   new MutationObserver(maybe).observe(stocks, { attributes: true, attributeFilter: ['class'] });

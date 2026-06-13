@@ -25,9 +25,13 @@
       panel = document.createElement('div');
       panel.id = 'desk-account';
       panel.className = 'desk-account';
-      var disc = document.getElementById('sa-disclaimer');
-      if (disc && disc.parentNode) disc.parentNode.insertBefore(panel, disc.nextSibling);
-      else stocks.querySelector('.stocks-inner').prepend(panel);
+      var slot = document.getElementById('desk-slot-account');
+      if (slot) { slot.appendChild(panel); }
+      else {
+        var disc = document.getElementById('sa-disclaimer');
+        if (disc && disc.parentNode) disc.parentNode.insertBefore(panel, disc.nextSibling);
+        else stocks.querySelector('.stocks-inner').prepend(panel);
+      }
     }
   }
 

@@ -51,7 +51,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=15" />
-  <link rel="stylesheet" href="stocks.css?v=6" />
+  <link rel="stylesheet" href="stocks.css?v=7" />
 </head>
 <body>
 
@@ -543,6 +543,14 @@
         </div>
         <p class="section-subtitle">A personal markets dashboard — live(ish) data, deep technical &amp; fundamental analysis, and plain-English explanations of every number.</p>
 
+        <!-- Sub-tabs: keep the long briefing in its own tab so the lookup view shows just the chart + analysis -->
+        <div class="sa-subtabs" role="tablist" aria-label="Stocks views">
+          <button type="button" class="sa-subtab active" data-pane="lookup" role="tab" aria-selected="true">📈 Stock lookup</button>
+          <button type="button" class="sa-subtab" data-pane="desk" role="tab" aria-selected="false">🧭 Research &amp; trading desk</button>
+        </div>
+
+        <!-- PANE: stock lookup (watchlist → per-stock chart & analysis only) -->
+        <div class="sa-pane" id="sa-pane-lookup" role="tabpanel">
         <div class="sa-disclaimer" id="sa-disclaimer">
           <strong>⚠️ Educational information only — not financial advice.</strong>
           Everything here is automated analysis of public data for learning purposes. It is
@@ -622,6 +630,21 @@
             <div class="sa-panel" id="sa-alerts-panel"></div>
           </div>
         </div>
+        </div><!-- /#sa-pane-lookup -->
+
+        <!-- PANE: research & trading desk (account, morning briefing, scorecard, paper trading inject into the slots) -->
+        <div class="sa-pane hidden" id="sa-pane-desk" role="tabpanel">
+          <div class="sa-desk-intro">
+            <span class="db-eyebrow">RESEARCH &amp; TRADING DESK</span>
+            <p class="sa-muted">Your account, the morning briefing, the rules-based scorecard, and paper trading — all in one place. Educational only, not financial advice.</p>
+          </div>
+          <div id="sa-desk-mount">
+            <div id="desk-slot-account"></div>
+            <div id="desk-slot-brief"></div>
+            <div id="desk-slot-score"></div>
+            <div id="desk-slot-trade"></div>
+          </div>
+        </div>
 
       </div>
     </section>
@@ -649,10 +672,11 @@
   <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js" defer></script>
   <script src="stocks.js?v=1" defer></script>
   <script src="stocks.ui.js?v=1" defer></script>
-  <script src="stocks.rt.js?v=1" defer></script>
-  <script src="desk.js?v=2" defer></script>
-  <script src="desk-briefing.js?v=2" defer></script>
-  <script src="desk-scorecard.js?v=1" defer></script>
-  <script src="desk-trade.js?v=1" defer></script>
+  <script src="stocks.rt.js?v=2" defer></script>
+  <script src="stocks.tabs.js?v=1" defer></script>
+  <script src="desk.js?v=3" defer></script>
+  <script src="desk-briefing.js?v=3" defer></script>
+  <script src="desk-scorecard.js?v=2" defer></script>
+  <script src="desk-trade.js?v=2" defer></script>
 </body>
 </html>
