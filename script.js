@@ -165,39 +165,72 @@ if (hamburger && mobileDrawer && drawerOverlay) {
     return new Date(ms).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   }
 
+  var state = { post: DEFAULT_POST, mins: 1, views: null };
+
+  function fmtViews(n) {
+    if (n == null) return '';
+    return ' · 👁 ' + Number(n).toLocaleString('en-US') + ' view' + (n === 1 ? '' : 's');
+  }
+
   /* ── Render the post + its card preview ── */
   function render(post) {
+    state.post = post;
     var text = textOf(post.content);
-    var mins = readTime(text);
+    var mins = state.mins = readTime(text);
     var dateText = post.updated ? fmtDate(post.updated) : fmtDate(Date.now());
 
     cardTitle.textContent = post.title;
     cardExcerpt.textContent = text.length > 200 ? text.slice(0, 200).trimEnd() + '…' : text;
     cardDate.textContent = dateText;
-    cardReadtime.textContent = '🕐 ' + mins + ' min read';
 
     postTitle.textContent = post.title;
     postBody.innerHTML = post.content; // trusted: authored by Andy, sanitized server-side
     postDate.textContent = dateText;
-    postStats.textContent = mins + ' min read';
+    renderStats();
+  }
+
+  function renderStats() {
+    cardReadtime.textContent = '🕐 ' + state.mins + ' min read' + fmtViews(state.views);
+    postStats.textContent = state.mins + ' min read' + fmtViews(state.views);
   }
 
   render(DEFAULT_POST);
 
-  /* Load the published post from the server */
+  /* Load the published post + view count from the server */
   if (location.protocol !== 'file:') {
     fetch('blog.php')
       .then(function (r) { return r.json(); })
       .then(function (d) {
+        if (d && typeof d.views === 'number') { state.views = d.views; }
         if (d && d.title && d.content) {
           render({ title: d.title, content: d.content, updated: d.updated ? d.updated * 1000 : null });
+        } else {
+          renderStats();
         }
       })
       .catch(function () { /* keep the default post */ });
   }
 
+  /* Record a view once per browser session, when the post is opened */
+  var VIEW_KEY = 'asd-blog-viewed';
+  function recordView() {
+    if (location.protocol === 'file:') return;
+    var already = false;
+    try { already = sessionStorage.getItem(VIEW_KEY) === '1'; } catch (e) {}
+    if (already) return;
+    try { sessionStorage.setItem(VIEW_KEY, '1'); } catch (e) {}
+    fetch('blog.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'view' })
+    })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (d && typeof d.views === 'number') { state.views = d.views; renderStats(); } })
+      .catch(function () {});
+  }
+
   /* ── Wire up ── */
-  var openPost = function () { showSection('post'); };
+  var openPost = function () { showSection('post'); recordView(); };
   cardOpen.addEventListener('click', openPost);
   document.getElementById('blog-card').addEventListener('click', function (e) {
     if (e.target.closest('button')) return;

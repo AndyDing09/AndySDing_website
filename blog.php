@@ -24,6 +24,19 @@ if (!is_dir($dir)) {
 $postFile = $dir . '/blog-post.json';
 $authFile = $dir . '/blog-auth.json';
 $codeFile = $dir . '/dev-code.txt';
+$viewsFile = $dir . '/blog-views.json';
+
+/** Read the stored view tally (count + per-IP last-seen day). */
+function read_views($f)
+{
+    if (is_file($f)) {
+        $d = json_decode((string) file_get_contents($f), true);
+        if (is_array($d) && isset($d['count'])) {
+            return $d;
+        }
+    }
+    return ['count' => 0, 'seen' => []];
+}
 
 /* sha256 of the default dev code (overridable via dev-code.txt) */
 $DEFAULT_CODE_HASH = hash('sha256', 'asd-dev|0902');
@@ -46,10 +59,11 @@ if ($method === 'GET') {
                 'title'   => $post['title'],
                 'content' => $post['content'],
                 'updated' => isset($post['updated']) ? $post['updated'] : null,
+                'views'   => read_views($viewsFile)['count'],
             ]);
         }
     }
-    respond(200, ['title' => null, 'content' => null, 'updated' => null]);
+    respond(200, ['title' => null, 'content' => null, 'updated' => null, 'views' => read_views($viewsFile)['count']]);
 }
 
 if ($method !== 'POST') {
@@ -61,6 +75,41 @@ if (!is_array($input)) {
     respond(400, ['error' => 'Invalid request']);
 }
 $action = isset($input['action']) ? $input['action'] : '';
+
+/* ── Record a view (no dev code required) ──
+   Deduped per visitor per day so refreshing doesn't inflate the count. */
+if ($action === 'view') {
+    $viewIp = substr(sha1((isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '') . 'asd-view'), 0, 12);
+    $today = gmdate('Y-m-d');
+    $fp = @fopen($viewsFile, 'c+');
+    if (!$fp) {
+        respond(200, ['views' => read_views($viewsFile)['count']]);
+    }
+    flock($fp, LOCK_EX);
+    $raw = stream_get_contents($fp);
+    $v = json_decode($raw !== false && $raw !== '' ? $raw : '{}', true);
+    if (!is_array($v) || !isset($v['count'])) {
+        $v = ['count' => 0, 'seen' => []];
+    }
+    if (!isset($v['seen']) || !is_array($v['seen'])) {
+        $v['seen'] = [];
+    }
+    if (!isset($v['seen'][$viewIp]) || $v['seen'][$viewIp] !== $today) {
+        $v['count']++;
+        $v['seen'][$viewIp] = $today;
+        if (count($v['seen']) > 5000) {
+            $v['seen'] = array_slice($v['seen'], -2500, null, true);
+        }
+        ftruncate($fp, 0);
+        rewind($fp);
+        fwrite($fp, json_encode($v));
+        fflush($fp);
+    }
+    flock($fp, LOCK_UN);
+    fclose($fp);
+    respond(200, ['views' => $v['count']]);
+}
+
 if ($action !== 'verify' && $action !== 'publish') {
     respond(400, ['error' => 'Unknown action']);
 }
