@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=7" />
+  <link rel="stylesheet" href="style.css?v=9" />
   <link rel="stylesheet" href="stocks.css?v=1" />
 </head>
 <body>
@@ -227,6 +227,7 @@
           <p class="blog-card-excerpt" id="card-excerpt"></p>
           <div class="blog-card-footer">
             <span class="blog-read-time" id="card-readtime"></span>
+            <span class="blog-view-count" id="card-views"></span>
             <button class="btn btn-primary" id="card-open" aria-label="Open the latest blog post">See more →</button>
           </div>
         </article>
@@ -248,6 +249,8 @@
           <span id="post-date"></span>
           <span class="meta-dot">·</span>
           <span id="post-stats"></span>
+          <span class="meta-dot">·</span>
+          <span id="post-views"></span>
         </div>
         <div class="post-engage">
           <button class="engage-btn" id="like-btn" aria-pressed="false">🤍 <span id="like-count"></span></button>
@@ -257,14 +260,24 @@
 
         <!-- ── Comments ── -->
         <div class="comments-section">
-          <h2 class="comments-title">Comments <span id="comments-count"></span></h2>
+          <div class="comments-header">
+            <h2 class="comments-title">
+              💬 Discussion
+              <span class="comments-title-count" id="comments-count"></span>
+            </h2>
+            <div class="comments-sort">
+              <span class="comments-sort-label">Sort:</span>
+              <button class="sort-btn active" data-sort="top">Top</button>
+              <button class="sort-btn" data-sort="new">New</button>
+            </div>
+          </div>
+
           <div class="comments-list" id="comments-list"></div>
 
-          <!-- Top-level post form -->
-          <form class="comment-form" id="comment-form" data-parent="">
-            <p class="comment-form-label">Leave a comment</p>
+          <form class="comment-form" id="comment-form">
+            <p class="comment-form-label">What do you think?</p>
             <input type="text" id="comment-name" maxlength="60" placeholder="Your name (optional)" autocomplete="name" />
-            <textarea id="comment-text" maxlength="1500" placeholder="Share your thoughts…" required></textarea>
+            <textarea id="comment-text" maxlength="1500" placeholder="Share your thoughts, questions, or feedback…" required></textarea>
             <input type="text" id="comment-website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
             <div class="comment-form-foot">
               <span class="char-count" id="char-count">0 / 1500</span>
@@ -637,7 +650,7 @@
 
   
 
-  <script src="script.js?v=7"></script>
+  <script src="script.js?v=9"></script>
   <script src="chat.js?v=1"></script>
   <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js" defer></script>
   <script src="stocks.js?v=1" defer></script>
