@@ -171,7 +171,11 @@
       'Explain what the setup means, what you\'d WAIT for before acting, and how you\'d manage risk (sizing + stop). Be explicitly TWO-SIDED — say plainly what would prove the idea wrong. Do NOT give a direct buy/sell recommendation and do NOT promise outcomes. End with a brief "Not advice." ';
     fetch('chat.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] }) })
       .then(function (r) { return r.json().then(function (x) { return { ok: r.ok, x: x }; }); })
-      .then(function (res) { out.textContent = (res.ok && res.x.reply) ? res.x.reply : (res.x.error || 'AI explanation isn’t available right now.'); })
+      .then(function (res) {
+        if (res.ok && res.x.reply) { out.textContent = res.x.reply; }
+        else if (res.x && /not enabled/i.test(res.x.error || '')) { out.textContent = 'AI explanations are off — add your Claude API key on the server (asd-site-data/anthropic-key.txt) to switch them on.'; }
+        else { out.textContent = (res.x && res.x.error) || 'AI explanation isn’t available right now.'; }
+      })
       .catch(function () { out.textContent = 'Couldn’t reach the AI service.'; })
       .finally(function () { btn.disabled = false; btn.textContent = '✨ Explain this plan (AI)'; });
   }
