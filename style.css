@@ -2018,3 +2018,54 @@ body::before {
 @media (prefers-reduced-motion: reduce) {
   .hero-eyebrow::before { animation: none; }
 }
+
+/* ═══════════════════════════════════════════════
+   SOUNDINGS — pass 3: instrument framing + scannable research
+════════════════════════════════════════════════ */
+/* Section eyebrows are now meaningful mono labels, not decorative numbers */
+.section-number { font-family: var(--font-mono); text-transform: uppercase; }
+
+/* Mono for all data-ish labels (dates, years, citations) — instrument feel */
+.project-year, .paper-meta, .resume-date, .resume-updated, .blog-date { font-family: var(--font-mono); }
+
+/* Research case-study preview cards */
+.project-summary {
+  font-size: 1.06rem;
+  line-height: 1.55;
+  color: var(--ink);
+  font-weight: 500;
+  margin: 6px 0 14px;
+}
+.project-specs {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 16px;
+  padding: 0;
+}
+.project-specs li {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--ink-2);
+  background: var(--green-soft);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 9px;
+}
+.project-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--green-deep);
+  transition: gap var(--transition);
+}
+.project-card-link:hover .project-more { gap: 10px; }
+
+/* Restraint: the hero status dot stays lit but doesn't ping —
+   the canvas sonar ping is the single signature motion. */
+.hero-eyebrow::before { animation: none; }
