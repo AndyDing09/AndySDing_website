@@ -50,7 +50,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css?v=11" />
+  <link rel="stylesheet" href="style.css?v=12" />
   <link rel="stylesheet" href="stocks.css?v=1" />
 </head>
 <body>
@@ -97,33 +97,32 @@
 
     <!-- ─── HOME ─── -->
     <section id="home" class="section active">
+      <canvas id="hero-sonar" class="hero-sonar" aria-hidden="true"></canvas>
+      <div class="hero-frame" aria-hidden="true">
+        <span class="hero-coord tl">42.36°N · 71.26°W</span>
+        <span class="hero-coord tr">SURVEY · MA COAST</span>
+        <span class="hero-coord bl">SONAR ◉ ACTIVE</span>
+        <span class="hero-coord br">DEPTH ~12 m</span>
+      </div>
       <div class="hero-container">
-        <p class="hero-eyebrow">Hi, I'm Andy 👋</p>
-        <h1 class="hero-name">Future<br /><em>environmental</em><br />engineer.</h1>
+        <p class="hero-eyebrow">Andy S. Ding — Environmental engineering</p>
+        <h1 class="hero-name">Mapping where the ocean<br />hides its <em>plastic</em>.</h1>
         <p class="hero-tagline">
-          I build autonomous robots that study the ocean. My current project,
-          <strong>Project Kymarion</strong>, is a self-navigating boat we designed and built
-          to map microplastic pollution along the Massachusetts coast. This site is where
-          I share my research, my writing, and what I'm learning along the way.
+          I'm a high-school researcher building <strong>Project Kymarion</strong> — a low-cost
+          autonomous boat that surveys the Massachusetts coast to find where microplastics
+          collect. Below: the research, the writing, and the data behind it.
         </p>
         <div class="hero-cta">
-          <a href="#research" class="btn btn-primary" data-section="research">See my research</a>
-          <a href="#blog" class="btn btn-ghost" data-section="blog">Read my blog</a>
+          <a href="#research" class="btn btn-primary" data-section="research">Explore the research →</a>
+          <a href="#resume" class="btn btn-ghost" data-section="resume">Résumé</a>
         </div>
-        <div class="hero-topics">
-          <span class="topic-chip">🌊 Ocean research</span>
-          <span class="topic-chip">🤖 Autonomous robotics</span>
-          <span class="topic-chip">💧 Microplastic detection</span>
-          <span class="topic-chip">♻️ Sustainability</span>
+        <div class="hero-readout">
+          <span><b>ASV</b> autonomous surface vehicle</span>
+          <span class="hero-readout-sep"></span>
+          <span><b>ISEF</b> 2026–27 target</span>
+          <span class="hero-readout-sep"></span>
+          <span><b>FTC</b> robotics captain</span>
         </div>
-      </div>
-      <div class="hero-waves" aria-hidden="true">
-        <svg class="wave-back" viewBox="0 0 2880 120" preserveAspectRatio="none">
-          <path d="M0,72 C240,104 480,40 720,72 C960,104 1200,40 1440,72 C1680,104 1920,40 2160,72 C2400,104 2640,40 2880,72 L2880,120 L0,120 Z"/>
-        </svg>
-        <svg class="wave-front" viewBox="0 0 2880 120" preserveAspectRatio="none">
-          <path d="M0,84 C240,116 480,52 720,84 C960,116 1200,52 1440,84 C1680,116 1920,52 2160,84 C2400,116 2640,52 2880,84 L2880,120 L0,120 Z"/>
-        </svg>
       </div>
     </section>
 
@@ -651,6 +650,7 @@
   
 
   <script src="script.js?v=9"></script>
+  <script src="hero-sonar.js?v=1" defer></script>
   <script src="chat.js?v=1"></script>
   <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js" defer></script>
   <script src="stocks.js?v=1" defer></script>
