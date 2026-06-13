@@ -3,12 +3,7 @@
    Uses the global theme tokens from style.css so it
    inherits light/dark mode automatically.
 ════════════════════════════════════════════════ */
-.stocks-inner { max-width: 1180px; position: relative; }
-.sa-smiley {
-  position: absolute; top: 0; right: 0; font-size: 1.8rem; line-height: 1;
-  cursor: default; user-select: none; transition: transform 0.2s ease;
-}
-.sa-smiley:hover { transform: rotate(12deg) scale(1.15); }
+.stocks-inner { max-width: 1180px; }
 
 /* Sub-tabs inside the Stocks lab */
 .sa-subtabs { display: flex; gap: 4px; margin: 6px 0 20px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
