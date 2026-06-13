@@ -464,6 +464,7 @@
 
     renderHeader(price);
     renderSignalPanel(signal);
+    renderGamePlan(ind, signal, closes, highs, lows, price, last);
     renderTechnicals(ind, last);
     renderStats(closes, price);
     renderRisk(closes, highs, lows, price, last(ind.atr));
@@ -514,6 +515,63 @@
     body.appendChild(grid);
     body.appendChild(el('p', 'sa-mini-note', 'An aggregate read, like TradingView\'s technical rating. It counts how many indicators lean each way right now — a snapshot of momentum and trend, not a forecast.'));
     p.appendChild(body);
+  }
+
+  /* ── Step-by-step game plan (educational; built from this stock's own levels) ── */
+  function renderGamePlan(ind, sig, closes, highs, lows, price, last) {
+    var b = panel('sa-plan-panel', 'Step-by-step game plan — when to buy & sell');
+    var cur = dash.currency;
+    function f(v) { return fmtCur(v, cur); }
+    var sma20 = last(ind.sma20), sma50 = last(ind.sma50), sma200 = last(ind.sma200);
+    var rsi = last(ind.rsi), atr = last(ind.atr) || price * 0.02;
+    var levels = []; try { levels = A.supportResistance(highs, lows) || []; } catch (e) {}
+    var supArr = levels.map(function (l) { return l.price; }).filter(function (p) { return p < price; });
+    var resArr = levels.map(function (l) { return l.price; }).filter(function (p) { return p > price; });
+    var support = supArr.length ? Math.max.apply(null, supArr) : Math.min.apply(null, lows.slice(-20));
+    var resistance = resArr.length ? Math.min.apply(null, resArr) : Math.max.apply(null, highs.slice(-20));
+    var hi3 = Math.max.apply(null, highs.slice(-63)), lo3 = Math.min.apply(null, lows.slice(-63));
+    var up = (price > sma50) && (isNaN(sma200) || price > sma200);
+    var trigger, type, stop = null, target = null, zone = '', ref = price, lean = 'flat';
+    if (!isNaN(rsi) && rsi < 38 && (isNaN(sma200) || price > sma200)) { type = 'dip'; trigger = 'Oversold pullback in an uptrend'; lean = 'up'; ref = price; zone = f(Math.max(support, price * 0.985)) + '–' + f(price); stop = support - atr; target = !isNaN(sma50) ? sma50 : resistance; }
+    else if (up && price <= hi3 * 1.03 && price >= hi3 * 0.97) { type = 'breakout'; trigger = 'Near a breakout'; lean = 'up'; ref = resistance; stop = resistance - 1.5 * atr; target = price + (hi3 - lo3) * 0.5; }
+    else if (up && !isNaN(sma50) && price <= sma50 * 1.03) { type = 'pullback'; trigger = 'Pullback toward the 50-day'; lean = 'up'; ref = sma50; zone = f(sma50) + '–' + f(price); stop = sma50 - 1.5 * atr; target = resistance; }
+    else if (!isNaN(rsi) && rsi > 75) { type = 'caution'; trigger = 'Overbought — caution'; lean = 'down'; }
+    else if (up) { type = 'trend'; trigger = 'Healthy uptrend'; lean = 'up'; ref = sma50; zone = 'pullbacks toward ' + f(sma50); stop = (!isNaN(sma50) ? sma50 : price) - 1.5 * atr; target = resistance; }
+    else { type = 'none'; trigger = 'No clean setup right now'; lean = 'down'; }
+
+    var steps = [];
+    if (type === 'none') {
+      steps.push('No clean setup today — price is below its key averages with no trigger. The disciplined move is usually to WAIT.');
+      steps.push('Add it to your watchlist. What would change things: a reclaim of the 50-day (' + f(sma50) + ') or a clear bounce off support (' + f(support) + ').');
+      steps.push('Only then look at an entry near support with a stop just below it. Never average down into a falling stock just because it\'s cheaper.');
+    } else if (type === 'caution') {
+      steps.push('DON\'T chase here — it\'s overbought/extended (RSI ' + (isNaN(rsi) ? '—' : rsi.toFixed(0)) + '). Sit on your hands; chasing green candles is the #1 beginner mistake.');
+      steps.push('Set a price alert for a cooldown toward ' + f(!isNaN(sma20) ? sma20 : sma50) + ' (the 20/50-day). Revisit the idea only then.');
+      steps.push('If you already own it: consider trimming some into the strength and/or trailing a stop up to lock in gains.');
+    } else {
+      if (type === 'dip') steps.push('WAIT for the drop to steady near support (' + f(support) + ') — a green day or a higher low — instead of catching a falling knife.');
+      else if (type === 'breakout') steps.push('WAIT for a daily CLOSE above ' + f(resistance) + ' on strong volume. No close above it = no trade yet.');
+      else if (type === 'pullback') steps.push('WAIT for the pullback to reach the 50-day (' + f(sma50) + ') and actually bounce (a green candle, or it holds).');
+      else steps.push('Trend is up — only act on PULLBACKS toward the 50-day (' + f(sma50) + '). Don\'t buy right after a big up day.');
+      if (stop != null) { var risk = Math.abs(ref - stop); steps.push('SIZE IT FIRST (most important step): stop at ' + f(stop) + ' means risking ~' + f(risk) + ' per share. Risk only ~1% of your account → shares ≈ (1% of your account) ÷ ' + f(risk) + '.'); }
+      if (type === 'breakout') steps.push('ENTER only after it confirms — buy on the close above ' + f(resistance) + ', or on a small pullback back to that level (a buy-stop order automates this).');
+      else steps.push('ENTER with a LIMIT order around ' + (zone || ('~' + f(price))) + ' — a limit, not market, so you don\'t overpay on a spike.');
+      if (stop != null) steps.push('PROTECT it immediately: place a stop-loss at ' + f(stop) + '. That\'s your "I was wrong" line — honor it, don\'t widen it to hope.');
+      if (target != null) steps.push('TAKE PROFITS at the first target near ' + f(target) + ' (around resistance ' + f(resistance) + '). A common move: sell ~half there, then trail a stop on the rest.');
+      steps.push('MANAGE: check once a day, not every tick. As it works in your favor, ratchet your stop UP toward break-even — never move it down.');
+    }
+
+    b.appendChild(el('div', 'sa-plan-setup ' + lean, 'Detected setup: <strong>' + esc(trigger) + '</strong>'));
+    if (type !== 'none' && type !== 'caution') {
+      b.appendChild(el('div', 'db-levels',
+        '<span><b>Entry</b> ' + (zone || ('~' + f(price))) + '</span>' +
+        (stop != null ? '<span><b>Stop</b> ' + f(stop) + '</span>' : '') +
+        (target != null ? '<span><b>Target</b> ' + f(target) + '</span>' : '')));
+    }
+    var ol = el('ol', 'db-plan-list');
+    steps.forEach(function (s) { ol.appendChild(el('li', null, esc(s))); });
+    b.appendChild(ol);
+    b.appendChild(el('p', 'sa-mini-note', 'A generic, educational checklist built from this stock\'s own levels — an example of <em>how</em> to size and manage a trade, <strong>not</strong> a recommendation to buy or sell. Levels are illustrative; you decide and you own the risk.'));
   }
 
   function interp(metric, val) {

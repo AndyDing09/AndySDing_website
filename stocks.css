@@ -279,6 +279,21 @@
 .db-news-line { display: block; font-size: 0.84rem; line-height: 1.45; color: var(--ink); }
 .db-news-fine { font-size: 0.7rem; color: var(--ink-3); margin-top: 8px; font-style: italic; }
 
+/* Step-by-step game plan (briefing cards + stock page) */
+.db-plan { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 8px; }
+.db-plan > summary { cursor: pointer; font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600; color: var(--clay); list-style: none; padding: 4px 0; }
+.db-plan > summary::-webkit-details-marker { display: none; }
+.db-plan > summary::marker { content: ''; }
+.db-plan-list { margin: 10px 0 0; padding-left: 22px; }
+.db-plan-list li { font-size: 0.84rem; line-height: 1.6; color: var(--ink-2); margin-bottom: 9px; }
+.db-plan-list li::marker { color: var(--clay); font-weight: 700; }
+.db-plan-list b, .db-plan-list strong { color: var(--ink); }
+.db-plan-fine { font-size: 0.72rem; color: var(--ink-3); font-style: italic; margin-top: 8px; }
+.sa-plan-setup { font-size: 0.9rem; color: var(--ink-2); padding: 9px 12px; border-radius: var(--radius-sm); margin-bottom: 12px; border: 1px solid var(--border); background: var(--paper-3); }
+.sa-plan-setup strong { color: var(--ink); }
+.sa-plan-setup.up { background: rgba(38,162,105,0.08); border-color: rgba(38,162,105,0.28); }
+.sa-plan-setup.down { background: rgba(214,64,69,0.08); border-color: rgba(214,64,69,0.28); }
+
 /* Comparison */
 .sa-table-scroll { overflow-x: auto; }
 .sa-compare-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }

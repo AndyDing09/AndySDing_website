@@ -124,6 +124,13 @@
       '<p class="db-entry-note">' + esc(e.note) + '</p></div>';
   }
 
+  function planHtml(plan, open) {
+    if (!plan || !plan.length) return '';
+    return '<details class="db-plan"' + (open ? ' open' : '') + '><summary>📋 Step-by-step game plan</summary>' +
+      '<ol class="db-plan-list">' + plan.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ol>' +
+      '<p class="db-plan-fine">A generic checklist built from the levels above — an example of <em>how</em> a disciplined trader sizes and manages a trade, not a recommendation to take this one.</p></details>';
+  }
+
   function watchCard(w) {
     var c = el('article', 'db-idea db-watch');
     c.innerHTML =
@@ -137,6 +144,7 @@
         '<div class="db-case bear"><h5>Bear &amp; risks</h5><ul>' + (w.bear || []).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>' +
       '</div>' +
       '<div class="db-levels"><span><b>Support</b> ' + money(w.support) + '</span><span><b>Resistance</b> ' + money(w.resistance) + '</span></div>' +
+      planHtml(w.plan, true) +
       newsHtml(w);
     return c;
   }
@@ -152,7 +160,8 @@
         '<div class="db-case bull"><h5>Bull</h5><ul>' + (a.bull || []).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>' +
         '<div class="db-case bear"><h5>Bear &amp; risks</h5><ul>' + (a.bear || []).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>' +
       '</div>' +
-      '<div class="db-levels"><span><b>Support</b> ' + money(a.support) + '</span><span><b>Resistance</b> ' + money(a.resistance) + '</span></div>';
+      '<div class="db-levels"><span><b>Support</b> ' + money(a.support) + '</span><span><b>Resistance</b> ' + money(a.resistance) + '</span></div>' +
+      planHtml(a.plan, false);
     return c;
   }
 

@@ -17,7 +17,7 @@ require __DIR__ . '/lib_platform.php';
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
-define('BRIEF_SCHEMA', 2); // bump when the JSON shape changes so caches self-refresh
+define('BRIEF_SCHEMA', 3); // bump when the JSON shape changes so caches self-refresh
 $UNIVERSE = ['AAPL', 'MSFT', 'NVDA', 'GOOGL', 'AMZN', 'TSLA'];
 $INDICES = [['SPY', 'S&P 500'], ['QQQ', 'Nasdaq 100'], ['DIA', 'Dow 30'], ['^VIX', 'VIX']];
 $cacheFile = ASD_DATA_DIR . '/briefing-today.json';
@@ -89,6 +89,41 @@ function b_news_read($news) {
     return ['lean' => 0, 'text' => 'Headlines look mixed or neutral — no clear directional tilt. Moves here are more likely to come from the overall market than from these stories.'];
 }
 function rnd($v, $d = 2) { return $v === null ? null : round($v, $d); }
+
+/** Build a plain-English, do-this-then-that game plan from the computed levels. Educational, not advice. */
+function b_plan($price, $sup, $res, $sma50, $sma20, $atr, $entry) {
+    $f = function ($v) { return '$' . number_format((float) $v, 2); };
+    $steps = [];
+    if (!$entry) {
+        $steps[] = 'No clean setup today. The disciplined move is usually to wait — most money is lost forcing trades that aren\'t there.';
+        $steps[] = 'Put it on your watchlist. What would change things: a reclaim of the 50-day (' . $f($sma50) . ') or a clear bounce off support (' . $f($sup) . ').';
+        $steps[] = 'Only when that happens, look at an entry near support with a stop just below it.';
+        $steps[] = 'Never average down into a falling stock just because it\'s "cheaper" — that\'s how small losses become big ones.';
+        return $steps;
+    }
+    $type = $entry['type']; $stop = $entry['stop']; $target = $entry['target']; $ref = $price;
+    if ($type === 'Dip-buy watch') { $steps[] = 'WAIT for the drop to steady near support (' . $f($sup) . ') — a green day or a higher low — instead of catching a falling knife.'; $ref = $price; }
+    elseif ($type === 'Breakout watch') { $steps[] = 'WAIT for a daily CLOSE above ' . $f($res) . ' (ideally on heavy volume). No close above it = no trade yet.'; $ref = $res; }
+    elseif ($type === 'Trend-pullback watch') { $steps[] = 'WAIT for the pullback to reach the 50-day (' . $f($sma50) . ') and actually bounce (a green candle, or it holds the level).'; $ref = $sma50; }
+    elseif ($type === 'Caution (no entry)') {
+        $steps[] = 'DON\'T chase here — it\'s overbought/extended. Sit on your hands; chasing green candles is the #1 beginner mistake.';
+        $steps[] = 'Set a price alert for a cooldown toward ' . $f($sma20 ?: $sma50) . ' (the 20/50-day). Revisit the idea only then.';
+        $steps[] = 'If you ALREADY own it: consider trimming some into the strength and/or trailing a stop up to lock in gains.';
+        return $steps;
+    }
+    else { $steps[] = 'Trend is up — only act on PULLBACKS toward the 50-day (' . $f($sma50) . '). Don\'t buy right after a big up day.'; $ref = $sma50; }
+
+    if ($stop !== null) {
+        $risk = abs($ref - $stop);
+        $steps[] = 'SIZE IT FIRST (this is the most important step): your stop sits at ' . $f($stop) . ', so you\'d risk about ' . $f($risk) . ' per share. Risk only ~1% of your account on the trade → shares ≈ (1% of your account) ÷ ' . $f($risk) . '.';
+    }
+    if ($type === 'Breakout watch') { $steps[] = 'ENTER only after it confirms — buy on the close above ' . $f($res) . ', or wait for a small pullback back to that level. A buy-stop order can automate this.'; }
+    else { $steps[] = 'ENTER with a LIMIT order around ' . $entry['zone'] . ' (a limit, not market, so you don\'t overpay on a spike).'; }
+    if ($stop !== null) { $steps[] = 'PROTECT it immediately: place a stop-loss at ' . $f($stop) . '. That\'s your "I was wrong" line — honor it; don\'t widen it to hope.'; }
+    if ($target !== null) { $steps[] = 'TAKE PROFITS at the first target near ' . $f($target) . ' (around resistance ' . $f($res) . '). A common move: sell ~half there, then trail a stop on the rest.'; }
+    $steps[] = 'MANAGE: check once a day, not every tick. As it works in your favor, ratchet your stop UP toward break-even — never move it down.';
+    return $steps;
+}
 
 function build_briefing($UNIVERSE, $INDICES)
 {
@@ -167,6 +202,7 @@ function build_briefing($UNIVERSE, $INDICES)
             'support' => rnd($sup20), 'resistance' => rnd($res20),
             'bull' => $bull, 'bear' => $bear,
             'trigger' => $trigger, 'score' => $score, 'entry' => $entry,
+            'plan' => b_plan($price, $sup20, $res20, $sma50, $sma20, $atr, $entry),
             'news' => [], // filled below for watch picks only (to limit calls)
         ];
     }
