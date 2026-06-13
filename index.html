@@ -51,6 +51,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=7" />
+  <link rel="stylesheet" href="stocks.css?v=1" />
 </head>
 <body>
 
@@ -68,6 +69,7 @@
       <li><a href="#research"  class="nav-link"        data-section="research">Research</a></li>
       <li><a href="#resume"    class="nav-link"        data-section="resume">Résumé</a></li>
       <li><a href="#interests" class="nav-link"        data-section="interests">Interests</a></li>
+      <li><a href="#stocks"    class="nav-link"        data-section="stocks">Stocks</a></li>
     </ul>
     <div class="nav-right">
       <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
@@ -86,6 +88,7 @@
       <li><a href="#research"  class="drawer-link" data-section="research">Research</a></li>
       <li><a href="#resume"    class="drawer-link" data-section="resume">Résumé</a></li>
       <li><a href="#interests" class="drawer-link" data-section="interests">Interests</a></li>
+      <li><a href="#stocks"    class="drawer-link" data-section="stocks">Stocks</a></li>
     </ul>
   </div>
   <div class="drawer-overlay" id="drawer-overlay"></div>
@@ -524,6 +527,99 @@
       </div>
     </section>
 
+    <!-- ─── ANDYSTOCKANALYSIS ─── -->
+    <section id="stocks" class="section">
+      <div class="section-inner stocks-inner">
+        <div class="section-header">
+          <span class="section-number">06</span>
+          <h2 class="section-title">AndyStockAnalysis</h2>
+          <div class="section-line"></div>
+        </div>
+        <p class="section-subtitle">A personal markets dashboard — live(ish) data, deep technical &amp; fundamental analysis, and plain-English explanations of every number.</p>
+
+        <div class="sa-disclaimer" id="sa-disclaimer">
+          <strong>⚠️ Educational information only — not financial advice.</strong>
+          Everything here is automated analysis of public data for learning purposes. It is
+          <em>not</em> a recommendation to buy or sell anything. Indicators and past performance
+          don't guarantee future results. Do your own research and consult a licensed professional
+          before investing. Prices are delayed (~15&nbsp;min).
+        </div>
+
+        <!-- Watchlist view -->
+        <div id="sa-watchlist-view">
+          <div class="sa-toolbar">
+            <form class="sa-add-form" id="sa-add-form">
+              <input type="text" id="sa-add-input" placeholder="Add ticker (e.g. NVDA)" maxlength="15" autocomplete="off" />
+              <button type="submit" class="btn btn-primary btn-small">+ Add</button>
+            </form>
+            <div class="sa-toolbar-right">
+              <button class="link-btn" id="sa-refresh">↻ Refresh</button>
+              <button class="link-btn" id="sa-compare-btn">⚖ Compare all</button>
+            </div>
+          </div>
+          <div class="sa-watchlist" id="sa-watchlist"></div>
+          <p class="sa-hint">Click a stock to open its full analysis dashboard. Your watchlist is saved in this browser.</p>
+        </div>
+
+        <!-- Comparison view -->
+        <div id="sa-compare-view" class="hidden">
+          <button class="link-btn sa-back" id="sa-compare-back">← Back to watchlist</button>
+          <h3 class="sa-dash-title">Compare watchlist</h3>
+          <div class="sa-compare-wrap">
+            <div class="sa-table-scroll"><table class="sa-compare-table" id="sa-compare-table"></table></div>
+          </div>
+          <div class="sa-panel">
+            <div class="sa-panel-head"><h4>Normalized performance (rebased to 100)</h4></div>
+            <div class="sa-compare-chart" id="sa-compare-chart"></div>
+            <div class="sa-compare-legend" id="sa-compare-legend"></div>
+          </div>
+        </div>
+
+        <!-- Per-stock dashboard view -->
+        <div id="sa-dash-view" class="hidden" data-symbol="">
+          <button class="link-btn sa-back" id="sa-dash-back">← Back to watchlist</button>
+          <div class="sa-dash-header" id="sa-dash-header"></div>
+
+          <!-- Chart -->
+          <div class="sa-panel sa-chart-panel">
+            <div class="sa-chart-toolbar">
+              <div class="sa-timeframes" id="sa-timeframes"></div>
+              <div class="sa-indicator-toggles" id="sa-indicator-toggles"></div>
+            </div>
+            <div class="sa-chart" id="sa-chart"></div>
+            <div class="sa-subchart" id="sa-subchart"></div>
+            <div class="sa-chart-status" id="sa-chart-status"></div>
+          </div>
+
+          <!-- Signal summary -->
+          <div class="sa-panel" id="sa-signal-panel"></div>
+
+          <!-- Narrative -->
+          <div class="sa-panel" id="sa-narrative-panel"></div>
+
+          <!-- AI analysis (optional, reuses chat key) -->
+          <div class="sa-panel" id="sa-ai-panel"></div>
+
+          <!-- Grid of analysis panels -->
+          <div class="sa-grid">
+            <div class="sa-panel" id="sa-technicals-panel"></div>
+            <div class="sa-panel" id="sa-fundamentals-panel"></div>
+            <div class="sa-panel" id="sa-stats-panel"></div>
+            <div class="sa-panel" id="sa-risk-panel"></div>
+            <div class="sa-panel" id="sa-patterns-panel"></div>
+            <div class="sa-panel" id="sa-news-panel"></div>
+          </div>
+
+          <!-- Backtest + alerts -->
+          <div class="sa-grid">
+            <div class="sa-panel" id="sa-backtest-panel"></div>
+            <div class="sa-panel" id="sa-alerts-panel"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
   </main>
 
   <!-- ─── Footer ─── -->
@@ -543,5 +639,8 @@
 
   <script src="script.js?v=6"></script>
   <script src="chat.js?v=1"></script>
+  <script src="https://unpkg.com/lightweight-charts@4.2.0/dist/lightweight-charts.standalone.production.js" defer></script>
+  <script src="stocks.js?v=1" defer></script>
+  <script src="stocks.ui.js?v=1" defer></script>
 </body>
 </html>
