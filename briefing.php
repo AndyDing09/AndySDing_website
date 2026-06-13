@@ -17,6 +17,7 @@ require __DIR__ . '/lib_platform.php';
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
+define('BRIEF_SCHEMA', 2); // bump when the JSON shape changes so caches self-refresh
 $UNIVERSE = ['AAPL', 'MSFT', 'NVDA', 'GOOGL', 'AMZN', 'TSLA'];
 $INDICES = [['SPY', 'S&P 500'], ['QQQ', 'Nasdaq 100'], ['DIA', 'Dow 30'], ['^VIX', 'VIX']];
 $cacheFile = ASD_DATA_DIR . '/briefing-today.json';
@@ -57,16 +58,35 @@ function b_daily($sym) {
     }
     return count($o['c']) > 60 ? $o : null;
 }
+/** Crude keyword read of a headline: +1 likely-positive, -1 likely-negative, 0 neutral. */
+function b_headline_dir($title) {
+    $t = ' ' . strtolower((string) $title) . ' ';
+    $pos = ['beat', 'beats', 'tops', 'surge', 'soar', 'jump', 'rally', 'rallies', 'upgrade', 'raises', 'raised', 'record', 'all-time high', 'strong', 'growth', 'outperform', 'buy rating', 'wins', 'awarded', 'approval', 'approved', 'partnership', 'expansion', 'profit', 'gains', 'rises', 'boom', 'bullish', 'breakthrough', 'buyback', 'dividend', 'beat estimates', 'better-than', 'better than', 'tops estimates'];
+    $neg = ['miss', 'misses', 'missed', 'plunge', 'drop', 'falls', 'slump', 'sinks', 'downgrade', 'cuts', 'cut', 'lawsuit', 'sued', 'probe', 'investigation', 'recall', 'warns', 'warning', 'weak', 'decline', 'loss', 'losses', 'layoff', 'bankruptcy', 'fraud', 'slowdown', 'bearish', 'underperform', 'sell rating', 'halts', 'delay', 'delayed', 'concerns', 'fears', 'slips', 'tumble', 'crash', 'worse-than', 'worse than', 'misses estimates', 'subpoena', 'antitrust'];
+    $s = 0;
+    foreach ($pos as $w) { if (strpos($t, ' ' . $w) !== false || strpos($t, $w . ' ') !== false || strpos($t, $w) !== false) { $s++; } }
+    foreach ($neg as $w) { if (strpos($t, $w) !== false) { $s--; } }
+    return $s > 0 ? 1 : ($s < 0 ? -1 : 0);
+}
 function b_news($sym, $n = 3) {
     $url = 'https://query1.finance.yahoo.com/v1/finance/search?q=' . rawurlencode($sym) . '&newsCount=' . $n . '&quotesCount=0';
     list($code, $d) = plat_http_get_json($url);
     $out = [];
     if ($code === 200 && isset($d['news']) && is_array($d['news'])) {
         foreach (array_slice($d['news'], 0, $n) as $it) {
-            $out[] = ['title' => $it['title'] ?? '', 'publisher' => $it['publisher'] ?? '', 'link' => $it['link'] ?? '', 'time' => $it['providerPublishTime'] ?? null];
+            $title = $it['title'] ?? '';
+            $out[] = ['title' => $title, 'publisher' => $it['publisher'] ?? '', 'link' => $it['link'] ?? '', 'time' => $it['providerPublishTime'] ?? null, 'dir' => b_headline_dir($title)];
         }
     }
     return $out;
+}
+/** Aggregate the headlines into a short, two-sided "how this news might move the stock" read. */
+function b_news_read($news) {
+    if (!$news) { return ['lean' => 0, 'text' => 'No fresh headlines — price will likely follow the broader tape and the next catalyst rather than stock-specific news.']; }
+    $s = 0; foreach ($news as $n) { $s += $n['dir']; }
+    if ($s > 0) { return ['lean' => 1, 'text' => 'Headlines skew positive (upgrades / beats / strong demand). News like this tends to pull a stock up — but markets often price good news in quickly, so a pop can fade if it was already expected.']; }
+    if ($s < 0) { return ['lean' => -1, 'text' => 'Headlines skew negative (downgrades / misses / legal or demand worries). News like this tends to pressure a stock down — though if the bad news was already feared, the drop may be limited or even reverse.']; }
+    return ['lean' => 0, 'text' => 'Headlines look mixed or neutral — no clear directional tilt. Moves here are more likely to come from the overall market than from these stories.'];
 }
 function rnd($v, $d = 2) { return $v === null ? null : round($v, $d); }
 
@@ -154,10 +174,11 @@ function build_briefing($UNIVERSE, $INDICES)
     // ── rank "stocks to watch today" (top by trigger score), attach news ──
     usort($cards, function ($a, $b) { return $b['score'] - $a['score']; });
     $watch = array_slice(array_filter($cards, function ($c) { return $c['score'] > 0; }), 0, 5);
-    foreach ($watch as &$w) { $w['news'] = b_news($w['symbol'], 3); }
+    foreach ($watch as &$w) { $w['news'] = b_news($w['symbol'], 3); $w['news_read'] = b_news_read($w['news']); }
     unset($w);
 
     return [
+        'schema' => BRIEF_SCHEMA,
         'generated_at' => date('c'),
         'market' => ['indices' => $indices, 'regime' => $regime],
         'watch' => array_values($watch),
@@ -180,10 +201,14 @@ if ($action === 'build') {
     plat_json(200, ['ok' => true, 'generated_at' => $b['generated_at'], 'watch' => count($b['watch'])]);
 }
 
-// action=today: serve stored; rebuild if missing or older than 18h
+// action=today: serve stored; rebuild if missing, stale (>18h), or an old schema
 if (is_file($cacheFile) && (time() - filemtime($cacheFile)) < 64800) {
-    echo file_get_contents($cacheFile);
-    exit;
+    $cached = file_get_contents($cacheFile);
+    $j = json_decode($cached, true);
+    if (is_array($j) && (int) ($j['schema'] ?? 0) >= BRIEF_SCHEMA) {
+        echo $cached;
+        exit;
+    }
 }
 $b = build_briefing($UNIVERSE, $INDICES);
 @file_put_contents($cacheFile, json_encode($b, JSON_UNESCAPED_UNICODE), LOCK_EX);

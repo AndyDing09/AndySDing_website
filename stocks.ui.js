@@ -726,20 +726,42 @@
     });
   }
 
-  /* ── News ── */
+  /* ── News + a plain-English read of the likely effect ── */
+  var NEWS_POS = ['beat', 'beats', 'tops', 'surge', 'soar', 'jump', 'rally', 'rallies', 'upgrade', 'raises', 'raised', 'record', 'all-time high', 'strong', 'growth', 'outperform', 'buy rating', 'wins', 'awarded', 'approval', 'approved', 'partnership', 'expansion', 'profit', 'gains', 'rises', 'boom', 'bullish', 'breakthrough', 'buyback', 'dividend', 'better than', 'better-than'];
+  var NEWS_NEG = ['miss', 'misses', 'missed', 'plunge', 'drop', 'falls', 'slump', 'sinks', 'downgrade', 'cuts', 'cut', 'lawsuit', 'sued', 'probe', 'investigation', 'recall', 'warns', 'warning', 'weak', 'decline', 'loss', 'losses', 'layoff', 'bankruptcy', 'fraud', 'slowdown', 'bearish', 'underperform', 'sell rating', 'halts', 'delay', 'delayed', 'concerns', 'fears', 'slips', 'tumble', 'crash', 'worse than', 'worse-than', 'subpoena', 'antitrust'];
+  function newsDir(title) {
+    var t = ' ' + String(title || '').toLowerCase() + ' ', s = 0;
+    NEWS_POS.forEach(function (w) { if (t.indexOf(w) !== -1) s++; });
+    NEWS_NEG.forEach(function (w) { if (t.indexOf(w) !== -1) s--; });
+    return s > 0 ? 1 : (s < 0 ? -1 : 0);
+  }
+  function newsDirTag(dir) {
+    if (dir > 0) return '<span class="sa-news-dir up" title="Headline reads positive">📈 may lift</span>';
+    if (dir < 0) return '<span class="sa-news-dir down" title="Headline reads negative">📉 may weigh</span>';
+    return '<span class="sa-news-dir flat" title="Neutral / unclear">➖ neutral</span>';
+  }
+  function newsRead(items) {
+    var s = 0; items.forEach(function (n) { s += newsDir(n.title); });
+    if (s > 0) return { cls: 'up', text: 'Headlines skew positive (upgrades / beats / strong demand) — news like this tends to pull a stock up, but markets often price good news in fast, so a pop can fade if it was expected.' };
+    if (s < 0) return { cls: 'down', text: 'Headlines skew negative (downgrades / misses / legal or demand worries) — news like this tends to pressure a stock down, though if it was already feared the drop may be limited or reverse.' };
+    return { cls: 'flat', text: 'Headlines look mixed or neutral — no clear directional tilt; moves are more likely to track the overall market than these stories.' };
+  }
   function loadNews() {
-    var b = panel('sa-news-panel', 'Recent news');
+    var b = panel('sa-news-panel', 'Recent news → likely effect');
     b.innerHTML = '<p class="sa-muted">Loading headlines…</p>';
     Data.news(dash.symbol).then(function (d) {
       b.innerHTML = '';
       if (!d.news || !d.news.length) { b.appendChild(el('p', 'sa-muted', 'No recent headlines found.')); return; }
+      var read = newsRead(d.news);
+      b.appendChild(el('p', 'sa-news-read ' + read.cls, '<b>News read:</b> ' + esc(read.text)));
       d.news.forEach(function (n) {
         var item = el('a', 'sa-news-item');
         item.href = n.link; item.target = '_blank'; item.rel = 'noopener';
-        item.innerHTML = '<div class="sa-news-title">' + esc(n.title) + '</div>' +
+        item.innerHTML = '<div class="sa-news-title">' + newsDirTag(newsDir(n.title)) + ' ' + esc(n.title) + '</div>' +
           '<div class="sa-news-meta">' + esc(n.publisher) + ' · ' + ago(n.time) + '</div>';
         b.appendChild(item);
       });
+      b.appendChild(el('p', 'sa-mini-note', 'Automated keyword read of the headlines — an interpretation, not a prediction.'));
     }).catch(function () {
       b.innerHTML = '<p class="sa-muted">Couldn\'t load news right now.</p>';
     });

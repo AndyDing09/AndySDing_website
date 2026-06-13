@@ -93,13 +93,23 @@
     document.getElementById('db-ai-btn').addEventListener('click', function () { aiSynthesis(d); });
   }
 
-  function newsHtml(news) {
+  function dirTag(dir) {
+    if (dir > 0) return '<span class="db-news-dir up" title="Headline reads positive">📈 may lift</span>';
+    if (dir < 0) return '<span class="db-news-dir down" title="Headline reads negative">📉 may weigh</span>';
+    return '<span class="db-news-dir flat" title="Neutral / unclear">➖ neutral</span>';
+  }
+  function newsHtml(w) {
+    var news = w.news, read = w.news_read;
     if (!news || !news.length) return '';
-    return '<div class="db-news"><div class="db-news-h">Today’s news</div>' +
+    var leanCls = read && read.lean > 0 ? 'up' : (read && read.lean < 0 ? 'down' : 'flat');
+    return '<div class="db-news"><div class="db-news-h">Today’s news → likely effect</div>' +
+      (read ? '<p class="db-news-read ' + leanCls + '"><b>News read:</b> ' + esc(read.text) + '</p>' : '') +
       news.map(function (n) {
         return '<a class="db-news-item" href="' + esc(n.link) + '" target="_blank" rel="noopener">' +
-          esc(n.title) + '<span class="db-news-meta">' + esc(n.publisher) + (n.time ? ' · ' + ago(n.time) + ' ago' : '') + '</span></a>';
-      }).join('') + '</div>';
+          '<span class="db-news-line">' + dirTag(n.dir) + ' ' + esc(n.title) + '</span>' +
+          '<span class="db-news-meta">' + esc(n.publisher) + (n.time ? ' · ' + ago(n.time) + ' ago' : '') + '</span></a>';
+      }).join('') +
+      '<p class="db-news-fine">Automated keyword read of the headlines — an interpretation, not a prediction.</p></div>';
   }
 
   function entryHtml(e) {
@@ -127,7 +137,7 @@
         '<div class="db-case bear"><h5>Bear &amp; risks</h5><ul>' + (w.bear || []).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>' +
       '</div>' +
       '<div class="db-levels"><span><b>Support</b> ' + money(w.support) + '</span><span><b>Resistance</b> ' + money(w.resistance) + '</span></div>' +
-      newsHtml(w.news);
+      newsHtml(w);
     return c;
   }
 

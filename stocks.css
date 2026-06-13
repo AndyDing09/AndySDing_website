@@ -259,6 +259,26 @@
 .sa-news-item:hover .sa-news-title { color: var(--green-deep); text-decoration: underline; }
 .sa-news-meta { font-size: 0.74rem; color: var(--ink-3); margin-top: 3px; }
 
+/* News "likely effect" read (shared look for stock page + briefing) */
+.sa-news-read, .db-news-read {
+  font-size: 0.82rem; line-height: 1.55; border-radius: var(--radius-sm);
+  padding: 9px 12px; margin: 0 0 12px; border: 1px solid var(--border); background: var(--paper-3);
+}
+.sa-news-read b, .db-news-read b { color: var(--ink); }
+.sa-news-read.up, .db-news-read.up { background: rgba(38,162,105,0.08); border-color: rgba(38,162,105,0.28); }
+.sa-news-read.down, .db-news-read.down { background: rgba(214,64,69,0.08); border-color: rgba(214,64,69,0.28); }
+.sa-news-dir, .db-news-dir {
+  display: inline-block; font-family: var(--font-mono); font-size: 0.66rem; font-weight: 600;
+  padding: 1px 6px; border-radius: 999px; margin-right: 4px; white-space: nowrap; vertical-align: middle;
+}
+.sa-news-dir.up, .db-news-dir.up { background: rgba(38,162,105,0.14); color: #1f8b50; }
+.sa-news-dir.down, .db-news-dir.down { background: rgba(214,64,69,0.14); color: #d64045; }
+.sa-news-dir.flat, .db-news-dir.flat { background: var(--green-soft); color: var(--ink-3); }
+[data-theme="dark"] .sa-news-dir.up, [data-theme="dark"] .db-news-dir.up { color: #4ade80; }
+[data-theme="dark"] .sa-news-dir.down, [data-theme="dark"] .db-news-dir.down { color: #f87171; }
+.db-news-line { display: block; font-size: 0.84rem; line-height: 1.45; color: var(--ink); }
+.db-news-fine { font-size: 0.7rem; color: var(--ink-3); margin-top: 8px; font-style: italic; }
+
 /* Comparison */
 .sa-table-scroll { overflow-x: auto; }
 .sa-compare-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
