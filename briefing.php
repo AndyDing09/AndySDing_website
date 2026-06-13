@@ -13,6 +13,7 @@
  * Cron token lives in asd-site-data/cron-token.txt (so only your cron can build).
  */
 require __DIR__ . '/lib_platform.php';
+@set_time_limit(120); // the full build makes ~15 sequential upstream calls
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
@@ -105,8 +106,8 @@ function build_briefing($UNIVERSE, $INDICES)
         $sup20 = min(array_slice($l, -20)); $res20 = max(array_slice($h, -20));
 
         $bull = []; $bear = [];
-        if ($sma50 !== null) { ($price > $sma50 ? $bull : $bear)[] = ($price > $sma50 ? 'Above' : 'Below') . ' the 50-day average.'; }
-        if ($sma200 !== null) { ($price > $sma200 ? $bull : $bear)[] = ($price > $sma200 ? 'Above' : 'Below') . ' the 200-day (longer-term ' . ($price > $sma200 ? 'uptrend' : 'downtrend') . ').'; }
+        if ($sma50 !== null) { $m = ($price > $sma50 ? 'Above' : 'Below') . ' the 50-day average.'; if ($price > $sma50) { $bull[] = $m; } else { $bear[] = $m; } }
+        if ($sma200 !== null) { $m = ($price > $sma200 ? 'Above' : 'Below') . ' the 200-day (longer-term ' . ($price > $sma200 ? 'uptrend' : 'downtrend') . ').'; if ($price > $sma200) { $bull[] = $m; } else { $bear[] = $m; } }
         if ($rsi !== null) { if ($rsi > 70) { $bear[] = 'RSI ' . round($rsi) . ' — overbought.'; } elseif ($rsi < 30) { $bull[] = 'RSI ' . round($rsi) . ' — oversold.'; } else { $bull[] = 'RSI ' . round($rsi) . ' — neutral.'; } }
         $bear[] = 'Typical daily swing ~$' . round($atr, 2) . ' (ATR) — size for it.';
 
