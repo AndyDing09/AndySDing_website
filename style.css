@@ -1433,7 +1433,7 @@ body::before {
   --paper-3:    #0f1210;
   --ink:        #e8ebe9;
   --ink-2:      #a8b0a9;
-  --ink-3:      #6b756d;
+  --ink-3:      #8a948c;
   --green:      #4ade80;
   --green-deep: #86efac;
   --green-soft: rgba(74, 222, 128, 0.10);
@@ -1483,10 +1483,15 @@ body::before {
 /* Dark mode: green is a bright mint, so white text on it fails contrast.
    Use near-black text on every green-filled surface instead. */
 [data-theme="dark"] .btn-primary,
+[data-theme="dark"] .btn-primary:hover,
 [data-theme="dark"] .chat-header,
 [data-theme="dark"] .chat-send,
-[data-theme="dark"] .chat-fab { color: #0f1210; }
-[data-theme="dark"] .btn-primary:hover { color: #0f1210; }
+[data-theme="dark"] .chat-fab,
+[data-theme="dark"] .fab-resume,
+[data-theme="dark"] .skip-link,
+[data-theme="dark"] .chat-msg.user,
+[data-theme="dark"] .chat-chip:hover,
+[data-theme="dark"] .tb-btn.active { color: #0f1210; }
 [data-theme="dark"] .chat-icon-btn { color: rgba(15, 18, 16, 0.7); }
 [data-theme="dark"] .chat-icon-btn:hover { color: #0f1210; }
 
