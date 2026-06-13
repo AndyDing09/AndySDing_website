@@ -6,7 +6,7 @@
 .stocks-inner { max-width: 1180px; }
 .sa-disclaimer {
   background: var(--clay-soft);
-  border: 1px solid rgba(184, 92, 56, 0.3);
+  border: 1px solid rgba(166, 83, 9, 0.3);
   border-radius: var(--radius);
   padding: 14px 18px;
   font-size: 0.84rem;
