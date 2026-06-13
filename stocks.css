@@ -293,3 +293,53 @@
   100% { box-shadow: 0 0 0 0 rgba(38,162,105,0); }
 }
 @media (prefers-reduced-motion: reduce) { .sa-live-dot { animation: none; } }
+
+/* ═══════════════════════════════════════════════
+   TRADING DESK — account + broker connect (Phase 1)
+════════════════════════════════════════════════ */
+.desk-account {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  margin-bottom: 22px;
+  box-shadow: var(--shadow);
+}
+.desk-head { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.desk-badge {
+  font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600;
+  padding: 3px 10px; border-radius: 999px;
+  background: var(--green-soft); color: var(--green-deep); border: 1px solid var(--border);
+}
+.desk-badge.on { color: var(--green-deep); }
+.desk-badge.off { color: var(--ink-3); }
+.desk-muted { color: var(--ink-3); font-size: 0.84rem; }
+.desk-head .link-btn { margin-left: auto; }
+.desk-form { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
+.desk-form input, .desk-connect-body input {
+  font-family: inherit; font-size: 0.88rem; padding: 8px 12px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--paper); color: var(--ink); outline: none;
+  min-width: 150px;
+}
+.desk-form input:focus, .desk-connect-body input:focus { border-color: var(--green); background: var(--card); }
+.desk-form-btns { display: flex; gap: 6px; }
+.desk-status { font-size: 0.82rem; margin-top: 8px; color: var(--ink-3); }
+.desk-status.ok { color: var(--green-deep); font-weight: 600; }
+.desk-status.err { color: var(--clay); font-weight: 600; }
+.desk-acct { display: flex; gap: 18px; flex-wrap: wrap; margin: 12px 0 4px; }
+.desk-stat { display: flex; flex-direction: column; font-size: 0.72rem; color: var(--ink-3); font-family: var(--font-mono); }
+.desk-stat b { font-family: var(--font-body); font-size: 1.05rem; color: var(--ink); font-weight: 700; }
+.desk-connect { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; }
+.desk-connect summary { cursor: pointer; font-weight: 600; color: var(--green-deep); font-size: 0.88rem; }
+.desk-connect-body { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; max-width: 420px; }
+.desk-modes { display: flex; gap: 18px; font-size: 0.86rem; color: var(--ink-2); }
+.desk-modes label { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
+.desk-warn { color: var(--clay); font-weight: 600; font-size: 0.78rem; }
+.desk-live-warn {
+  background: var(--clay-soft); border: 1px solid rgba(166,83,9,0.3); border-radius: var(--radius-sm);
+  padding: 10px 12px; font-size: 0.8rem; line-height: 1.55; color: var(--ink-2);
+}
+.desk-live-warn strong { color: var(--clay); }
+.desk-ack { display: flex; gap: 7px; align-items: flex-start; margin-top: 8px; color: var(--ink); }
+.desk-fine { font-size: 0.74rem; color: var(--ink-3); line-height: 1.5; }
+.desk-account .hidden { display: none !important; }
