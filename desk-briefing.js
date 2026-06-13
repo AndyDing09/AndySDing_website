@@ -9,7 +9,7 @@
   'use strict';
   var stocks = document.getElementById('stocks');
   if (!stocks) return;
-  var panel, built = false;
+  var panel, built = false, current = null;
 
   function el(t, c, h) { var e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; }
   function esc(s) { var d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
@@ -36,6 +36,10 @@
       else stocks.querySelector('.stocks-inner').prepend(panel);
     }
     document.getElementById('db-run').addEventListener('click', run);
+    panel.addEventListener('click', function (e) {
+      var btn = e.target.closest ? e.target.closest('.db-explain-btn') : null;
+      if (btn) explainStock(btn);
+    });
   }
 
   function run() {
@@ -51,6 +55,7 @@
   }
 
   function render(d) {
+    current = d;
     var body = document.getElementById('db-body');
     body.innerHTML = '';
     var stamp = document.getElementById('db-stamp');
@@ -145,8 +150,30 @@
       '</div>' +
       '<div class="db-levels"><span><b>Support</b> ' + money(w.support) + '</span><span><b>Resistance</b> ' + money(w.resistance) + '</span></div>' +
       planHtml(w.plan, true) +
+      '<div class="db-explain"><button class="btn btn-ghost btn-small db-explain-btn" data-sym="' + esc(w.symbol) + '">✨ Explain this plan (AI)</button><div class="db-explain-out"></div></div>' +
       newsHtml(w);
     return c;
+  }
+
+  function explainStock(btn) {
+    var sym = btn.getAttribute('data-sym');
+    var out = btn.parentNode.querySelector('.db-explain-out');
+    var w = (current && current.watch || []).filter(function (x) { return x.symbol === sym; })[0];
+    if (!w) { out.textContent = 'No data for ' + sym + '.'; return; }
+    btn.disabled = true; btn.textContent = 'Thinking…';
+    var e = w.entry || {};
+    var nr = w.news_read ? w.news_read.text : 'no notable news';
+    var prompt = 'You are a balanced markets educator writing for a beginner. Turn this desk read on ' + sym +
+      ' (' + (w.name || '') + ') into ONE short paragraph (3–5 sentences), plain English.\n' +
+      'Setup: ' + (w.trigger || 'n/a') + '. Price ~$' + w.price + ', RSI ' + w.rsi + ', support $' + w.support + ', resistance $' + w.resistance + '.\n' +
+      'Illustrative plan — entry: ' + (e.zone || 'n/a') + '; stop: ' + (e.stop != null ? '$' + e.stop : 'n/a') + '; target: ' + (e.target != null ? '$' + e.target : 'n/a') + '.\n' +
+      'Steps: ' + (w.plan || []).join(' ') + '\nNews read: ' + nr + '\n' +
+      'Explain what the setup means, what you\'d WAIT for before acting, and how you\'d manage risk (sizing + stop). Be explicitly TWO-SIDED — say plainly what would prove the idea wrong. Do NOT give a direct buy/sell recommendation and do NOT promise outcomes. End with a brief "Not advice." ';
+    fetch('chat.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: [{ role: 'user', content: prompt }] }) })
+      .then(function (r) { return r.json().then(function (x) { return { ok: r.ok, x: x }; }); })
+      .then(function (res) { out.textContent = (res.ok && res.x.reply) ? res.x.reply : (res.x.error || 'AI explanation isn’t available right now.'); })
+      .catch(function () { out.textContent = 'Couldn’t reach the AI service.'; })
+      .finally(function () { btn.disabled = false; btn.textContent = '✨ Explain this plan (AI)'; });
   }
 
   function ideaCard(a) {

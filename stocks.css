@@ -293,6 +293,9 @@
 .sa-plan-setup strong { color: var(--ink); }
 .sa-plan-setup.up { background: rgba(38,162,105,0.08); border-color: rgba(38,162,105,0.28); }
 .sa-plan-setup.down { background: rgba(214,64,69,0.08); border-color: rgba(214,64,69,0.28); }
+.db-explain { margin-top: 10px; }
+.db-explain-out { margin-top: 8px; font-size: 0.85rem; line-height: 1.65; color: var(--ink); white-space: pre-wrap; }
+.db-explain-out:empty { display: none; }
 
 /* Comparison */
 .sa-table-scroll { overflow-x: auto; }
