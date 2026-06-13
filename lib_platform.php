@@ -197,4 +197,33 @@ if (!defined('ASD_PLATFORM')) {
         curl_close($ch);
         return [$code, json_decode((string) $resp, true)];
     }
+
+    /** Decrypt a user's stored keys for a mode. Returns ['key','secret'] or null. */
+    function plat_load_keys($uid, $mode)
+    {
+        $st = plat_pdo()->prepare('SELECT key_enc, secret_enc FROM broker_keys WHERE user_id = ? AND mode = ?');
+        $st->execute([$uid, $mode]);
+        $row = $st->fetch();
+        if (!$row) {
+            return null;
+        }
+        $key = plat_decrypt($row['key_enc']);
+        $secret = plat_decrypt($row['secret_enc']);
+        return ($key && $secret) ? ['key' => $key, 'secret' => $secret] : null;
+    }
+
+    /** Plain server-side GET of a public JSON URL (e.g. Yahoo) for the desk scorecard. */
+    function plat_http_get_json($url)
+    {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 15, CURLOPT_CONNECTTIMEOUT => 8,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTPHEADER => ['User-Agent: Mozilla/5.0 (compatible; AndyDesk/1.0)', 'Accept: application/json'],
+        ]);
+        $body = curl_exec($ch);
+        $code = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        curl_close($ch);
+        return [$code, json_decode((string) $body, true)];
+    }
 }

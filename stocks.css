@@ -409,3 +409,54 @@
 .db-ai { margin-top: 18px; }
 .db-ai-out { margin-top: 10px; font-size: 0.9rem; line-height: 1.7; color: var(--ink); white-space: pre-wrap; }
 @media (max-width: 560px) { .db-cases { grid-template-columns: 1fr; } }
+
+/* ═══════════════════════════════════════════════
+   SCORECARD (Phase 3) + PAPER TRADING DESK (Phase 4)
+════════════════════════════════════════════════ */
+.desk-score, .desk-trade {
+  background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 20px 22px; margin-bottom: 22px; box-shadow: var(--shadow);
+}
+.sc-verdict { padding: 10px 14px; border-radius: var(--radius-sm); font-size: 0.95rem; margin-bottom: 14px; }
+.sc-verdict.win { background: rgba(38,162,105,0.1); color: #1f8b50; }
+.sc-verdict.lose { background: rgba(214,64,69,0.1); color: #d64045; }
+[data-theme="dark"] .sc-verdict.win { color: #4ade80; }
+[data-theme="dark"] .sc-verdict.lose { color: #f87171; }
+.sc-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-bottom: 8px; }
+.sc-tile { background: var(--paper-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; display: flex; flex-direction: column; }
+.sc-tile-v { font-size: 1.15rem; font-weight: 700; color: var(--ink); font-variant-numeric: tabular-nums; }
+.sc-tile-l { font-size: 0.7rem; color: var(--ink-3); font-family: var(--font-mono); }
+.sc-chart { width: 100%; height: 300px; }
+.sc-legend { display: flex; gap: 16px; margin-top: 8px; font-size: 0.8rem; }
+.sc-leg.desk { color: var(--green-deep); } .sc-leg.spy { color: var(--ink-3); }
+.sc-verdict-text { font-size: 0.84rem; line-height: 1.6; color: var(--ink-2); margin-top: 8px; }
+
+/* Trade ticket */
+.tr-mode { font-family: var(--font-mono); font-size: 0.8rem; padding: 4px 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--paper); color: var(--ink); }
+.tr-ticket { display: flex; flex-direction: column; gap: 12px; max-width: 640px; }
+.tr-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.tr-row label, .tr-note { display: flex; flex-direction: column; gap: 4px; font-size: 0.74rem; color: var(--ink-3); flex: 1; min-width: 90px; }
+.tr-note { max-width: none; }
+.tr-ticket input, .tr-ticket select {
+  font-family: inherit; font-size: 0.9rem; padding: 8px 10px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--paper); color: var(--ink); outline: none;
+}
+.tr-ticket input:focus, .tr-ticket select:focus { border-color: var(--green); background: var(--card); }
+.tr-ticket .hidden { display: none !important; }
+.tr-review { background: var(--paper-2); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); padding: 14px; margin-top: 4px; }
+.tr-review-head { font-size: 0.95rem; color: var(--ink); margin-bottom: 8px; }
+.tr-review-grid { display: flex; gap: 18px; flex-wrap: wrap; font-size: 0.84rem; color: var(--ink-2); margin-bottom: 10px; }
+.tr-review-grid b { color: var(--ink); }
+.tr-warn { color: var(--clay); font-weight: 600; font-size: 0.82rem; margin-bottom: 8px; }
+.tr-confirm-btns { display: flex; gap: 10px; align-items: center; }
+.tr-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 6px; }
+.tr-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.tr-table th, .tr-table td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.tr-table th { color: var(--ink-3); font-size: 0.7rem; text-transform: uppercase; font-family: var(--font-mono); }
+.tr-table th:first-child, .tr-table td:first-child { text-align: left; font-weight: 600; color: var(--ink); }
+.tr-jform { display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.tr-jform input { font-family: inherit; font-size: 0.85rem; padding: 7px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--paper); color: var(--ink); outline: none; flex: 1; }
+.tr-jentry { font-size: 0.84rem; color: var(--ink-2); padding: 6px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: baseline; }
+.tr-jsym { font-weight: 700; color: var(--ink); font-family: var(--font-mono); }
+.tr-jdate { margin-left: auto; color: var(--ink-3); font-size: 0.74rem; }
+@media (max-width: 600px) { .tr-cols { grid-template-columns: 1fr; } }

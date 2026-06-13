@@ -33,6 +33,7 @@
 
   function render() {
     mount();
+    if (window.AndyDeskTradeRefresh) setTimeout(window.AndyDeskTradeRefresh, 0); // refresh trade panel on auth/connect changes
     if (!state.configured) {
       panel.innerHTML = '<div class="desk-row"><span class="desk-badge off">Desk offline</span>' +
         '<span class="desk-muted">The trading desk isn\'t configured on the server yet.</span></div>';
