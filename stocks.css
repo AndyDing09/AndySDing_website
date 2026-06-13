@@ -262,3 +262,34 @@
   .sa-bt-grid { grid-template-columns: repeat(2, 1fr); }
   .sa-chart { height: 300px; }
 }
+
+/* ── Live (real-time) indicators ── */
+.sa-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #1f8b50;
+  background: rgba(38, 162, 105, 0.1);
+  border: 1px solid rgba(38, 162, 105, 0.25);
+  padding: 4px 10px;
+  border-radius: 999px;
+  margin-top: 6px;
+}
+[data-theme="dark"] .sa-live-badge { color: #4ade80; background: rgba(74,222,128,0.12); border-color: rgba(74,222,128,0.28); }
+.sa-live-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #26a269;
+  box-shadow: 0 0 0 0 rgba(38,162,105,0.6);
+  animation: saLivePing 1.6s ease-out infinite;
+}
+[data-theme="dark"] .sa-live-dot { background: #4ade80; }
+@keyframes saLivePing {
+  0%   { box-shadow: 0 0 0 0 rgba(38,162,105,0.55); }
+  70%  { box-shadow: 0 0 0 6px rgba(38,162,105,0); }
+  100% { box-shadow: 0 0 0 0 rgba(38,162,105,0); }
+}
+@media (prefers-reduced-motion: reduce) { .sa-live-dot { animation: none; } }

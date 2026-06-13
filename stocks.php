@@ -146,6 +146,67 @@ function yahoo_crumb($cacheDir)
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
 /* ─────────────────────────────────────────────
+   REALTIME — near-real-time quotes via Finnhub
+   (key hidden in asd-site-data/finnhub-key.txt; ~1-2s fresh, not delayed).
+   Falls back silently to delayed Yahoo quotes when no key is present.
+───────────────────────────────────────────── */
+if ($action === 'rtstatus') {
+    $kf = $dataDir . '/finnhub-key.txt';
+    $on = is_file($kf) && trim((string) file_get_contents($kf)) !== '';
+    respond(200, ['enabled' => $on, 'source' => $on ? 'finnhub' : 'yahoo']);
+}
+if ($action === 'realtime') {
+    $kf = $dataDir . '/finnhub-key.txt';
+    $key = is_file($kf) ? trim((string) file_get_contents($kf)) : '';
+    if ($key === '') {
+        respond(200, ['enabled' => false]);
+    }
+    $raw = isset($_GET['symbols']) ? explode(',', $_GET['symbols']) : [];
+    $symbols = [];
+    foreach ($raw as $s) {
+        $c = clean_symbol($s);
+        if ($c && !in_array($c, $symbols, true)) {
+            $symbols[] = $c;
+        }
+    }
+    if (empty($symbols) || count($symbols) > 30) {
+        respond(400, ['error' => 'Provide 1–30 symbols']);
+    }
+    $out = [];
+    $toFetch = [];
+    foreach ($symbols as $sym) {
+        $cached = cache_get(cache_path($cacheDir, "rt_$sym"), 1); // 1-second cache
+        if ($cached !== null) {
+            $out[$sym] = json_decode($cached, true);
+        } else {
+            $toFetch[$sym] = 'https://finnhub.io/api/v1/quote?symbol=' . rawurlencode($sym)
+                . '&token=' . rawurlencode($key);
+        }
+    }
+    if (!empty($toFetch)) {
+        $bodies = http_get_multi($toFetch);
+        foreach ($bodies as $sym => $body) {
+            $d = json_decode((string) $body, true);
+            $q = ['ok' => false, 'symbol' => $sym];
+            if (is_array($d) && isset($d['c']) && $d['c'] > 0) {
+                $q = [
+                    'ok'        => true,
+                    'symbol'    => $sym,
+                    'price'     => $d['c'],
+                    'change'    => isset($d['d']) ? $d['d'] : null,
+                    'changePct' => isset($d['dp']) ? $d['dp'] : null,
+                    'prevClose' => isset($d['pc']) ? $d['pc'] : null,
+                    't'         => isset($d['t']) ? $d['t'] : null,
+                ];
+            }
+            cache_put(cache_path($cacheDir, "rt_$sym"), json_encode($q));
+            $out[$sym] = $q;
+        }
+    }
+    respond(200, ['enabled' => true, 'source' => 'finnhub', 'quotes' => $out]);
+}
+
+/* ─────────────────────────────────────────────
    QUOTES — batch mini-quote + sparkline
 ───────────────────────────────────────────── */
 if ($action === 'quotes') {
