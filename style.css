@@ -331,7 +331,7 @@ body::before {
 .topic-chip {
   padding: 7px 16px;
   border-radius: 999px;
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   color: var(--ink-2);
   font-size: 0.84rem;
@@ -410,7 +410,7 @@ body::before {
   font-size: 0.82rem;
   font-weight: 500;
   letter-spacing: 0.01em;
-  background: #fff;
+  background: var(--card);
   transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .social-link:hover {
@@ -479,7 +479,7 @@ body::before {
    BLOG — single card
 ════════════════════════════════════════════════ */
 .blog-card {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 36px 40px;
@@ -820,7 +820,7 @@ body::before {
   gap: 22px;
 }
 .project-card {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 28px;
@@ -859,7 +859,7 @@ body::before {
 /* Papers in progress */
 .papers-block {
   margin-top: 32px;
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 26px 28px;
@@ -928,7 +928,7 @@ body::before {
 }
 
 .resume-block {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 26px 28px;
@@ -1002,7 +1002,7 @@ body::before {
   gap: 16px;
 }
 .interest-card {
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 24px;
@@ -1143,7 +1143,7 @@ body::before {
   align-items: center;
   gap: 3px;
   flex-wrap: wrap;
-  background: #fff;
+  background: var(--card);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 6px 8px;
@@ -1246,9 +1246,9 @@ body::before {
 }
 .editing .post-title { padding: 4px 8px; margin-left: -8px; }
 .editing .post-body  { padding: 8px 12px; margin-left: -12px; }
-.editing .post-title:hover, .editing .post-body:hover { background: rgba(255,255,255,0.7); }
+.editing .post-title:hover, .editing .post-body:hover { background: var(--paper-2); }
 .editing .post-title:focus, .editing .post-body:focus {
-  background: #fff;
+  background: var(--card);
   box-shadow: 0 0 0 1.5px rgba(46, 107, 78, 0.35);
 }
 
@@ -1336,6 +1336,16 @@ body::before {
 [data-theme="dark"] .tag { background: var(--green-soft); color: var(--green); }
 
 [data-theme="dark"] .fab-resume { background: var(--green); color: #111; }
+
+/* Dark mode: green is a bright mint, so white text on it fails contrast.
+   Use near-black text on every green-filled surface instead. */
+[data-theme="dark"] .btn-primary,
+[data-theme="dark"] .chat-header,
+[data-theme="dark"] .chat-send,
+[data-theme="dark"] .chat-fab { color: #0f1210; }
+[data-theme="dark"] .btn-primary:hover { color: #0f1210; }
+[data-theme="dark"] .chat-icon-btn { color: rgba(15, 18, 16, 0.7); }
+[data-theme="dark"] .chat-icon-btn:hover { color: #0f1210; }
 
 [data-theme="dark"] ::-webkit-scrollbar-track { background: var(--paper); }
 [data-theme="dark"] ::-webkit-scrollbar-thumb { background: var(--paper-3); }
@@ -1755,12 +1765,12 @@ body::before {
   .meta-item { border-right: none; border-bottom: 1px solid var(--border); }
   .meta-item:last-child { border-bottom: none; }
 }
-[data-theme=""dark""] .project-meta-bar {
+[data-theme="dark"] .project-meta-bar {
   background: var(--paper-2);
   border-color: var(--border);
 }
-[data-theme=""dark""] .meta-label { color: var(--ink-3); }
-[data-theme=""dark""] .meta-value { color: var(--ink); }
-[data-theme=""dark""] .partner-badge-link:hover {
+[data-theme="dark"] .meta-label { color: var(--ink-3); }
+[data-theme="dark"] .meta-value { color: var(--ink); }
+[data-theme="dark"] .partner-badge-link:hover {
   background: var(--green-soft);
 }
