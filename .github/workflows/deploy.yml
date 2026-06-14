@@ -30,3 +30,7 @@ jobs:
             **/.git*/**
             **/node_modules/**
             .github/**
+            .claude/**
+            tests/**
+            playwright.config.ts
+            **/*.md
