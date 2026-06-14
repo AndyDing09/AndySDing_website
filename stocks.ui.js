@@ -189,15 +189,30 @@
 
   function openDashboard(symbol) {
     dash.symbol = symbol; dash.range = '1y'; dash.interval = '1d';
+    dash.dayPrice = null; dash.dayPrev = null; dash.marketPrice = null;
     showView('sa-dash-view');
     document.getElementById('sa-dash-view').dataset.symbol = symbol;
     window.scrollTo({ top: 0, behavior: 'instant' });
     document.getElementById('sa-dash-header').innerHTML = '<div class="sa-dash-title">' + esc(symbol) + '</div><div class="sa-muted">Loading analysis…</div>';
     renderTimeframes();
+    loadDayQuote();
     loadChartAndAnalyze();
     loadFundamentals();
     loadNews();
     renderAlertsPanel();
+  }
+
+  // The true daily change (current price vs prior-session close) — independent of
+  // the chart timeframe. Comes from the quotes endpoint (which uses a 1-day range).
+  function loadDayQuote() {
+    var sym = dash.symbol;
+    Data.quotes([sym]).then(function (r) {
+      var q = r && r.quotes && r.quotes[sym];
+      if (!q || sym !== dash.symbol) return;
+      if (q.price != null && !isNaN(q.price)) dash.dayPrice = q.price;
+      if (q.prevClose != null && !isNaN(q.prevClose)) dash.dayPrev = q.prevClose;
+      if (dash.candles && dash.candles.length) renderHeader(dash.candles[dash.candles.length - 1].c);
+    }).catch(function () {});
   }
 
   function renderTimeframes() {
@@ -262,7 +277,6 @@
     Data.chart(dash.symbol, dash.range, dash.interval).then(function (d) {
       if (!d.candles || d.candles.length < 2) { status.textContent = 'Not enough data for this timeframe.'; return; }
       dash.candles = d.candles; dash.currency = d.currency; dash.name = d.name;
-      dash.prevClose = (d.prevClose != null && !isNaN(d.prevClose)) ? d.prevClose : null;
       dash.marketPrice = (d.marketPrice != null && !isNaN(d.marketPrice)) ? d.marketPrice : null;
       status.textContent = '';
       buildChart();
@@ -483,8 +497,8 @@
     // Current price + the TRUE prior-session close, so the daily change is the same
     // no matter which chart timeframe is selected (was previously computed off the
     // last two candles, which made it the weekly/intraday change on other timeframes).
-    var cur = dash.marketPrice != null ? dash.marketPrice : price;
-    var prev = dash.prevClose != null ? dash.prevClose : (k.length > 1 ? k[k.length - 2].c : cur);
+    var cur = dash.dayPrice != null ? dash.dayPrice : (dash.marketPrice != null ? dash.marketPrice : price);
+    var prev = dash.dayPrev != null ? dash.dayPrev : (k.length > 1 ? k[k.length - 2].c : cur);
     var first = k[0].c;
     var chg = cur - prev, pct = prev ? (chg / prev) * 100 : 0;
     var periodPct = first ? (cur - first) / first * 100 : 0;

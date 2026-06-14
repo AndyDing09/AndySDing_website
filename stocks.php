@@ -331,7 +331,9 @@ if ($action === 'chart') {
         ];
     }
     $m = $res['meta'];
-    // True prior-session close (range-independent) for an accurate daily change.
+    // Close before the range start (Yahoo's previousClose here is range-dependent, so
+    // the client uses the quotes endpoint for the true *daily* change). marketPrice is
+    // the current price and IS range-independent.
     $prevClose = isset($m['previousClose']) ? $m['previousClose']
                : (isset($m['chartPreviousClose']) ? $m['chartPreviousClose'] : null);
     $out = [
