@@ -17,6 +17,7 @@
   var enabled = false;
   var timer = null;
   var last = {};
+  var wlCount = 1;
 
   function fmtUsd(n) {
     return '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -89,6 +90,7 @@
     if (!ts.length) { schedule(); return; }
     var syms = [];
     ts.forEach(function (t) { if (syms.indexOf(t.sym) === -1) syms.push(t.sym); });
+    wlCount = syms.length || 1;
     fetch('stocks.php?action=realtime&symbols=' + encodeURIComponent(syms.join(',')))
       .then(function (r) { return r.json(); })
       .then(function (d) {
@@ -100,12 +102,20 @@
       .finally(schedule);
   }
 
+  // Watchlist polls one Finnhub call per symbol; free tier is 60/min. Scale the
+  // interval to the watchlist size so it stays ~50 calls/min: small lists refresh
+  // fast (down to 5s), big lists back off automatically (up to 12s).
+  function watchlistMs() {
+    var ms = Math.ceil(1.2 * (wlCount || 1)) * 1000;
+    return Math.min(12000, Math.max(5000, ms));
+  }
+
   function schedule() {
     clearTimeout(timer);
     if (document.hidden) { return; } // pause when tab not visible
     var dash = document.getElementById('sa-dash-view');
     var onDash = dash && !dash.classList.contains('hidden');
-    timer = setTimeout(poll, onDash ? 2000 : 10000);
+    timer = setTimeout(poll, onDash ? 2000 : watchlistMs());
   }
 
   function swapLabel() {
