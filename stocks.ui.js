@@ -278,6 +278,7 @@
       if (!d.candles || d.candles.length < 2) { status.textContent = 'Not enough data for this timeframe.'; return; }
       dash.candles = d.candles; dash.currency = d.currency; dash.name = d.name;
       dash.marketPrice = (d.marketPrice != null && !isNaN(d.marketPrice)) ? d.marketPrice : null;
+      dash.exchangeTz = d.exchangeTz || 'America/New_York';
       status.textContent = '';
       buildChart();
       renderIndicatorToggles();
@@ -287,6 +288,31 @@
     }).catch(function (e) {
       status.textContent = 'Could not load chart: ' + (e.message || 'error');
     });
+  }
+
+  // ── Time-axis labels in the stock's EXCHANGE timezone (lightweight-charts
+  //    otherwise labels intraday in UTC/local, making a 9:30–4:00 session look
+  //    shifted/cut off). Mirrors how TradingView shows exchange time. ──
+  function isIntradayInterval() { return /^\d+m$/.test(dash.interval); }
+  function tzFmt(ts, opts) {
+    opts.timeZone = dash.exchangeTz || 'America/New_York';
+    try { return new Intl.DateTimeFormat('en-US', opts).format(new Date(ts * 1000)); }
+    catch (e) { return new Intl.DateTimeFormat('en-US', opts).format(new Date(ts * 1000)); }
+  }
+  function tickMarkFmt(time, tickType) {
+    if (isIntradayInterval()) {
+      if (tickType <= 2) return tzFmt(time, { month: 'short', day: 'numeric' }); // day/month boundary
+      return tzFmt(time, { hour: 'numeric', minute: '2-digit', hour12: true });
+    }
+    if (dash.interval === '1mo') return tzFmt(time, { month: 'short', year: 'numeric' });
+    return tzFmt(time, { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+  function crosshairTimeFmt(time) {
+    if (isIntradayInterval()) return tzFmt(time, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+    return tzFmt(time, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  }
+  function timeScaleOpts(c) {
+    return { borderColor: c.border, timeVisible: isIntradayInterval(), secondsVisible: false, rightOffset: 4, tickMarkFormatter: tickMarkFmt };
   }
 
   function disposeChart() {
@@ -310,7 +336,8 @@
       layout: { background: { type: 'solid', color: 'transparent' }, textColor: c.text, fontFamily: 'Inter, sans-serif' },
       grid: { vertLines: { color: c.grid }, horzLines: { color: c.grid } },
       rightPriceScale: { borderColor: c.border },
-      timeScale: { borderColor: c.border, timeVisible: dash.interval.indexOf('m') > -1, secondsVisible: false },
+      localization: { timeFormatter: crosshairTimeFmt },
+      timeScale: timeScaleOpts(c),
       crosshair: { mode: LightweightCharts.CrosshairMode ? LightweightCharts.CrosshairMode.Normal : 0 }
     });
     var candleSeries = chart.addCandlestickSeries({
@@ -424,7 +451,8 @@
       layout: { background: { type: 'solid', color: 'transparent' }, textColor: c.text, fontFamily: 'Inter, sans-serif' },
       grid: { vertLines: { color: c.grid }, horzLines: { color: c.grid } },
       rightPriceScale: { borderColor: c.border },
-      timeScale: { borderColor: c.border, timeVisible: dash.interval.indexOf('m') > -1, visible: true }
+      localization: { timeFormatter: crosshairTimeFmt },
+      timeScale: { borderColor: c.border, timeVisible: isIntradayInterval(), secondsVisible: false, visible: true, tickMarkFormatter: tickMarkFmt }
     });
     var closes = dash.candles.map(function (k) { return k.c; });
     var highs = dash.candles.map(function (k) { return k.h; });

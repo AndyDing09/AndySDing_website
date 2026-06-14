@@ -346,6 +346,7 @@ if ($action === 'chart') {
         'marketPrice' => isset($m['regularMarketPrice']) ? $m['regularMarketPrice'] : null,
         'marketTime'  => isset($m['regularMarketTime']) ? $m['regularMarketTime'] : null,
         'marketState' => isset($m['marketState']) ? $m['marketState'] : null,
+        'exchangeTz'  => isset($m['exchangeTimezoneName']) ? $m['exchangeTimezoneName'] : null,
         'candles'     => $candles,
     ];
     cache_put($cacheFile, json_encode($out));
