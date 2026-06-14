@@ -2016,6 +2016,18 @@ body::before {
   .hero-coord.tr, .hero-coord.br { display: none; }
   .hero-sonar { opacity: 0.7; }
 }
+/* Small phones: keep the hero headline + mono eyebrow from overflowing
+   (the page clips horizontal overflow, so oversized text gets cut at the edge). */
+@media (max-width: 480px) {
+  .hero-name { font-size: clamp(1.7rem, 8.2vw, 2.35rem); }
+  .hero-eyebrow {
+    font-size: 0.64rem;
+    letter-spacing: 0.07em;
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+  .hero-readout { font-size: 0.68rem; }
+}
 @media (prefers-reduced-motion: reduce) {
   .hero-eyebrow::before { animation: none; }
 }

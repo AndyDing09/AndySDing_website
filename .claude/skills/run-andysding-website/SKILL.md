@@ -37,6 +37,14 @@ PNGs land in `%TEMP%\andysding-shots\` (printed as `OK <path>` lines, e.g.
 `C:\Users\andyd\AppData\Local\Temp\andysding-shots\index.png`). **Open the PNG and
 look at it** — that's the verification. Override the output dir with `SHOTS=<dir>`.
 
+**Mobile QA** — pass `--size WxH` (suffixed onto the filename):
+```bash
+python ".claude/skills/run-andysding-website/driver.py" shot index.html --size 375x812
+```
+Screenshots run with `--force-prefers-reduced-motion`, so the hero's entry
+fade-in is skipped and captures are deterministic (otherwise you catch the hero
+mid-animation and the headline looks faded/missing — a capture artifact, not a bug).
+
 The Stocks tab is a tab inside the page; screenshot it by passing the page and
 then driving the tab in a browser if needed, but for design checks the default
 pages cover the hero, blog post, and dev pages.

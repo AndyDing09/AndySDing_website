@@ -56,8 +56,14 @@ def start_server(port=0):
     return httpd, port
 
 
-def cmd_shot(pages):
-    pages = pages or ["index.html", "kymarion.html", "dev.html"]
+def cmd_shot(argv):
+    # optional: --size WIDTHxHEIGHT (default 1440x2600; use 375x2400 for mobile)
+    size = "1440x2600"
+    if "--size" in argv:
+        i = argv.index("--size"); size = argv[i + 1]; del argv[i:i + 2]
+    w, h = size.lower().split("x")
+    tag = "" if size == "1440x2600" else "@" + size
+    pages = argv or ["index.html", "kymarion.html", "dev.html"]
     chrome = find_chrome()
     httpd, port = start_server()
     out_dir = os.environ.get("SHOTS") or os.path.join(tempfile.gettempdir(), "andysding-shots")
@@ -66,12 +72,15 @@ def cmd_shot(pages):
     rc = 0
     for page in pages:
         url = "http://127.0.0.1:%d/%s" % (port, page)
-        out = os.path.join(out_dir, page.replace("/", "_").replace(".html", "") + ".png")
+        out = os.path.join(out_dir, page.replace("/", "_").replace(".html", "") + tag + ".png")
         subprocess.run([
             chrome, "--headless=new", "--disable-gpu", "--no-first-run",
             "--no-default-browser-check", "--user-data-dir=" + udd,
             "--hide-scrollbars", "--force-device-scale-factor=1",
-            "--window-size=1440,2600", "--virtual-time-budget=4000",
+            # reduced-motion -> the site skips its entry fade-in, so the capture is
+            # deterministic (otherwise the screenshot catches the hero mid-animation)
+            "--force-prefers-reduced-motion",
+            "--window-size=%s,%s" % (w, h), "--virtual-time-budget=4000",
             "--screenshot=" + out, url,
         ], timeout=120, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         ok = os.path.exists(out) and os.path.getsize(out) > 0
