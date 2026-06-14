@@ -170,14 +170,15 @@
   }
 
   /* ═══ DASHBOARD ════════════════════════════════════════════════════════ */
-  var dash = { symbol: null, range: '6mo', interval: '1d', chart: null, sub: null,
+  var dash = { symbol: null, range: '1y', interval: '1d', chart: null, sub: null,
     series: {}, overlays: {}, candles: [], osc: 'rsi', resizeHandler: null };
 
   var TIMEFRAMES = [
     { label: '1D', range: '1d', interval: '5m' }, { label: '1W', range: '5d', interval: '15m' },
     { label: '1M', range: '1mo', interval: '1d' }, { label: '3M', range: '3mo', interval: '1d' },
     { label: '6M', range: '6mo', interval: '1d' }, { label: '1Y', range: '1y', interval: '1d' },
-    { label: '5Y', range: '5y', interval: '1wk' }
+    { label: '2Y', range: '2y', interval: '1d' }, { label: '5Y', range: '5y', interval: '1wk' },
+    { label: 'Max', range: 'max', interval: '1mo' }
   ];
 
   function showView(which) {
@@ -187,7 +188,7 @@
   }
 
   function openDashboard(symbol) {
-    dash.symbol = symbol; dash.range = '6mo'; dash.interval = '1d';
+    dash.symbol = symbol; dash.range = '1y'; dash.interval = '1d';
     showView('sa-dash-view');
     document.getElementById('sa-dash-view').dataset.symbol = symbol;
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -261,6 +262,8 @@
     Data.chart(dash.symbol, dash.range, dash.interval).then(function (d) {
       if (!d.candles || d.candles.length < 2) { status.textContent = 'Not enough data for this timeframe.'; return; }
       dash.candles = d.candles; dash.currency = d.currency; dash.name = d.name;
+      dash.prevClose = (d.prevClose != null && !isNaN(d.prevClose)) ? d.prevClose : null;
+      dash.marketPrice = (d.marketPrice != null && !isNaN(d.marketPrice)) ? d.marketPrice : null;
       status.textContent = '';
       buildChart();
       renderIndicatorToggles();
@@ -476,16 +479,23 @@
 
   function renderHeader(price) {
     var h = document.getElementById('sa-dash-header');
-    var k = dash.candles, prev = k.length > 1 ? k[k.length - 2].c : price;
-    var first = k[0].c, chg = price - prev, pct = prev ? (chg / prev) * 100 : 0;
-    var periodPct = first ? (price - first) / first * 100 : 0;
+    var k = dash.candles;
+    // Current price + the TRUE prior-session close, so the daily change is the same
+    // no matter which chart timeframe is selected (was previously computed off the
+    // last two candles, which made it the weekly/intraday change on other timeframes).
+    var cur = dash.marketPrice != null ? dash.marketPrice : price;
+    var prev = dash.prevClose != null ? dash.prevClose : (k.length > 1 ? k[k.length - 2].c : cur);
+    var first = k[0].c;
+    var chg = cur - prev, pct = prev ? (chg / prev) * 100 : 0;
+    var periodPct = first ? (cur - first) / first * 100 : 0;
     var up = pct >= 0;
+    var tfLabel = (TIMEFRAMES.filter(function (t) { return t.range === dash.range; })[0] || {}).label || 'period';
     h.innerHTML =
       '<div class="sa-dash-id"><div class="sa-dash-title">' + esc(dash.symbol) + '</div>' +
       '<div class="sa-muted">' + esc(dash.name || '') + '</div></div>' +
-      '<div class="sa-dash-price"><div class="sa-dash-now">' + fmtCur(price, dash.currency) + '</div>' +
-      '<div class="sa-dash-chg ' + (up ? 'up' : 'down') + '">' + (up ? '▲' : '▼') + ' ' + fmtPct(pct) +
-      ' <span class="sa-muted">· ' + fmtPct(periodPct) + ' this period</span></div></div>';
+      '<div class="sa-dash-price"><div class="sa-dash-now">' + fmtCur(cur, dash.currency) + '</div>' +
+      '<div class="sa-dash-chg ' + (up ? 'up' : 'down') + '">' + (up ? '▲' : '▼') + ' ' + fmtPct(pct) + ' today' +
+      ' <span class="sa-muted">· ' + fmtPct(periodPct) + ' over ' + esc(tfLabel) + '</span></div></div>';
   }
 
   function ratingMeter(score) {

@@ -331,13 +331,20 @@ if ($action === 'chart') {
         ];
     }
     $m = $res['meta'];
+    // True prior-session close (range-independent) for an accurate daily change.
+    $prevClose = isset($m['previousClose']) ? $m['previousClose']
+               : (isset($m['chartPreviousClose']) ? $m['chartPreviousClose'] : null);
     $out = [
-        'symbol'   => $sym,
-        'currency' => isset($m['currency']) ? $m['currency'] : 'USD',
-        'name'     => isset($m['longName']) ? $m['longName'] : (isset($m['shortName']) ? $m['shortName'] : $sym),
-        'range'    => $range,
-        'interval' => $interval,
-        'candles'  => $candles,
+        'symbol'      => $sym,
+        'currency'    => isset($m['currency']) ? $m['currency'] : 'USD',
+        'name'        => isset($m['longName']) ? $m['longName'] : (isset($m['shortName']) ? $m['shortName'] : $sym),
+        'range'       => $range,
+        'interval'    => $interval,
+        'prevClose'   => $prevClose,
+        'marketPrice' => isset($m['regularMarketPrice']) ? $m['regularMarketPrice'] : null,
+        'marketTime'  => isset($m['regularMarketTime']) ? $m['regularMarketTime'] : null,
+        'marketState' => isset($m['marketState']) ? $m['marketState'] : null,
+        'candles'     => $candles,
     ];
     cache_put($cacheFile, json_encode($out));
     respond(200, $out);
