@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "warrior-desk"
+version = "0.1.0"
+description = "Warrior Desk — a disciplined, paper-first momentum day-trading agent (educational)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+# Core runtime deps are intentionally tiny. The risk engine, indicators, the
+# gauntlet and the local journal all run on the standard library + PyYAML so the
+# safety-critical core is testable anywhere with zero heavy dependencies.
+dependencies = [
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+# Broker / market data. Lazy-imported; only needed for live data + execution.
+alpaca = ["alpaca-py>=0.21"]
+# Plain-English thesis writer. Lazy-imported; the agent runs fine without it.
+llm = ["anthropic>=0.40"]
+# Google Doc journal sync. Lazy-imported; degrades to local-only without it.
+gdoc = [
+    "google-api-python-client>=2.0",
+    "google-auth>=2.0",
+    "google-auth-oauthlib>=1.0",
+]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+warrior = "warrior.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["warrior*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

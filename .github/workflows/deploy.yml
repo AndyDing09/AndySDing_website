@@ -32,5 +32,6 @@ jobs:
             .github/**
             .claude/**
             tests/**
+            warrior-desk/**
             playwright.config.ts
             **/*.md
