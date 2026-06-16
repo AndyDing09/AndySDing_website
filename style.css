@@ -1498,7 +1498,7 @@ body::before {
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background: radial-gradient(38% 46% at 70% 42%, rgba(214, 120, 52, 0.18), rgba(158,194,177,0.05) 45%, transparent 72%);
+  background: radial-gradient(38% 46% at var(--mx, 70%) var(--my, 42%), rgba(214, 120, 52, 0.18), rgba(158,194,177,0.05) 45%, transparent 72%);
   filter: blur(6px);
 }
 
@@ -1985,7 +1985,7 @@ body::before {
   z-index: 0;
   background: transparent;       /* insurance: never paint a solid fill */
   pointer-events: none;          /* clicks pass through to buttons */
-  opacity: 0.28;                 /* quieted for the editorial look (kept, not removed) */
+  opacity: 0.85;                 /* the rotating globe is the hero focal model */
 }
 .hero-frame { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
 .hero-coord {
