@@ -22,7 +22,7 @@
 /* AI research analyst — the self-contained agent page, embedded in its own frame */
 .sa-research-frame {
   display: block; width: 100%; height: clamp(640px, 86vh, 1000px);
-  border: 1px solid var(--border); border-radius: 14px; background: #0B1220;
+  border: 1px solid var(--border); border-radius: 14px; background: var(--paper);
   box-shadow: 0 18px 50px -30px rgba(0, 0, 0, 0.5);
 }
 

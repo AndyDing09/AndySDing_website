@@ -4,6 +4,30 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Equity Research Desk</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<script>
+/* Match the parent site's theme. Same-origin: read the parent's data-theme on
+   load, fall back to the shared 'asd-theme' storage key or the OS preference,
+   and follow live toggles via the storage event (fires across same-origin frames). */
+(function () {
+  function pick() {
+    try {
+      if (window.parent && window.parent !== window && window.parent.document) {
+        var t = window.parent.document.documentElement.getAttribute('data-theme');
+        if (t) return t;
+      }
+    } catch (e) {}
+    var s = null;
+    try { s = localStorage.getItem('asd-theme'); } catch (e) {}
+    if (s) return s;
+    return (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+  }
+  function apply(t) { document.documentElement.setAttribute('data-theme', t === 'dark' ? 'dark' : 'light'); }
+  apply(pick());
+  window.addEventListener('storage', function (e) { if (e.key === 'asd-theme' && e.newValue) apply(e.newValue); });
+})();
+</script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
@@ -167,6 +191,57 @@
   ::-webkit-scrollbar{ width:10px; height:10px; }
   ::-webkit-scrollbar-thumb{ background:#26334C; border-radius:6px; }
   .paper ::-webkit-scrollbar-thumb{ background:#D4D8E0; }
+</style>
+<style>
+  /* ── Theme bridge: re-skin the desk with the parent site's palette (style.css
+     tokens) so the embedded page matches in light and dark mode. Declared after
+     the desk's own styles, so these variable values win. ── */
+  :root{
+    --ink:#ece5da; --ink2:#f3eee5; --slate:#fcfbf7; --slate2:#f0eadf;
+    --line:rgba(22,24,26,.12); --line2:rgba(22,24,26,.20);
+    --paper:#fcfbf7; --paper-2:#f0eadf; --paper-edge:rgba(22,24,26,.12);
+    --paper-ink:#16181a; --paper-muted:#6b716c;
+    --text:#16181a; --muted:#4a4f4c; --muted2:#6b716c;
+    --brass:#3f5b50; --brass-bright:#2c4339; --on-brass:#fcfbf7;
+    --up:#1f8b50; --down:#d64045;
+    --sans:'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --mono:'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --serif:'Fraunces', Georgia, 'Times New Roman', serif;
+  }
+  html[data-theme="dark"]{
+    --ink:#0b0b0c; --ink2:#131315; --slate:#1c1c1f; --slate2:#141416;
+    --line:rgba(230,224,212,.12); --line2:rgba(230,224,212,.20);
+    --paper:#131315; --paper-2:#1c1c1f; --paper-edge:rgba(230,224,212,.12);
+    --paper-ink:#f4f1ea; --paper-muted:#87837b;
+    --text:#f4f1ea; --muted:#aeaaa2; --muted2:#87837b;
+    --brass:#9ec2b1; --brass-bright:#bcd6c9; --on-brass:#0b0b0c;
+    --up:#46b07e; --down:#e0705e;
+  }
+  body{ background:
+    radial-gradient(1100px 600px at 85% -10%, rgba(63,91,80,.05), transparent 60%),
+    radial-gradient(900px 500px at -5% 110%, rgba(138,111,83,.04), transparent 55%),
+    var(--ink); }
+  .diamond{ box-shadow:0 0 14px rgba(63,91,80,.40); }
+  .desc{ background:rgba(63,91,80,.06); }
+  .opt:hover{ background:rgba(63,91,80,.08); }
+  .opt.sel{ background:rgba(63,91,80,.12); }
+  .in:focus, .ta:focus{ box-shadow:0 0 0 3px rgba(63,91,80,.16); }
+  .run{ box-shadow:0 10px 24px -14px rgba(63,91,80,.5); }
+  .paper-bar{ background:var(--paper-2); }
+  .paper-bar .pb-dot{ background:var(--paper-muted); }
+  .paper-bar .copy:hover{ border-color:var(--paper-muted); }
+  .empty .mk{ color:var(--paper-muted); opacity:.45; }
+  .loading .sub{ color:var(--paper-muted); }
+  .scanner{ border-color:var(--paper-edge); border-top-color:var(--brass); }
+  .report strong{ color:var(--paper-ink); }
+  .report h3{ color:var(--paper-ink); }
+  .report code{ background:var(--paper-2); color:var(--paper-ink); }
+  .report a{ color:var(--brass); }
+  .verify{ background:var(--paper-2); color:var(--brass); border-color:var(--paper-edge); }
+  .report th{ background:var(--paper-2); color:var(--paper-ink); }
+  .report td{ color:var(--paper-ink); border-bottom-color:var(--paper-edge); }
+  ::-webkit-scrollbar-thumb{ background:var(--line2); }
+  .paper ::-webkit-scrollbar-thumb{ background:var(--line2); }
 </style>
 </head>
 <body>
