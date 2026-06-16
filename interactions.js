@@ -11,11 +11,11 @@
   var fine = window.matchMedia && matchMedia('(pointer: fine)').matches;
   if (reduce || !fine) return;
 
-  var MAG = '.btn, .nav-logo, #theme-toggle, .project-more, .cta-btn, .sa-tf, .db-explain-btn';
-  var TILT = '.interest-card, .blog-card, .photo-frame, .sa-wl-card, .sa-panel';
+  var MAG = '.btn, .nav-logo, #theme-toggle, .project-more, .cta-btn';
+  var TILT = '.interest-card, .blog-card, .photo-frame';
 
   function bindMagnetic(el) {
-    if (el.dataset.mag) return; el.dataset.mag = '1';
+    if (el.dataset.mag || el.closest('#stocks')) return; el.dataset.mag = '1';
     el.style.transition = 'transform 0.18s cubic-bezier(.2,.7,.3,1)';
     el.addEventListener('pointermove', function (e) {
       var r = el.getBoundingClientRect();
@@ -27,7 +27,7 @@
   }
 
   function bindTilt(el) {
-    if (el.dataset.tilt) return; el.dataset.tilt = '1';
+    if (el.dataset.tilt || el.closest('#stocks')) return; el.dataset.tilt = '1';
     el.style.transition = 'transform 0.22s ease';
     el.style.transformStyle = 'preserve-3d';
     el.addEventListener('pointermove', function (e) {
