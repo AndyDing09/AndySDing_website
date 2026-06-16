@@ -48,6 +48,11 @@ class RiskConfig:
     # stop-too-wide policy (§2.4): "reject" or "mechanical"
     wide_stop_policy: str = "reject"
     mechanical_stop_distance: float = 0.20
+    # exit logic (§2.7): scale at the first target (~2R), sell into an extension
+    # bar (a parabolic spike up ~4R), and never widen a stop.
+    first_target_r: float = 2.0
+    extension_r: float = 4.0
+    extension_atr_mult: float = 2.0
 
     def normalized(self) -> "RiskConfig":
         """Clamp values to their hard floors. Never loosen a protective rule."""

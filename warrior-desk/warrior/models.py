@@ -283,6 +283,27 @@ class ClosedTrade:
         return self.gross_pnl > 0
 
 
+@dataclass
+class ManageAction:
+    """A position-management decision (Section 2.7)."""
+    kind: str               # scale_half | move_stop_breakeven | exit_all | hold
+    qty: int = 0
+    price: float = 0.0
+    reason: str = ""
+
+
+@dataclass
+class OrderResult:
+    id: Optional[str] = None
+    symbol: str = ""
+    qty: int = 0
+    side: str = "buy"
+    status: str = "new"
+    filled_avg_price: Optional[float] = None
+    order_class: str = "simple"
+    raw: dict = field(default_factory=dict)
+
+
 def floor_int(x: float) -> int:
     """Floor that never returns a negative share count."""
     return max(0, int(math.floor(x)))
