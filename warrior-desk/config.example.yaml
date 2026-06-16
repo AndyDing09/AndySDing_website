@@ -1,0 +1,59 @@
+# Warrior Desk — example configuration.
+# Copy to config.yaml and tune. Thresholds here may be made STRICTER than the
+# defaults but some protective floors are enforced in code regardless (e.g. the
+# 2:1 reward:risk minimum and the 2-consecutive-loss halt).
+
+trading_mode: paper            # paper | live  (live requires the §0 multi-lock)
+paper_auto_approve: false      # true = unattended sim auto-approval; live ignores this entirely
+shorting_enabled: false        # long-side only by default
+allow_overnight: false         # day trading — keep this false (flatten before the close)
+account_profile: cash_under_25k   # cash_under_25k | margin_under_25k | over_25k
+
+use_llm_reasoning: true        # plain-English thesis via Anthropic, if a key is present
+llm_model: claude-sonnet-4-6
+poll_seconds: 30
+log_level: INFO
+
+state_path: state/state.json
+journal_dir: journal
+log_dir: logs
+live_ack_path: live_account_acknowledgement.md
+
+risk:
+  max_risk_per_trade: 100        # $ risked per trade (entry -> stop)
+  max_position_notional: 5000    # $ max position size
+  max_pct_account_per_trade: 0.20
+  max_daily_loss: 300            # $ — hit it, flatten + halt the day
+  min_reward_risk: 2.0           # HARD gate; code clamps anything below 2.0 back to 2.0
+  max_concurrent_positions: 1
+  max_trades_per_day: 5
+  consecutive_loss_halt: 2       # halt the day after this many losses in a row
+  loss_cooldown_minutes: 10      # no revenge trading; block same ticker during cooldown
+  max_spread: 0.10               # $ — skip wider
+  max_chase: 0.05                # $ above the trigger the entry limit may reach
+  b_grade_size_factor: 0.5       # B setups are auto-sized down by this factor
+  wide_stop_policy: reject       # reject | mechanical  (§2.4)
+  mechanical_stop_distance: 0.20
+
+selection:
+  max_float: 100000000
+  ideal_float: 20000000
+  min_rvol: 2.0
+  min_avg_dollar_volume: 1000000
+  min_price: 1.0
+  max_price: 20.0
+  pullback_max_retrace: 0.50     # reject pullbacks deeper than 50% of the pole
+
+sessions:
+  prime_start: "09:30"
+  prime_end:   "11:30"
+  market_close: "16:00"
+  hard_flat_time: "15:55"        # flatten everything before the close
+  trade_premarket: false
+  trade_afterhours: false
+  timezone: "America/New_York"
+
+graduation_gate:                 # paper -> live eligibility (Ross steps 4-7)
+  min_closed_trades: 50
+  require_positive_expectancy: true
+  max_drawdown_pct: 0.15
