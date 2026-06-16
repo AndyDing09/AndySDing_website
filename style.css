@@ -29,7 +29,8 @@
   --shadow:     0 1px 2px rgba(22, 24, 26, 0.04), 0 8px 24px rgba(22, 24, 26, 0.05);
   --shadow-lg:  0 18px 48px rgba(22, 24, 26, 0.10);
   --font-body:  'Inter', system-ui, sans-serif;
-  --font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-display: 'Inter', system-ui, sans-serif;   /* light grotesque for upright headlines */
+  --font-accent: 'Fraunces', Georgia, 'Times New Roman', serif; /* serif italic for emphasis words */
   --font-mono:  'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
   --nav-bg:     rgba(245, 242, 236, 0.80);
   /* Spacing scale (4/8px base) */
@@ -1465,27 +1466,40 @@ body::before {
    DARK MODE
 ═══════════════════════════════════════════════ */
 [data-theme="dark"] {
-  --paper:      #16140f;   /* warm near-black */
-  --paper-2:    #1d1a14;
-  --paper-3:    #110f0b;
-  --ink:        #f0ece3;   /* warm off-white */
-  --ink-2:      #b6b1a6;
-  --ink-3:      #97928a;   /* muted — AA on warm black */
-  --green:      #8fb3a3;   /* muted evergreen, lightened for AA on dark */
-  --green-deep: #a9c6b9;
-  --green-soft: rgba(143, 179, 163, 0.14);
-  --clay:       #c4a37e;   /* quiet warm secondary */
-  --clay-soft:  rgba(196, 163, 126, 0.14);
-  --card:       #201d16;   /* surface — elevation by lightness */
-  --nav-bg:     rgba(17, 15, 11, 0.82);
-  --border:     rgba(220, 210, 190, 0.14);
-  --border-strong: rgba(220, 210, 190, 0.26);
-  --shadow:     0 2px 12px rgba(0, 0, 0, 0.34);
-  --shadow-lg:  0 16px 40px rgba(0, 0, 0, 0.50);
+  --paper:      #0b0b0c;   /* moody near-black (dashcreative-style) */
+  --paper-2:    #131315;
+  --paper-3:    #070708;
+  --ink:        #f4f1ea;   /* warm off-white */
+  --ink-2:      #aeaaa2;
+  --ink-3:      #87837b;   /* muted — AA on near-black */
+  --green:      #9ec2b1;   /* evergreen, lightened for AA on dark */
+  --green-deep: #bcd6c9;
+  --green-soft: rgba(158, 194, 177, 0.12);
+  --clay:       #c8a884;   /* quiet warm secondary */
+  --clay-soft:  rgba(200, 168, 132, 0.14);
+  --card:       #161618;   /* elevated surface */
+  --nav-bg:     rgba(11, 11, 12, 0.78);
+  --border:     rgba(230, 224, 212, 0.12);
+  --border-strong: rgba(230, 224, 212, 0.22);
+  --shadow:     0 2px 12px rgba(0, 0, 0, 0.40);
+  --shadow-lg:  0 18px 48px rgba(0, 0, 0, 0.55);
 }
 
 [data-theme="dark"] body::before {
-  background: radial-gradient(ellipse at 30% 0%, rgba(143, 179, 163, 0.05) 0%, transparent 60%);
+  background:
+    radial-gradient(ellipse 50% 40% at 12% 4%, rgba(158, 194, 177, 0.05), transparent 70%),
+    radial-gradient(ellipse 46% 40% at 96% 96%, rgba(200, 140, 70, 0.045), transparent 70%),
+    var(--paper);
+}
+/* Hero ambient glow on dark — echoes dashcreative's warm light blob (CSS only) */
+[data-theme="dark"] #home::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: radial-gradient(38% 46% at 70% 42%, rgba(214, 120, 52, 0.18), rgba(158,194,177,0.05) 45%, transparent 72%);
+  filter: blur(6px);
 }
 
 [data-theme="dark"] .nav-logo,
@@ -2163,4 +2177,27 @@ body::before {
   .nav-magnetic { overflow: visible; }
   .nav-magnetic > span { transition: none; }
   .nav-magnetic::after { display: none; }
+}
+
+/* ═══════════════════════════════════════════════
+   DASHCREATIVE-STYLE TYPE PAIRING (v18)
+   Upright headlines = light grotesque (Inter 300);
+   emphasis words = high-contrast serif italic (Fraunces).
+════════════════════════════════════════════════ */
+.hero-name { font-weight: 300; letter-spacing: -0.03em; }
+.section-title { font-weight: 300; letter-spacing: -0.025em; }
+.project-card-title, .blog-card-title { font-weight: 350; letter-spacing: -0.02em; }
+.interest-title { font-weight: 400; letter-spacing: -0.01em; }
+.sa-dash-title, .sa-panel-head h4, .db-title, .db-section { font-weight: 400; }
+.section-heading, .project-title { font-weight: 350 !important; letter-spacing: -0.02em; }
+
+.hero-name em,
+.section-title em,
+.project-card-title em,
+.blog-card-title em,
+h1 em, h2 em, h3 em {
+  font-family: var(--font-accent);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0;
 }
