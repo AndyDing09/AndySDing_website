@@ -90,11 +90,23 @@ class TradingEngine:
             if c.symbol in st.open_positions:
                 continue
             proposal = self.gauntlet.evaluate_symbol(c.symbol, self.account, st, now)
-            if proposal.tradeable:
+            if proposal.tradeable and proposal.triggered:
+                # The breakout is confirmed — take it.
                 self.execution.execute(proposal, st, now, approval_fn=approval_fn)
                 return  # one entry attempt per pass
-            elif self.journal is not None:
+            if proposal.tradeable and not proposal.triggered:
+                # A valid setup that hasn't broken out yet — watch, don't chase.
+                log.debug("%s: setup ready, waiting for the breakout trigger.", c.symbol)
+                continue
+            # Only journal *meaningful* rejections (a real pattern that failed a
+            # gate) — not every polling tick where nothing was setting up.
+            if self.journal is not None and self._pattern_valid(proposal):
                 self._safe(lambda p=proposal: self.journal.record_proposal(p))
+
+    @staticmethod
+    def _pattern_valid(proposal) -> bool:
+        from .models import StepStatus
+        return any(s.number == 6 and s.status == StepStatus.PASS for s in proposal.steps)
 
     # ── halts ──
     def check_day_halts(self, now: datetime) -> None:

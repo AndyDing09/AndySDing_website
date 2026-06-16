@@ -261,6 +261,7 @@ class Gauntlet:
 
         # ── Step 7: Define entry trigger ──
         entry = round(pattern.trigger_price, 4)
+        p.triggered = pattern.triggered
         add(7, "Define entry trigger", StepStatus.PASS,
             f"limit at/just above {entry:.2f} (max chase ${cfg.risk.max_chase:.2f}); "
             f"confirm with volume >= {pattern.confirm_volume:.0f}"

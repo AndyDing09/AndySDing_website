@@ -216,6 +216,7 @@ class TradeProposal:
 
     grade: Grade = Grade.REJECT
     grade_score: float = 0.0
+    triggered: bool = False        # has the breakout candle actually fired yet?
 
     catalyst: Optional[Catalyst] = None
     metrics: dict = field(default_factory=dict)          # the full metric table (§ glossary)
