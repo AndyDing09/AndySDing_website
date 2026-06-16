@@ -90,6 +90,27 @@ class JournalManager:
             lines.append("  (no activity recorded for this date)")
         return "\n".join(lines)
 
+    def today_structured(self, date_iso: str | None = None, state=None) -> dict:
+        """Today's summary as data (for the website snapshot + stats panel)."""
+        date_iso = date_iso or datetime.now().date().isoformat()
+        trades = self._read(self.local.trades_csv)
+        closed = self._read(self.local.closed_csv)
+        today_trades = [r for r in trades if r.get("date") == date_iso]
+        today_closed = [r for r in closed if r.get("date") == date_iso]
+        counts = {
+            "taken": sum(1 for r in today_trades if r.get("approval") == "approved"),
+            "skipped": sum(1 for r in today_trades if r.get("approval") == "approved-skipped"),
+            "rejected": sum(1 for r in today_trades if r.get("approved") in ("False", "false", "0", "")),
+        }
+        stats = compute_stats(today_closed)
+        rules = self._rules_checklist(state, stats)
+        return {
+            "date": date_iso, "counts": counts, "closed": stats.n,
+            "win_rate": stats.win_rate, "expectancy": stats.expectancy,
+            "profit_factor": stats.profit_factor, "day_pnl": stats.total_pnl,
+            "rules": [[n, bool(ok)] for n, ok in rules],
+        }
+
     # ── helpers ──
     def _rules_checklist(self, state, stats) -> list[tuple[str, bool]]:
         r = self.cfg.risk

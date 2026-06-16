@@ -11,12 +11,13 @@
   if (!stocks) return;
   var deskOpened = false;
 
+  var warriorOpened = false;
+
   function show(pane) {
-    var lookup = document.getElementById('sa-pane-lookup');
-    var desk = document.getElementById('sa-pane-desk');
-    if (!lookup || !desk) return;
-    lookup.classList.toggle('hidden', pane !== 'lookup');
-    desk.classList.toggle('hidden', pane !== 'desk');
+    // Toggle every pane by id (sa-pane-<pane>) so adding tabs needs no edits here.
+    stocks.querySelectorAll('.sa-pane').forEach(function (p) {
+      p.classList.toggle('hidden', p.id !== 'sa-pane-' + pane);
+    });
     stocks.querySelectorAll('.sa-subtab').forEach(function (b) {
       var on = b.getAttribute('data-pane') === pane;
       b.classList.toggle('active', on);
@@ -26,6 +27,10 @@
       deskOpened = true;
       // auto-load the (server-cached, instant) morning briefing the first time
       if (window.AndyDeskBriefingRun) setTimeout(window.AndyDeskBriefingRun, 0);
+    }
+    if (pane === 'warrior' && !warriorOpened) {
+      warriorOpened = true;
+      if (window.AndyWarriorOpen) setTimeout(window.AndyWarriorOpen, 0);
     }
     try { stocks.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
   }

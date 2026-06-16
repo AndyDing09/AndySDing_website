@@ -46,6 +46,7 @@ class TradingEngine:
         self.gauntlet = Gauntlet(cfg, provider, reasoner=reasoner)
         self.execution = ExecutionEngine(cfg, broker, journal=journal, alerter=alerter)
         self.pm = PositionManager(cfg, broker, alerter=alerter)
+        self.recent_proposals: list = []   # ring buffer for the website snapshot
         self.state = state or State.load(cfg.state_path)
         try:
             self.account = account or broker.get_account()
@@ -98,6 +99,7 @@ class TradingEngine:
             if c.symbol in st.open_positions:
                 continue
             proposal = self.gauntlet.evaluate_symbol(c.symbol, self.account, st, now)
+            self._record_recent(proposal)
             if proposal.tradeable and proposal.triggered:
                 # The breakout is confirmed — take it.
                 self.execution.execute(proposal, st, now, approval_fn=approval_fn)
@@ -115,6 +117,44 @@ class TradingEngine:
     def _pattern_valid(proposal) -> bool:
         from .models import StepStatus
         return any(s.number == 6 and s.status == StepStatus.PASS for s in proposal.steps)
+
+    # ── website snapshot ──
+    def _record_recent(self, proposal, limit: int = 12) -> None:
+        """Keep the latest proposal per symbol for the website to display."""
+        self.recent_proposals = [p for p in self.recent_proposals if p.symbol != proposal.symbol]
+        self.recent_proposals.append(proposal)
+        self.recent_proposals = self.recent_proposals[-limit:]
+
+    def evaluate_for_display(self, symbol: str, now: datetime) -> None:
+        """Run the gauntlet on an on-demand (website-requested) ticker. Display
+        only — never executes."""
+        try:
+            p = self.gauntlet.evaluate_symbol(symbol, self.account, self.state, now,
+                                              short_circuit=False)
+            self._record_recent(p)
+        except Exception as exc:
+            log.warning("evaluate_for_display(%s) failed: %s", symbol, exc)
+
+    def build_snapshot(self, now: datetime, mode_label: str) -> dict:
+        from .publish import build_snapshot
+        window = classify_window(now, self.cfg)
+        session = {
+            "window": window.value, "halted": self.state.session_halted,
+            "halt_reason": self.state.halt_reason, "day_pnl": round(self.state.day_pnl, 2),
+            "trades_today": self.state.trades_today,
+            "consecutive_losses": self.state.consecutive_losses,
+            "open_positions": self.state.open_count,
+        }
+        try:
+            watchlist = self.gauntlet.scan()
+        except Exception:
+            watchlist = []
+        alerts = self.alerter.history if self.alerter is not None else []
+        return build_snapshot(
+            self.cfg, mode=mode_label, account_equity=self.account.equity, session=session,
+            watchlist=watchlist, proposals=list(self.recent_proposals),
+            open_positions=list(self.state.open_positions.values()),
+            journal=self.journal, alerts=alerts)
 
     # ── halts ──
     def check_day_halts(self, now: datetime) -> None:
@@ -262,20 +302,25 @@ def run_agent(cfg: Config, demo: bool = False, once: bool = False, equity: float
     elif demo:
         log.info("DEMO run: non-interactive auto-approve; SIMULATED account.")
 
+    mode_label = "advisory" if advisory else cfg.trading_mode
+
     if once:
         engine.step(now_fn(), approval_fn=approval_fn)
+        _handle_requests(cfg, engine, now_fn())
+        _publish_safe(cfg, engine, now_fn(), mode_label)
         _report(engine, simulated)
         if journal is not None:
             engine._safe(lambda: journal.write_daily_summary(engine.state))
         return 0
 
-    log.info("Starting the agent loop (mode=%s). Ctrl-C to stop.", cfg.trading_mode)
+    log.info("Starting the agent loop (mode=%s). Ctrl-C to stop.", mode_label)
     errors = 0
     try:
         while True:
             now = now_fn()
             try:
                 engine.step(now, approval_fn=approval_fn)
+                _handle_requests(cfg, engine, now)   # on-demand tickers from the website
                 errors = 0
             except Exception as exc:
                 # Never spam orders on a glitch — back off exponentially.
@@ -287,6 +332,7 @@ def run_agent(cfg: Config, demo: bool = False, once: bool = False, equity: float
                     break
                 time.sleep(backoff)
                 continue
+            _publish_safe(cfg, engine, now, mode_label)   # keep the website tab fresh
             if engine.state.session_halted:
                 log.info("Session halted (%s). Stopping.", engine.state.halt_reason)
                 break
@@ -296,10 +342,34 @@ def run_agent(cfg: Config, demo: bool = False, once: bool = False, equity: float
             time.sleep(max(1, cfg.poll_seconds))
     except KeyboardInterrupt:
         log.info("Interrupted by Operator.")
+    _publish_safe(cfg, engine, now_fn(), mode_label)
     _report(engine, simulated)
     if journal is not None:
         engine._safe(lambda: journal.write_daily_summary(engine.state))
     return 0
+
+
+def _handle_requests(cfg: Config, engine: TradingEngine, now: datetime) -> None:
+    if not cfg.secrets.publish_url:
+        return
+    try:
+        from .publish import fetch_requests
+        for sym in fetch_requests(cfg):
+            engine.evaluate_for_display(sym, now)
+    except Exception as exc:
+        log.debug("request handling failed: %s", exc)
+
+
+def _publish_safe(cfg: Config, engine: TradingEngine, now: datetime, mode_label: str) -> None:
+    if not cfg.secrets.publish_url:
+        return
+    try:
+        from .publish import publish_snapshot
+        ok, msg = publish_snapshot(cfg, engine.build_snapshot(now, mode_label))
+        if not ok:
+            log.debug("publish: %s", msg)
+    except Exception as exc:
+        log.debug("publish failed: %s", exc)
 
 
 def _report(engine: TradingEngine, simulated: bool) -> None:

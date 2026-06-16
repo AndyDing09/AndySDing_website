@@ -193,6 +193,56 @@ def cmd_stats(args) -> int:
     return 0
 
 
+def cmd_publish(args) -> int:
+    import json
+    from pathlib import Path
+    from .gauntlet import Gauntlet
+    from .journal import JournalManager
+    from .publish import build_snapshot, fetch_requests, publish_snapshot
+    from .sessions import classify_window
+    from .state import State
+
+    cfg = load_config(args.config)
+    setup_logging(cfg.log_level, cfg.log_dir)
+    provider, account, simulated = _provider_and_account(cfg, args.demo, args.equity)
+    reasoner = make_reasoner(cfg, cfg.secrets)
+    now = _now(cfg, args.demo)
+    state = State.load(cfg.state_path)
+    state.start_session(now.date(), save=False)
+    journal = JournalManager(cfg)
+    g = Gauntlet(cfg, provider, reasoner=reasoner)
+
+    watch = g.scan()
+    requested = fetch_requests(cfg) if cfg.secrets.publish_url else []
+    syms: list[str] = []
+    for s in list(args.symbols or []) + requested + [c.symbol for c in watch[:5]]:
+        if s.upper() not in syms:
+            syms.append(s.upper())
+    proposals = [g.evaluate_symbol(s, account, state, now, short_circuit=False) for s in syms]
+
+    window = classify_window(now, cfg)
+    session = {"window": window.value, "halted": state.session_halted,
+               "halt_reason": state.halt_reason, "day_pnl": round(state.day_pnl, 2),
+               "trades_today": state.trades_today, "consecutive_losses": state.consecutive_losses,
+               "open_positions": state.open_count}
+    snap = build_snapshot(cfg, mode=cfg.trading_mode, account_equity=account.equity,
+                          session=session, watchlist=watch, proposals=proposals,
+                          open_positions=list(state.open_positions.values()), journal=journal)
+
+    if cfg.secrets.publish_url:
+        ok, msg = publish_snapshot(cfg, snap)
+        print(f"{'Published' if ok else 'Publish FAILED'} to {cfg.secrets.publish_url} ({msg}); "
+              f"{len(proposals)} proposals, {len(watch)} watchlist.")
+    else:
+        out = Path(cfg.journal_dir) / "snapshot.json"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(snap, indent=2))
+        print(f"No WARRIOR_PUBLISH_URL set — wrote snapshot to {out} "
+              f"({len(proposals)} proposals). Set the URL to push it to your site.")
+    print(DISCLAIMER_SHORT)
+    return 0
+
+
 def cmd_backtest(args) -> int:
     from .backtest import run_backtest
     cfg = load_config(args.config)
@@ -247,6 +297,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     sub.add_parser("stats", parents=[common],
                    help="cumulative performance + graduation gate").set_defaults(func=cmd_stats)
+
+    spub = sub.add_parser("publish", parents=[common],
+                          help="evaluate tickers + watchlist and push a snapshot to your website tab")
+    spub.add_argument("symbols", nargs="*", help="extra tickers to evaluate")
+    spub.set_defaults(func=cmd_publish)
 
     sb = sub.add_parser("backtest", parents=[common],
                         help="replay historical data through the gauntlet")

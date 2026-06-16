@@ -137,6 +137,27 @@ if you choose.
 If any lock is missing the agent hard-exits. There is no flag that auto-enables
 live. The approval gate stays mandatory in live.
 
+## Website viewer (the ⚡ Warrior tab)
+
+The agent can push a snapshot to a tab on the andysding.com Stocks section so you
+can glance at signals from your phone. The **agent stays the source of truth**;
+the website only displays what it publishes (and never trades).
+
+Setup:
+1. On the server, drop a shared secret outside the web root:
+   `asd-site-data/warrior-publish-token.txt` (one long random string).
+2. In the agent's `.env`: `WARRIOR_PUBLISH_URL=https://andysding.com/warrior.php`
+   and `WARRIOR_PUBLISH_TOKEN=<that same string>`.
+3. Push a snapshot:
+   ```bash
+   warrior publish AAPL TSLA     # evaluate these + the watchlist, push once
+   warrior run --advisory        # auto-publishes every pass while it runs
+   ```
+4. Open the site → **Stocks → ⚡ Warrior** (sign in on the Desk tab first). You'll
+   see the ranked watchlist, each setup's 12-step verdict + exact entry/stop/
+   target/size + thesis, today's journal, and graduation progress. Type a ticker
+   there to queue it; your running agent evaluates it on its next pass.
+
 ## Honest data gaps
 
 Alpaca does **not** provide share float, and its scanner coverage for true

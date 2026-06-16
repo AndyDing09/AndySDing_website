@@ -113,6 +113,8 @@ class Secrets:
     google_credentials_path: str = ""
     google_token_path: str = ""
     google_doc_id: str = ""
+    publish_url: str = ""               # WARRIOR_PUBLISH_URL -> your site's warrior.php
+    publish_token: str = ""             # WARRIOR_PUBLISH_TOKEN (matches the server token file)
 
     @property
     def has_alpaca(self) -> bool:
@@ -203,6 +205,8 @@ def load_secrets() -> Secrets:
         google_credentials_path=os.environ.get("GOOGLE_CREDENTIALS_PATH", ""),
         google_token_path=os.environ.get("GOOGLE_TOKEN_PATH", ""),
         google_doc_id=os.environ.get("WARRIOR_GOOGLE_DOC_ID", ""),
+        publish_url=os.environ.get("WARRIOR_PUBLISH_URL", ""),
+        publish_token=os.environ.get("WARRIOR_PUBLISH_TOKEN", ""),
     )
 
 
