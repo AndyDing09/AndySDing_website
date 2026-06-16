@@ -138,11 +138,19 @@ class PatternResult:
     pullback_low: Optional[float] = None
     flat_top_price: Optional[float] = None
     retrace_pct: Optional[float] = None       # how much of the pole the pullback gave back
+    pullback_len: int = 0
     holds_9ema: Optional[bool] = None
     holds_vwap: Optional[bool] = None
     trigger_price: Optional[float] = None      # break of prior-red-high / flat-top line
     confirm_volume: Optional[float] = None     # volume to confirm the breakout candle
+    triggered: bool = False                    # has the breakout candle already fired?
+    pole_volume: float = 0.0                   # avg volume across the pole
+    pullback_volume: float = 0.0               # avg volume across the pullback
     reasons: list[str] = field(default_factory=list)
+
+    @property
+    def low_volume_pullback(self) -> bool:
+        return self.pole_volume > 0 and self.pullback_volume <= self.pole_volume
 
 
 # ──────────────────────────────────────────────────────────────────────────

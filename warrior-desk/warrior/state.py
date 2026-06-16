@@ -126,9 +126,12 @@ class State:
             log.error("Failed to persist state: %s", exc)
 
     # ── session lifecycle ──
-    def start_session(self, today: date) -> None:
+    def start_session(self, today: date, save: bool = True) -> None:
         """Roll daily counters if a new trading day has begun. The rolling
-        day-trade history and the high-water mark persist across days."""
+        day-trade history and the high-water mark persist across days.
+
+        ``save=False`` lets read-only commands (propose/status) reflect a fresh
+        day without persisting the roll."""
         iso = today.isoformat()
         if self.session_date != iso:
             log.info("New session %s (was %s): resetting daily counters.", iso, self.session_date)
@@ -140,7 +143,8 @@ class State:
             self.session_halted = False
             self.halt_reason = ""
             self._prune_day_trades(today)
-            self.save()
+            if save:
+                self.save()
 
     def _prune_day_trades(self, today: date, keep_business_days: int = 10) -> None:
         """Drop day-trade dates older than the PDT window can ever need."""
