@@ -79,9 +79,11 @@ class SelectionConfig:
     max_float: float = 100_000_000
     ideal_float: float = 20_000_000
     min_rvol: float = 2.0
-    min_avg_dollar_volume: float = 1_000_000
-    min_price: float = 1.0
+    min_avg_dollar_volume: float = 2_000_000     # liquidity floor (no thin names)
+    min_share_volume: float = 500_000            # real participation today
+    min_price: float = 2.0           # no sub-$2 penny stocks (raise to 5 for strict)
     max_price: float = 20.0          # small-cap focus; momentum names are cheap
+    major_exchanges_only: bool = True            # drop OTC / pink-sheet names
     pullback_max_retrace: float = 0.50   # reject pullbacks deeper than 50% of pole
 
 

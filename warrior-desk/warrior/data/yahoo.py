@@ -59,10 +59,15 @@ def parse_screener(payload: dict) -> list[Candidate]:
                 symbol=str(sym).upper(), price=price,
                 gap_pct=(gap / 100.0) if gap is not None else 0.0,
                 rvol=rvol, avg_dollar_volume=round(price * avg, 0) if avg else 0.0,
+                day_volume=vol, exchange=str(q.get("exchange") or "").upper(),
                 float_shares=shares, float_verified=False,
             )
             out.append(c)
     return out
+
+
+# Pink-sheet / OTC venue codes — where penny-stock junk lives.
+_OTC_EXCHANGES = {"PNK", "OTC", "OQB", "OQX", "PINK", "OTCBB", "OBB", "OTCMKTS"}
 
 
 def parse_float_quote_summary(payload: dict) -> FloatInfo:
@@ -130,11 +135,17 @@ class YahooScanner:
 
     def _prefilter(self, c: Candidate) -> bool:
         sel = self.cfg.selection
+        # No penny stocks: enforce a price floor and drop OTC / pink-sheet venues.
         if not (sel.min_price <= c.price <= sel.max_price):
+            return False
+        if getattr(sel, "major_exchanges_only", True) and c.exchange in _OTC_EXCHANGES:
             return False
         if c.gap_pct <= 0:                       # momentum = up on the day
             return False
+        # No illiquid names: require real average dollar-volume AND real volume today.
         if c.avg_dollar_volume and c.avg_dollar_volume < sel.min_avg_dollar_volume:
+            return False
+        if c.day_volume and c.day_volume < sel.min_share_volume:
             return False
         return True
 

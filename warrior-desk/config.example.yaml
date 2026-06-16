@@ -41,9 +41,11 @@ selection:
   max_float: 100000000
   ideal_float: 20000000
   min_rvol: 2.0
-  min_avg_dollar_volume: 1000000
-  min_price: 1.0
+  min_avg_dollar_volume: 2000000   # liquidity floor — no thin names
+  min_share_volume: 500000         # must actually be trading today
+  min_price: 2.0                   # no sub-$2 penny stocks (set 5.0 for the strict SEC line)
   max_price: 20.0
+  major_exchanges_only: true       # drop OTC / pink-sheet names
   pullback_max_retrace: 0.50     # reject pullbacks deeper than 50% of the pole
 
 sessions:

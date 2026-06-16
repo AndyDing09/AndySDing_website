@@ -117,6 +117,8 @@ class Candidate:
     gap_pct: float = 0.0
     rvol: float = 0.0
     avg_dollar_volume: float = 0.0
+    day_volume: float = 0.0                   # today's share volume (participation)
+    exchange: str = ""                        # e.g. NMS/NYQ (major) vs PNK/OTC (penny)
     float_shares: Optional[float] = None      # None => unknown
     float_verified: bool = False              # False => approximated / unverified
     catalyst: Optional[Catalyst] = None
