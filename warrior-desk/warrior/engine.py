@@ -22,7 +22,7 @@ from .data.provider import AccountInfo, DataProvider
 from .execution import ExecutionEngine
 from .gauntlet import Gauntlet
 from .indicators import atr_last
-from .locks import enforce_mode_locks
+from .locks import LiveLockError, enforce_mode_locks
 from .logging_setup import get_logger
 from .models import SessionWindow
 from .position_manager import PositionManager
@@ -197,10 +197,29 @@ def _build_runtime(cfg: Config, demo: bool, equity: float):
     raise SystemExit("No Alpaca keys and --demo not set. Try: warrior run --demo --once")
 
 
+def require_graduation(cfg: Config):
+    """Decline live until the PAPER track record clears the graduation gate
+    (Ross steps 4–7). Raises LiveLockError with what's still missing."""
+    from pathlib import Path
+    from .stats import compute_stats, graduation_status, read_closed_trades
+    closed = read_closed_trades(str(Path(cfg.journal_dir) / "closed_trades.csv"))
+    grad = graduation_status(cfg, compute_stats(closed))
+    if not grad.eligible:
+        raise LiveLockError(
+            "Live trading declined — your PAPER track record hasn't cleared the graduation gate:\n"
+            + "\n".join(f"  - {m}" for m in grad.missing)
+            + "\n\nKeep paper trading and run 'warrior stats'. The discipline is the edge.")
+    return grad
+
+
 def run_agent(cfg: Config, demo: bool = False, once: bool = False, equity: float = 30_000.0) -> int:
-    # The mode locks are the gate to live. demo is always paper; a real live run
-    # must clear every §0 lock (incl. the typed confirmation) or this raises.
-    enforce_mode_locks(cfg, interactive=True)
+    # The mode locks are the gate to live. demo is always a paper sim. A real live
+    # run must FIRST clear the paper graduation gate, then satisfy every §0 lock
+    # (incl. the typed confirmation) — or this raises and refuses to start.
+    if not demo:
+        if cfg.is_live:
+            require_graduation(cfg)
+        enforce_mode_locks(cfg, interactive=True)
     from .reasoning import make_reasoner
     provider, broker, account, approval_fn, now_fn, simulated = _build_runtime(cfg, demo, equity)
     journal = None

@@ -113,9 +113,12 @@ def graduation_status(cfg: Config, stats: TradeStats) -> GraduationStatus:
     crit.append(("positive_expectancy", pos_exp,
                  f"expectancy ${stats.expectancy:.2f}/trade ({stats.expectancy_r:+.2f}R)"))
 
-    pf_ok = (stats.profit_factor is not None and stats.profit_factor >= 1.0) or stats.n == 0
-    crit.append(("profit_factor>=1", pf_ok and stats.n > 0,
-                 f"profit factor {stats.profit_factor if stats.profit_factor is not None else 'n/a'}"))
+    # A record with no losing trades has an "infinite" profit factor — that passes.
+    pf_ok = (stats.profit_factor is not None and stats.profit_factor >= 1.0) or \
+            (stats.profit_factor is None and stats.total_pnl > 0)
+    pf_label = "inf (no losses)" if stats.profit_factor is None and stats.total_pnl > 0 else \
+        (stats.profit_factor if stats.profit_factor is not None else "n/a")
+    crit.append(("profit_factor>=1", pf_ok and stats.n > 0, f"profit factor {pf_label}"))
 
     dd_ok = stats.max_drawdown_pct <= g.max_drawdown_pct
     crit.append(("max_drawdown", dd_ok,
