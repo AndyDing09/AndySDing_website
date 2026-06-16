@@ -60,6 +60,13 @@ class TradingEngine:
             pos = self.state.open_positions.get(sym)
             if pos is None:
                 continue
+            # Never trade into a halt; on resume the gauntlet re-runs from scratch.
+            try:
+                if self.provider.is_halted(sym):
+                    log.warning("%s is HALTED — holding, no orders into a halt.", sym)
+                    continue
+            except Exception:
+                pass
             try:
                 bars = self.provider.get_bars(sym, tf, 60)
             except Exception as exc:
@@ -145,10 +152,18 @@ class TradingEngine:
             if not self.state.session_halted:
                 self.state.halt("end of day — flattened, done trading")
             return
-        self.manage_open_positions(now)
-        self.check_day_halts(now)
-        self.maybe_enter(now, approval_fn)
-        self.check_day_halts(now)
+        # Managing exits is more important than entering; isolate failures so a
+        # transient data glitch in one phase never spams orders or crashes the loop.
+        try:
+            self.manage_open_positions(now)
+            self.check_day_halts(now)
+        except Exception as exc:
+            log.exception("manage phase failed this pass: %s", exc)
+        try:
+            self.maybe_enter(now, approval_fn)
+            self.check_day_halts(now)
+        except Exception as exc:
+            log.exception("entry phase failed this pass: %s", exc)
 
     def _safe(self, fn) -> None:
         try:
@@ -209,10 +224,23 @@ def run_agent(cfg: Config, demo: bool = False, once: bool = False, equity: float
         return 0
 
     log.info("Starting the agent loop (mode=%s). Ctrl-C to stop.", cfg.trading_mode)
+    errors = 0
     try:
         while True:
             now = now_fn()
-            engine.step(now, approval_fn=approval_fn)
+            try:
+                engine.step(now, approval_fn=approval_fn)
+                errors = 0
+            except Exception as exc:
+                # Never spam orders on a glitch — back off exponentially.
+                errors += 1
+                backoff = min(cfg.poll_seconds * (2 ** errors), 300)
+                log.exception("pass failed (%d in a row); backing off %ds: %s", errors, backoff, exc)
+                if errors >= 8:
+                    log.error("too many consecutive failures — stopping the loop.")
+                    break
+                time.sleep(backoff)
+                continue
             if engine.state.session_halted:
                 log.info("Session halted (%s). Stopping.", engine.state.halt_reason)
                 break

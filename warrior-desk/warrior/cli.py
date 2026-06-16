@@ -254,10 +254,15 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(argv=None) -> int:
+    from .locks import LiveLockError
     parser = build_parser()
     args = parser.parse_args(argv)
     try:
         return args.func(args)
+    except LiveLockError as exc:
+        # A deliberate, clean refusal — not a crash. No traceback.
+        print(f"\n{exc}\n", file=sys.stderr)
+        return 2
     except SystemExit:
         raise
     except KeyboardInterrupt:

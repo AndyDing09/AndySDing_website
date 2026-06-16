@@ -77,13 +77,18 @@ class ExecutionEngine:
             return None
 
         fill_price = result.filled_avg_price if result.filled_avg_price else entry_limit
+        # Honour partial fills: track the qty the broker actually reports.
+        filled_qty = result.qty if result.qty and result.qty > 0 else proposal.shares
+        if filled_qty < proposal.shares:
+            log.warning("Partial fill on %s: %d of %d shares.", proposal.symbol,
+                        filled_qty, proposal.shares)
         pos = Position(
-            symbol=proposal.symbol, qty=proposal.shares, avg_entry=fill_price,
+            symbol=proposal.symbol, qty=filled_qty, avg_entry=fill_price,
             stop=proposal.stop, target=proposal.target, side=Side.LONG,
-            initial_qty=proposal.shares, initial_risk=round(fill_price - proposal.stop, 4),
+            initial_qty=filled_qty, initial_risk=round(fill_price - proposal.stop, 4),
             opened_at=now, order_ids={"entry": result.id},
         )
-        pos.events.append(f"{now.isoformat()} entered {proposal.shares}@{fill_price} "
+        pos.events.append(f"{now.isoformat()} entered {filled_qty}@{fill_price} "
                           f"stop {proposal.stop} target {proposal.target} ({result.status})")
         state.record_entry(pos, now)
         log.info("ENTERED %s %s@%.2f (stop %.2f, target %.2f)",

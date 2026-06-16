@@ -140,6 +140,9 @@ def run_backtest(cfg: Config, args) -> int:
     if state.open_positions:
         engine.flatten_all(last_now, "backtest end — flatten")
 
+    # Persist the daily summary into the (separate) backtest journal too.
+    state.session_date = last_now.date().isoformat()
+    journal.write_daily_summary(state)
     journal_summary = journal.render_today_summary(date_iso=last_now.date().isoformat(), state=state)
 
     closed = read_closed_trades(str(Path(bt_journal_dir) / "closed_trades.csv"))

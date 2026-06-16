@@ -41,9 +41,13 @@ class PositionManager:
 
         # 1) Protective stop — honoured first, always. (Never widened.)
         if bar.low <= pos.stop:
-            return [ManageAction("exit_all", qty=pos.qty, price=pos.stop,
-                                 reason=("break-even stop hit (trade was free)"
-                                         if pos.breakeven_moved else "protective stop hit"))]
+            # Model gap risk: if the candle opened below the stop, a real stop
+            # fills at the worse opening price, not the (un-reachable) stop level.
+            gapped = bar.open < pos.stop
+            fill = round(bar.open, 4) if gapped else pos.stop
+            base = "break-even stop hit (trade was free)" if pos.breakeven_moved else "protective stop hit"
+            return [ManageAction("exit_all", qty=pos.qty, price=fill,
+                                 reason=base + (" — GAPPED through the stop" if gapped else ""))]
 
         # 2) Extension bar — parabolic spike, sell into it before the snap-back.
         parabolic = atr and (bar.close - bar.open) >= r.extension_atr_mult * atr
