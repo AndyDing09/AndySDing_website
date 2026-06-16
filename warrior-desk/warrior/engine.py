@@ -222,10 +222,11 @@ def _build_runtime(cfg: Config, demo: bool, equity: float, advisory: bool = Fals
         from .demo import DEMO_NOW, DemoProvider
         provider, now_fn = DemoProvider(), (lambda: DEMO_NOW)
     elif cfg.secrets.has_alpaca:
+        from .data import build_scan_sources
         from .data.alpaca_provider import AlpacaProvider
-        from .data.float_source import UnknownFloatSource
+        scanner, float_source = build_scan_sources(cfg)
         provider = AlpacaProvider(cfg.secrets.alpaca_api_key, cfg.secrets.alpaca_secret_key,
-                                  mode="paper", float_source=UnknownFloatSource())
+                                  mode="paper", float_source=float_source, scanner=scanner)
         now_fn = lambda: now_et(cfg)
     else:
         raise SystemExit("No Alpaca keys and --demo not set. Try: warrior run --demo --once")

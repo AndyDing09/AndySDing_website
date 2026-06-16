@@ -113,10 +113,11 @@ class AlpacaProvider(DataProvider):
     name = "alpaca"
 
     def __init__(self, key: str, secret: str, mode: str = "paper",
-                 float_source: Optional[FloatSource] = None, feed: str = "iex"):
+                 float_source: Optional[FloatSource] = None, feed: str = "iex", scanner=None):
         self.rest = AlpacaREST(key, secret, mode=mode)
         self.float_source = float_source or UnknownFloatSource()
         self.feed = feed   # 'iex' (free) or 'sip' (paid)
+        self.scanner = scanner   # optional market scanner (e.g. YahooScanner) for get_movers
 
     def get_bars(self, symbol: str, timeframe: str, limit: int = 200) -> list[Bar]:
         status, body = self.rest.get(
@@ -143,6 +144,15 @@ class AlpacaProvider(DataProvider):
         return parse_news(body)
 
     def get_movers(self, limit: int = 20) -> list[Candidate]:
+        # Prefer a real market-wide scanner if one is wired in (Alpaca's free-tier
+        # screener coverage is thin for low-float momentum names).
+        if self.scanner is not None:
+            try:
+                cands = self.scanner.get_candidates(limit)
+                if cands:
+                    return cands
+            except Exception as exc:
+                log.warning("scanner failed (%s); falling back to Alpaca movers.", exc)
         status, body = self.rest.get(
             "/v1beta1/screener/stocks/movers", {"top": limit}, data_api=True)
         if status != 200:

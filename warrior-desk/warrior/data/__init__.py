@@ -14,4 +14,13 @@ from .synthetic import SyntheticProvider
 __all__ = [
     "AccountInfo", "DataProvider", "FloatInfo", "MarketDataError",
     "FloatSource", "StaticFloatSource", "UnknownFloatSource", "SyntheticProvider",
+    "build_scan_sources",
 ]
+
+
+def build_scan_sources(cfg):
+    """Return (scanner, float_source) per cfg.scanner (yahoo | alpaca | none)."""
+    if getattr(cfg, "scanner", "yahoo") == "yahoo":
+        from .yahoo import YahooFloatSource, YahooScanner
+        return YahooScanner(cfg), YahooFloatSource()
+    return None, UnknownFloatSource()

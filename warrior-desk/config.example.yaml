@@ -12,6 +12,7 @@ account_profile: cash_under_25k   # cash_under_25k | margin_under_25k | over_25k
 use_llm_reasoning: true        # plain-English thesis via Anthropic, if a key is present
 llm_model: claude-sonnet-4-6
 manual_broker_name: Firstrade  # shown in advisory alerts ("place in Firstrade now")
+scanner: yahoo                 # market scanner feed: yahoo (free, no key) | alpaca | none
 poll_seconds: 30
 log_level: INFO
 

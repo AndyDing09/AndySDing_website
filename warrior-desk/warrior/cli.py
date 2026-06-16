@@ -41,11 +41,11 @@ def _provider_and_account(cfg, demo: bool, equity: float):
         return DemoProvider(), AccountInfo(equity=equity, cash=equity, buying_power=equity,
                                            status="SIMULATED", mode="paper"), True
     if cfg.secrets.has_alpaca:
+        from .data import build_scan_sources
         from .data.alpaca_provider import AlpacaProvider
-        from .data.float_source import StaticFloatSource, UnknownFloatSource
-        fs = UnknownFloatSource()
+        scanner, fs = build_scan_sources(cfg)
         prov = AlpacaProvider(cfg.secrets.alpaca_api_key, cfg.secrets.alpaca_secret_key,
-                              mode="paper", float_source=fs)
+                              mode="paper", float_source=fs, scanner=scanner)
         try:
             acct = prov.get_account()
             return prov, acct, False
