@@ -1,10 +1,11 @@
 /* ═══════════════════════════════════════════════════════════════════════
    Stocks lab sub-tabs
-   Three views inside the Stocks section: "Stock lookup" (watchlist → per-stock
+   Four views inside the Stocks section: "Stock lookup" (watchlist → per-stock
    chart + analysis), "Research & trading desk" (the long morning briefing,
-   scorecard, account, paper trading), and "AI research analyst" (the embedded
-   equity-research agent page). Keeps the lookup view clean — clicking a stock
-   shows just its chart + analysis, never the briefing.
+   scorecard, account, paper trading), "AI research analyst" (the embedded
+   equity-research agent page), and "Warrior" (the read-only momentum-agent
+   viewer). Keeps the lookup view clean — clicking a stock shows just its chart
+   + analysis, never the briefing.
 ═══════════════════════════════════════════════════════════════════════ */
 (function () {
   'use strict';
@@ -12,8 +13,10 @@
   if (!stocks) return;
   var deskOpened = false;
   var researchOpened = false;
+  var warriorOpened = false;
 
   function show(pane) {
+    // Toggle every pane by id (sa-pane-<pane>) so adding tabs needs no edits here.
     var panes = stocks.querySelectorAll('.sa-pane');
     if (!panes.length) return;
     panes.forEach(function (p) {
@@ -36,6 +39,11 @@
       if (frame && !frame.src && frame.getAttribute('data-src')) {
         frame.src = frame.getAttribute('data-src');
       }
+    }
+    if (pane === 'warrior' && !warriorOpened) {
+      warriorOpened = true;
+      // fetch + render the published Warrior snapshot the first time
+      if (window.AndyWarriorOpen) setTimeout(window.AndyWarriorOpen, 0);
     }
     try { stocks.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
   }
