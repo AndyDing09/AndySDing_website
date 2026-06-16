@@ -172,7 +172,8 @@ def cmd_run(args) -> int:
     cfg = load_config(args.config)
     setup_logging(cfg.log_level, cfg.log_dir)
     print(DISCLAIMER)
-    return run_agent(cfg, demo=args.demo, once=args.once, equity=args.equity)
+    return run_agent(cfg, demo=args.demo, once=args.once, equity=args.equity,
+                     advisory=args.advisory, sound=not args.no_sound)
 
 
 def cmd_journal(args) -> int:
@@ -235,6 +236,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     sr = sub.add_parser("run", parents=[common], help="start the agent loop")
     sr.add_argument("--once", action="store_true", help="one scan/evaluate pass then exit")
+    sr.add_argument("--advisory", action="store_true",
+                    help="live ENTER/SCALE/EXIT alerts only; NO orders sent (place by hand)")
+    sr.add_argument("--no-sound", action="store_true", help="silence alert bell/desktop pings")
     sr.set_defaults(func=cmd_run)
 
     sj = sub.add_parser("journal", parents=[common], help="print today's journal summary")

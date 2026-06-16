@@ -136,6 +136,7 @@ class Config:
     log_level: str = "INFO"
     use_llm_reasoning: bool = True         # uses anthropic if a key is present
     llm_model: str = "claude-sonnet-4-6"
+    manual_broker_name: str = "your broker"  # shown in advisory alerts, e.g. "Firstrade"
     state_path: str = "state/state.json"
     journal_dir: str = "journal"
     log_dir: str = "logs"

@@ -116,6 +116,14 @@ class SimBroker(Broker):
         return self.positions.get(symbol)
 
 
+class ManualBroker(SimBroker):
+    """Advisory mode: no API is ever called. Positions are tracked internally
+    assuming you place each alerted order by hand in your real broker (e.g.
+    Firstrade). Fills are modelled at the alerted price — your real fills may
+    differ, which the journal notes."""
+    name = "manual"
+
+
 # ──────────────────────────────────────────────────────────────────────────
 # AlpacaBroker
 # ──────────────────────────────────────────────────────────────────────────

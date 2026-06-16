@@ -37,14 +37,15 @@ log = get_logger("engine")
 class TradingEngine:
     def __init__(self, cfg: Config, provider: DataProvider, broker: Broker,
                  reasoner=None, journal=None, state: Optional[State] = None,
-                 account: Optional[AccountInfo] = None):
+                 account: Optional[AccountInfo] = None, alerter=None):
         self.cfg = cfg
         self.provider = provider
         self.broker = broker
         self.journal = journal
+        self.alerter = alerter
         self.gauntlet = Gauntlet(cfg, provider, reasoner=reasoner)
-        self.execution = ExecutionEngine(cfg, broker, journal=journal)
-        self.pm = PositionManager(cfg, broker)
+        self.execution = ExecutionEngine(cfg, broker, journal=journal, alerter=alerter)
+        self.pm = PositionManager(cfg, broker, alerter=alerter)
         self.state = state or State.load(cfg.state_path)
         try:
             self.account = account or broker.get_account()
@@ -172,29 +173,45 @@ class TradingEngine:
             log.warning("journal hook failed: %s", exc)
 
 
-def _build_runtime(cfg: Config, demo: bool, equity: float):
+def _build_runtime(cfg: Config, demo: bool, equity: float, advisory: bool = False):
     """Return (provider, broker, account, approval_fn, now_fn, simulated)."""
+    from .broker import ManualBroker
+
+    # ── live data provider ──
     if demo:
         from .demo import DEMO_NOW, DemoProvider
-        acct = AccountInfo(equity=equity, cash=equity, buying_power=equity,
-                           status="SIMULATED", mode="paper")
-        return DemoProvider(), SimBroker(acct), acct, (lambda _p: True), (lambda: DEMO_NOW), True
-    if cfg.secrets.has_alpaca:
-        from .broker import AlpacaBroker
+        provider, now_fn = DemoProvider(), (lambda: DEMO_NOW)
+    elif cfg.secrets.has_alpaca:
         from .data.alpaca_provider import AlpacaProvider
         from .data.float_source import UnknownFloatSource
-        mode = "live" if cfg.is_live else "paper"
-        prov = AlpacaProvider(cfg.secrets.alpaca_api_key, cfg.secrets.alpaca_secret_key,
-                              mode="paper", float_source=UnknownFloatSource())
-        broker = AlpacaBroker(cfg.secrets.alpaca_api_key, cfg.secrets.alpaca_secret_key, mode=mode)
-        try:
-            acct = broker.get_account()
-            sim = False
-        except Exception:
-            acct = AccountInfo(equity=equity, buying_power=equity, status="SIMULATED")
-            sim = True
-        return prov, broker, acct, None, (lambda: now_et(cfg)), sim
-    raise SystemExit("No Alpaca keys and --demo not set. Try: warrior run --demo --once")
+        provider = AlpacaProvider(cfg.secrets.alpaca_api_key, cfg.secrets.alpaca_secret_key,
+                                  mode="paper", float_source=UnknownFloatSource())
+        now_fn = lambda: now_et(cfg)
+    else:
+        raise SystemExit("No Alpaca keys and --demo not set. Try: warrior run --demo --once")
+
+    # ── broker + account ──
+    if advisory:
+        # Advisory: NO API is called for execution. Size off your real (e.g.
+        # Firstrade) equity via --equity so alerted share counts match reality.
+        acct = AccountInfo(equity=equity, cash=equity, buying_power=equity,
+                           status="ADVISORY", mode="advisory")
+        return provider, ManualBroker(acct), acct, (lambda _p: True), now_fn, True
+    if demo:
+        acct = AccountInfo(equity=equity, cash=equity, buying_power=equity,
+                           status="SIMULATED", mode="paper")
+        return provider, SimBroker(acct), acct, (lambda _p: True), now_fn, True
+    # real Alpaca paper (or live, once unlocked) execution
+    from .broker import AlpacaBroker
+    mode = "live" if cfg.is_live else "paper"
+    broker = AlpacaBroker(cfg.secrets.alpaca_api_key, cfg.secrets.alpaca_secret_key, mode=mode)
+    try:
+        acct = broker.get_account()
+        sim = False
+    except Exception:
+        acct = AccountInfo(equity=equity, buying_power=equity, status="SIMULATED")
+        sim = True
+    return provider, broker, acct, None, now_fn, sim
 
 
 def require_graduation(cfg: Config):
@@ -212,16 +229,19 @@ def require_graduation(cfg: Config):
     return grad
 
 
-def run_agent(cfg: Config, demo: bool = False, once: bool = False, equity: float = 30_000.0) -> int:
-    # The mode locks are the gate to live. demo is always a paper sim. A real live
-    # run must FIRST clear the paper graduation gate, then satisfy every §0 lock
-    # (incl. the typed confirmation) — or this raises and refuses to start.
-    if not demo:
+def run_agent(cfg: Config, demo: bool = False, once: bool = False, equity: float = 30_000.0,
+              advisory: bool = False, sound: bool = True) -> int:
+    # The mode locks are the gate to live. demo/advisory are never live. A real
+    # live run must FIRST clear the paper graduation gate, then satisfy every §0
+    # lock (incl. the typed confirmation) — or this raises and refuses to start.
+    if not demo and not advisory:
         if cfg.is_live:
             require_graduation(cfg)
         enforce_mode_locks(cfg, interactive=True)
+    from .alerts import Alerter
     from .reasoning import make_reasoner
-    provider, broker, account, approval_fn, now_fn, simulated = _build_runtime(cfg, demo, equity)
+    provider, broker, account, approval_fn, now_fn, simulated = _build_runtime(
+        cfg, demo, equity, advisory)
     journal = None
     try:
         from .journal import JournalManager
@@ -229,10 +249,17 @@ def run_agent(cfg: Config, demo: bool = False, once: bool = False, equity: float
     except Exception as exc:  # journal must never block trading
         log.warning("journal unavailable (%s); continuing without it.", exc)
 
+    alerter = Alerter(sound=sound, broker_name=cfg.manual_broker_name)
     reasoner = make_reasoner(cfg, cfg.secrets)
-    engine = TradingEngine(cfg, provider, broker, reasoner=reasoner, journal=journal, account=account)
+    engine = TradingEngine(cfg, provider, broker, reasoner=reasoner, journal=journal,
+                           account=account, alerter=alerter)
 
-    if demo:
+    if advisory:
+        log.info("ADVISORY run: NO orders sent anywhere — the agent alerts you live to "
+                 "ENTER/SCALE/EXIT; place each by hand in %s.", cfg.manual_broker_name)
+        print(f"\nADVISORY MODE — live signals only, sized off ${account.equity:,.0f} equity. "
+              f"Place every alerted order by hand in {cfg.manual_broker_name}.\n")
+    elif demo:
         log.info("DEMO run: non-interactive auto-approve; SIMULATED account.")
 
     if once:

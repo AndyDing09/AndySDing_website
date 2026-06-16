@@ -32,10 +32,11 @@ def _interactive_approval(proposal: TradeProposal) -> bool:
 
 
 class ExecutionEngine:
-    def __init__(self, cfg: Config, broker: Broker, journal=None):
+    def __init__(self, cfg: Config, broker: Broker, journal=None, alerter=None):
         self.cfg = cfg
         self.broker = broker
         self.journal = journal
+        self.alerter = alerter
 
     def execute(self, proposal: TradeProposal, state, now: datetime,
                 approval_fn: Optional[ApprovalFn] = None, show: bool = True) -> Optional[Position]:
@@ -92,7 +93,12 @@ class ExecutionEngine:
                           f"stop {proposal.stop} target {proposal.target} ({result.status})")
         state.record_entry(pos, now)
         log.info("ENTERED %s %s@%.2f (stop %.2f, target %.2f)",
-                 proposal.symbol, proposal.shares, fill_price, proposal.stop, proposal.target)
+                 proposal.symbol, filled_qty, fill_price, proposal.stop, proposal.target)
+        if self.alerter is not None:
+            try:
+                self.alerter.entry(proposal, pos)
+            except Exception as exc:
+                log.warning("entry alert failed: %s", exc)
         self._journal(proposal)
         return pos
 

@@ -27,9 +27,10 @@ log = get_logger("pm")
 
 
 class PositionManager:
-    def __init__(self, cfg: Config, broker):
+    def __init__(self, cfg: Config, broker, alerter=None):
         self.cfg = cfg
         self.broker = broker
+        self.alerter = alerter
 
     def decide(self, pos: Position, bar: Bar, atr: Optional[float] = None) -> list[ManageAction]:
         r = self.cfg.risk
@@ -84,6 +85,11 @@ class PositionManager:
         for a in actions:
             if a.kind == "hold":
                 continue
+            if self.alerter is not None and a.kind in ("scale_half", "move_stop_breakeven", "exit_all"):
+                try:
+                    self.alerter.action(pos.symbol, a, pos)
+                except Exception as exc:
+                    log.warning("action alert failed: %s", exc)
             if a.kind == "move_stop_breakeven":
                 pos.stop = a.price
                 pos.breakeven_moved = True

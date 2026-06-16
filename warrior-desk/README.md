@@ -91,6 +91,39 @@ loss halt). See `config.example.yaml` for every setting.
 `propose` and `backtest` are the main learning tools — full reasoning, zero
 execution risk. Add `--demo` to any command to use the offline demo data.
 
+### Using it with a broker that has no API (e.g. Firstrade): advisory mode
+
+Firstrade has no public API and automating its login violates its ToS, so the
+agent **cannot and will not** place Firstrade orders. Instead, run it as a live
+**signal engine** — it watches the market on your (free) Alpaca data and tells you
+exactly when to act so you can place each order by hand:
+
+```bash
+warrior run --advisory --equity 10000     # size off your real account; NO orders sent
+```
+
+You'll get loud, timestamped alerts as setups trigger and progress:
+
+```
+🟢  ENTER — WARR   [10:31:05]
+   → PLACE THIS IN FIRSTRADE NOW:
+     BUY 529 shares WARR  @ limit 3.78
+     STOP (protective)    @ 3.65   (risk $69)
+     TARGET (first)       @ 4.76   (R:R 7.5, grade A)
+...
+🟡  SCALE — WARR — SELL 264 @ 4.04, then move stop to break-even 3.78
+🔴  EXIT  — WARR — SELL 265 @ 4.30  (extension spike — lock the parabolic move)
+```
+
+Set `--equity` to your real Firstrade balance so the share sizes match what you'll
+trade, and `manual_broker_name: Firstrade` in `config.yaml` for the alert wording.
+Add `--no-sound` to silence the bell/desktop pings. Everything is journaled.
+
+**Auto-trading** (hands-off) is available too, but only on your **Alpaca paper**
+account: `warrior run` with `paper_auto_approve: true`. That builds an honest
+track record toward the graduation gate while you mirror the alerts into Firstrade
+if you choose.
+
 ## Going live (don't rush this)
 
 1. Build a real paper track record. Run `warrior stats` until the graduation gate
