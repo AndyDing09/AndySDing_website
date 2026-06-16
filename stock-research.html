@@ -1,0 +1,540 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Equity Research Desk</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --ink:#0B1220; --ink2:#0E1626; --slate:#131D30; --slate2:#101A2B;
+    --line:#22304A; --line2:#2C3C59;
+    --paper:#F5F6F8; --paper-edge:#E6E9EF; --paper-ink:#16202E; --paper-muted:#586475;
+    --text:#E9EDF5; --muted:#8B98AE; --muted2:#697694;
+    --brass:#CBA94E; --brass-bright:#E7C667; --on-brass:#1B1407;
+    --up:#46B07E; --down:#E0705E;
+    --sans:'Space Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --mono:'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+  }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:
+      radial-gradient(1100px 600px at 85% -10%, rgba(203,169,78,.06), transparent 60%),
+      radial-gradient(900px 500px at -5% 110%, rgba(70,176,126,.05), transparent 55%),
+      var(--ink);
+    color:var(--text); font-family:var(--sans); -webkit-font-smoothing:antialiased;
+    min-height:100vh; padding:14px;
+  }
+  .desk{ max-width:1180px; margin:0 auto; border:1px solid var(--line); border-radius:14px;
+    background:linear-gradient(180deg, var(--ink2), var(--slate2)); overflow:hidden;
+    box-shadow:0 30px 80px -40px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.02); }
+
+  .statusbar{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; padding:14px 18px;
+    border-bottom:1px solid var(--line);
+    background:repeating-linear-gradient(90deg, rgba(255,255,255,.012) 0 2px, transparent 2px 4px), var(--ink); }
+  .brand{ display:flex; align-items:center; gap:11px; }
+  .diamond{ width:11px; height:11px; transform:rotate(45deg); background:var(--brass); box-shadow:0 0 14px rgba(203,169,78,.5); flex:none; }
+  .brand .t1{ font-weight:600; letter-spacing:.04em; font-size:13.5px; }
+  .brand .t2{ font-family:var(--mono); font-size:11px; color:var(--muted2); letter-spacing:.02em; margin-top:2px; }
+  .sb-right{ margin-left:auto; display:flex; align-items:center; gap:18px; }
+  .live{ display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted2); }
+  .dot{ width:7px; height:7px; border-radius:50%; background:var(--muted2); }
+  .live.on{ color:var(--up); }
+  .live.on .dot{ background:var(--up); animation:pulse 1.3s ease-out infinite; }
+  @keyframes pulse{ 0%{ box-shadow:0 0 0 0 rgba(70,176,126,.55);} 70%{ box-shadow:0 0 0 8px rgba(70,176,126,0);} 100%{ box-shadow:0 0 0 0 rgba(70,176,126,0);} }
+  .fid{ font-family:var(--mono); font-size:12px; color:var(--brass); letter-spacing:.06em; }
+  .fid .cur{ color:var(--brass-bright); animation:blink 1.1s steps(1) infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  .grid{ display:grid; grid-template-columns:380px 1fr; min-height:560px; }
+  .rail{ border-right:1px solid var(--line); padding:20px 18px 22px; background:linear-gradient(180deg, rgba(255,255,255,.012), transparent); }
+  .stage{ padding:0; background:var(--ink2); position:relative; }
+  .eyebrow{ font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:var(--muted2); margin:0 0 8px; }
+
+  .dd{ position:relative; margin-bottom:18px; }
+  .dd-btn{ width:100%; text-align:left; cursor:pointer; background:var(--slate); color:var(--text);
+    border:1px solid var(--line2); border-radius:9px; padding:13px 14px; font-family:var(--sans); font-size:14px;
+    display:flex; align-items:center; gap:12px; transition:border-color .15s, background .15s; }
+  .dd-btn:hover{ border-color:var(--brass); }
+  .dd-btn .tag{ font-family:var(--mono); font-size:11px; color:var(--brass); border:1px solid var(--line2); border-radius:5px; padding:3px 6px; flex:none; }
+  .dd-btn .nm{ flex:1; font-weight:500; }
+  .dd-btn .chev{ color:var(--muted); flex:none; transition:transform .18s; }
+  .dd.open .dd-btn .chev{ transform:rotate(180deg); }
+  .dd-panel{ position:absolute; z-index:40; top:calc(100% + 8px); left:0; right:0; background:var(--slate2);
+    border:1px solid var(--line2); border-radius:11px; box-shadow:0 28px 70px -30px rgba(0,0,0,.85);
+    max-height:430px; overflow:auto; padding:6px; display:none; }
+  .dd.open .dd-panel{ display:block; }
+  .dd-cat{ font-family:var(--mono); font-size:9.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--muted2); padding:12px 10px 6px; }
+  .dd-cat:first-child{ padding-top:6px; }
+  .opt{ display:flex; gap:11px; align-items:flex-start; padding:10px 10px; border-radius:8px; cursor:pointer; transition:background .12s; }
+  .opt:hover{ background:rgba(203,169,78,.08); }
+  .opt.sel{ background:rgba(203,169,78,.13); }
+  .opt .tag{ font-family:var(--mono); font-size:10.5px; color:var(--brass); border:1px solid var(--line2); border-radius:5px; padding:2px 5px; margin-top:1px; flex:none; }
+  .opt .body .nm{ font-size:13.5px; font-weight:500; color:var(--text); }
+  .opt .body .bl{ font-size:11.5px; color:var(--muted); margin-top:3px; line-height:1.45; }
+
+  .desc{ border-left:2px solid var(--brass); background:rgba(203,169,78,.05); padding:11px 13px; border-radius:0 8px 8px 0; margin-bottom:20px; }
+  .desc p{ margin:0; font-size:12.5px; color:var(--muted); line-height:1.55; }
+
+  .field{ margin-bottom:16px; }
+  label.lbl{ display:block; font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted2); margin-bottom:7px; }
+  .in, .ta{ width:100%; background:var(--ink); color:var(--text); border:1px solid var(--line2); border-radius:8px;
+    padding:11px 12px; font-family:var(--mono); font-size:14px; outline:none; transition:border-color .15s, box-shadow .15s; }
+  .in::placeholder, .ta::placeholder{ color:var(--muted2); }
+  .in:focus, .ta:focus{ border-color:var(--brass); box-shadow:0 0 0 3px rgba(203,169,78,.14); }
+  .ta{ resize:vertical; min-height:74px; line-height:1.5; font-size:12.5px; }
+  .ta.tall{ min-height:108px; }
+  .hint{ font-size:11px; color:var(--muted2); margin-top:6px; line-height:1.5; }
+  .seg{ display:flex; gap:6px; flex-wrap:wrap; }
+  .seg button{ flex:1 1 0; min-width:72px; cursor:pointer; background:var(--ink); color:var(--muted); border:1px solid var(--line2);
+    border-radius:7px; padding:8px 6px; font-family:var(--mono); font-size:11px; letter-spacing:.04em; text-transform:uppercase; transition:all .14s; }
+  .seg button:hover{ border-color:var(--brass); color:var(--text); }
+  .seg button.on{ background:var(--brass); color:var(--on-brass); border-color:var(--brass); font-weight:600; }
+
+  .run{ width:100%; cursor:pointer; margin-top:4px; background:var(--brass); color:var(--on-brass); border:1px solid var(--brass);
+    border-radius:9px; padding:13px 16px; font-family:var(--sans); font-weight:600; font-size:14px; letter-spacing:.01em;
+    display:flex; align-items:center; justify-content:center; gap:9px; transition:transform .12s, background .15s, box-shadow .15s;
+    box-shadow:0 10px 26px -12px rgba(203,169,78,.6); }
+  .run:hover{ background:var(--brass-bright); transform:translateY(-1px); }
+  .run:active{ transform:translateY(0); }
+  .run:disabled{ background:var(--slate); color:var(--muted2); border-color:var(--line2); box-shadow:none; cursor:not-allowed; transform:none; }
+  .run .arr{ font-family:var(--mono); }
+  .legal{ font-size:10.5px; color:var(--muted2); margin-top:16px; line-height:1.5; }
+
+  .stage-inner{ position:absolute; inset:0; overflow:auto; padding:26px; }
+  .paper{ background:var(--paper); color:var(--paper-ink); border:1px solid var(--paper-edge); border-radius:11px;
+    min-height:100%; overflow:hidden; box-shadow:0 24px 60px -34px rgba(0,0,0,.7); }
+  .paper-bar{ display:flex; align-items:center; gap:10px; padding:11px 18px; border-bottom:1px solid var(--paper-edge); background:#EEF0F4; }
+  .paper-bar .pb-dot{ width:9px; height:9px; border-radius:50%; background:#D2D6DE; }
+  .paper-bar .pb-t{ font-family:var(--mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--paper-muted); }
+  .paper-bar .copy{ margin-left:auto; font-family:var(--mono); font-size:10.5px; letter-spacing:.06em; color:var(--paper-muted); background:transparent; border:1px solid var(--paper-edge); border-radius:6px; padding:5px 9px; cursor:pointer; transition:all .14s; }
+  .paper-bar .copy:hover{ color:var(--paper-ink); border-color:#C7CCD6; }
+  .paper-body{ padding:26px 30px 34px; }
+
+  .empty{ display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; height:100%; padding:60px 30px; color:var(--paper-muted); }
+  .empty .mk{ font-family:var(--mono); font-size:40px; color:#C9CDD6; letter-spacing:.1em; }
+  .empty h3{ font-family:var(--sans); font-weight:600; color:var(--paper-ink); margin:18px 0 8px; font-size:18px; }
+  .empty p{ margin:0; font-size:13.5px; max-width:340px; line-height:1.6; }
+  .empty .steps{ margin-top:22px; display:flex; gap:8px; font-family:var(--mono); font-size:11px; }
+  .empty .steps span{ border:1px solid var(--paper-edge); border-radius:20px; padding:5px 11px; color:var(--paper-muted); }
+
+  .loading{ height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 30px; }
+  .scanner{ width:54px; height:54px; border-radius:50%; border:2px solid #E2E5EB; border-top-color:var(--brass); animation:spin 0.9s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .loading .msg{ font-family:var(--mono); font-size:12.5px; color:var(--paper-muted); margin-top:20px; letter-spacing:.02em; min-height:18px; }
+  .loading .sub{ font-size:11.5px; color:#9AA2AF; margin-top:8px; }
+
+  .err{ padding:30px; }
+  .err .ttl{ font-family:var(--mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--down); }
+  .err h3{ color:var(--paper-ink); font-size:16px; margin:9px 0 6px; }
+  .err p{ color:var(--paper-muted); font-size:13px; line-height:1.6; margin:0; }
+
+  .stream-flag{ display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--paper-muted); padding:10px 30px 0; }
+  .stream-flag .sd{ width:7px; height:7px; border-radius:50%; background:var(--up); animation:pulse 1.3s ease-out infinite; }
+
+  .report{ font-family:var(--serif); color:var(--paper-ink); font-size:15px; line-height:1.7; }
+  .report h1{ font-family:var(--sans); font-weight:700; font-size:22px; line-height:1.25; margin:4px 0 14px; }
+  .report h2{ font-family:var(--sans); font-weight:600; font-size:15px; letter-spacing:.02em; margin:26px 0 10px; padding-bottom:7px; border-bottom:1px solid var(--paper-edge); }
+  .report h2::before{ content:""; display:inline-block; width:8px; height:8px; background:var(--brass); margin-right:9px; transform:translateY(-1px) rotate(45deg); }
+  .report h3{ font-family:var(--sans); font-weight:600; font-size:13.5px; margin:18px 0 7px; color:#33414F; }
+  .report p{ margin:0 0 12px; }
+  .report strong{ font-weight:700; color:#0E1822; }
+  .report em{ font-style:italic; }
+  .report ul, .report ol{ margin:6px 0 14px; padding-left:22px; }
+  .report li{ margin:5px 0; }
+  .report code{ font-family:var(--mono); font-size:12.5px; background:#ECEEF2; padding:1px 5px; border-radius:4px; color:#324; }
+  .report hr{ border:none; border-top:1px solid var(--paper-edge); margin:20px 0; }
+  .report a{ color:#9A7C24; text-decoration:underline; text-underline-offset:2px; }
+  .verify{ font-family:var(--mono); font-size:11px; font-style:normal; background:rgba(203,169,78,.16); color:#8A6D1F; border:1px solid rgba(203,169,78,.35); border-radius:4px; padding:1px 5px; white-space:nowrap; }
+  .tbl-wrap{ overflow-x:auto; margin:6px 0 16px; border:1px solid var(--paper-edge); border-radius:8px; }
+  .report table{ width:100%; border-collapse:collapse; font-family:var(--sans); font-size:12.5px; }
+  .report th{ text-align:left; background:#EEF0F4; color:#36424F; font-weight:600; padding:9px 12px; border-bottom:1px solid var(--paper-edge); white-space:nowrap; }
+  .report td{ padding:9px 12px; border-bottom:1px solid #EDEFF3; color:#2C3744; vertical-align:top; }
+  .report tr:last-child td{ border-bottom:none; }
+
+  @media (max-width: 880px){
+    body{ padding:12px; }
+    .grid{ grid-template-columns:1fr; }
+    .rail{ border-right:none; border-bottom:1px solid var(--line); }
+    .stage{ min-height:520px; }
+    .stage-inner{ padding:16px; }
+    .paper-body{ padding:20px 18px 26px; }
+  }
+  @media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+  ::-webkit-scrollbar{ width:10px; height:10px; }
+  ::-webkit-scrollbar-thumb{ background:#26334C; border-radius:6px; }
+  .paper ::-webkit-scrollbar-thumb{ background:#D4D8E0; }
+</style>
+</head>
+<body>
+  <main class="desk">
+    <div class="statusbar">
+      <div class="brand">
+        <span class="diamond"></span>
+        <div>
+          <div class="t1">Equity Research Desk</div>
+          <div class="t2">analyst agent · 12 frameworks · live web search</div>
+        </div>
+      </div>
+      <div class="sb-right">
+        <div class="live" id="live"><span class="dot"></span><span id="liveText">standby</span></div>
+        <div class="fid" id="fid">F-02 <span class="cur">_</span></div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="rail">
+        <p class="eyebrow">Framework</p>
+        <div class="dd" id="dd">
+          <button class="dd-btn" id="ddBtn" aria-haspopup="listbox" aria-expanded="false">
+            <span class="tag" id="ddTag">F-02</span>
+            <span class="nm" id="ddName">Full Equity Research Report</span>
+            <span class="chev">▾</span>
+          </button>
+          <div class="dd-panel" id="ddPanel" role="listbox"></div>
+        </div>
+
+        <div class="desc"><p id="descText"></p></div>
+
+        <div class="field" id="styleField" style="display:none">
+          <label class="lbl">Screen style</label>
+          <div class="seg" id="styleSeg">
+            <button data-v="growth" class="on">Growth</button>
+            <button data-v="value">Value</button>
+            <button data-v="income">Income</button>
+            <button data-v="momentum">Momentum</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="lbl" id="primaryLbl" for="primary">Stock ticker</label>
+          <input class="in" id="primary" placeholder="e.g. UBER" autocomplete="off" spellcheck="false" />
+          <textarea class="ta tall" id="primaryTa" placeholder="" style="display:none"></textarea>
+        </div>
+
+        <div class="field">
+          <label class="lbl" for="context">Additional context <span style="color:var(--muted2)">— optional</span></label>
+          <textarea class="ta" id="context" placeholder=""></textarea>
+          <div class="hint" id="ctxHint"></div>
+        </div>
+
+        <button class="run" id="run"><span>Run analysis</span><span class="arr">→</span></button>
+        <p class="legal">Analytical scaffolding generated by Claude with live web search — not investment advice. Verify every figure against primary sources before acting.</p>
+      </section>
+
+      <section class="stage">
+        <div class="stage-inner">
+          <div class="paper">
+            <div class="paper-bar">
+              <span class="pb-dot"></span>
+              <span class="pb-t" id="paperTitle">Output</span>
+              <button class="copy" id="copyBtn" style="display:none">Copy</button>
+            </div>
+            <div class="paper-body" id="output"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+<script>
+/* The backend route that holds the API key (see analyze.php). Same-origin PHP endpoint. */
+const API_ENDPOINT = "analyze.php";
+const MODEL = "claude-sonnet-4-6"; // change to "claude-opus-4-8" for max quality (higher cost)
+
+const FRAMEWORKS = [
+  { id:"01", cat:"Discovery", name:"Institutional Screener",
+    blurb:"Narrow a sector or geography to a high-conviction shortlist of 10 names, plus 3 to avoid.",
+    label:"Sector or geography", ph:"e.g. US semiconductors", style:true,
+    ctxHint:"Optional: timeframe, market-cap range, or hard constraints.",
+    build:(p,c,s)=>`You are a senior equity analyst at a top-tier hedge fund with 20 years of experience.
+Screen for the strongest ${s} opportunities in ${p} for a 12-month horizon.
+For each stock you recommend (return 10) provide: 1) Ticker and current market cap; 2) P/E vs the stated sector average; 3) Revenue growth trend (last 5 years + forward consensus); 4) Debt-to-equity with a credit-health read; 5) Dividend yield and payout sustainability (1-10); 6) Moat rating (weak/moderate/strong + one line); 7) Bull-case 12-month target + key assumption; 8) Bear-case 12-month target + key risk; 9) Risk rating (1-10) + reasoning; 10) Entry zone and stop-loss.
+End with a one-sentence thesis for the top 3. Then SEPARATELY list 3 stocks to AVOID in this category and why. Format as a structured table.${c?`\n\nAdditional context: ${c}`:""}` },
+
+  { id:"07", cat:"Discovery", name:"Disruption Scan",
+    blurb:"Map the credible 5–10 year disruption risks to an industry before you enter it.",
+    label:"Industry", ph:"e.g. retail banking",
+    ctxHint:"Optional: specific incumbents or technologies you want weighed.",
+    build:(p,c)=>`You are a technology and industry strategist with deep knowledge of innovation patterns and business-model disruption.
+Identify the most credible disruption risks to this industry over the next 5 to 10 years. Industry: ${p}.
+For each risk (return 5): 1) what it is and how it works; 2) which companies/technologies drive it; 3) time horizon (1-3 / 3-7 / 7+ years); 4) likelihood (low/med/high) + reasoning; 5) most-exposed incumbents; 6) best-positioned incumbents; 7) leading indicators it is accelerating.
+Then answer: which incumbent has the strongest defense and why; which has the weakest and why; and whether there is a "picks and shovels" play that benefits regardless of who wins. Be specific about technology, business model, and capital requirements.${c?`\n\nAdditional context: ${c}`:""}` },
+
+  { id:"02", cat:"Deep research", name:"Full Equity Research Report",
+    blurb:"The complete 5-section sell-side note: thesis, fundamentals, valuation, catalysts, sizing.",
+    label:"Stock ticker", ph:"e.g. UBER",
+    ctxHint:"Optional: anything specific you want the note to address.",
+    build:(p,c)=>`You are an elite equity research analyst. Generate a complete equity research report on ${p} in 5 sections.
+SECTION 1 — INVESTMENT THESIS: 3-sentence bull case; 3-sentence bear case; one-sentence overall thesis; recommendation (Strong Buy / Buy / Hold / Sell / Strong Sell); 12-month price target with implied upside.
+SECTION 2 — FUNDAMENTAL ANALYSIS: revenue growth (last 5 years + forward 2-year consensus); margin trends (gross, operating, net) with explanation; free-cash-flow trajectory and conversion; capital allocation (buybacks, dividends, M&A, capex); balance-sheet strength.
+SECTION 3 — VALUATION: current multiples (P/E, EV/EBITDA, P/S, FCF yield); multiples vs 5-year history; multiples vs nearest 3 competitors; DCF with bear/base/bull scenarios and explicit assumptions; verdict (cheap/fair/expensive).
+SECTION 4 — CATALYSTS AND RISKS: 3 catalysts in the next 6-12 months with timing; 3 downside risks with mitigation; key earnings drivers; macro sensitivities.
+SECTION 5 — POSITION SIZING: suggested allocation (% range); entry zone with reasoning; stop-loss; profit-taking levels.
+Cite every numerical claim. Flag any uncertain data point with [VERIFY].${c?`\n\nAdditional context: ${c}`:""}` },
+
+  { id:"04", cat:"Deep research", name:"Red Flag Scanner",
+    blurb:"Read a 10-K like a forensic accountant and surface accounting & governance warning signs.",
+    label:"Company or ticker", ph:"e.g. UBER",
+    ctxHint:"Paste the relevant 10-K / annual-report sections for the sharpest read — otherwise the agent pulls the latest filing.",
+    build:(p,c)=>`You are a forensic accountant reviewing a company filing for warning signs. Read like an auditor looking for problems, not an investor looking for confirmation. Company: ${p}.
+${c?`Review these filing sections:\n${c}\n`:`Use web search to pull the most recent 10-K / annual report.\n`}Flag anything unusual, inconsistent, or worth deeper scrutiny across: 1) Revenue quality (recognition policies, deferred-revenue moves, revenue vs cash flow, related-party deals); 2) Margin trends (unexplained compression, capitalized expenses, recurring "one-time" charges); 3) Working capital (AR and inventory vs revenue, DSO/DIO trend); 4) Debt & liquidity (debt vs cash flow, covenants, refinancing within 24 months, off-balance-sheet obligations); 5) Accounting changes (policy/estimate changes, restatements, reserve releases); 6) Governance (auditor changes or qualified opinions, going-concern language, insider selling, vague or defensive commentary).
+For each red flag, explain why it matters and what a follow-up should focus on.` },
+
+  { id:"06", cat:"Deep research", name:"Competitive Moat Audit",
+    blurb:"Rate the durability of a company's advantage across the 7 standard moat categories.",
+    label:"Stock ticker", ph:"e.g. COST",
+    ctxHint:"Optional: competitors to benchmark against.",
+    build:(p,c)=>`You are a competitive-strategy expert with 20 years analyzing business moats. Analyze ${p}'s moat across the 7 standard categories. For each, rate STRONG / MODERATE / WEAK / NONE and explain in 2-3 specific sentences: 1) network effects; 2) switching costs; 3) cost advantages (scale, location, process, regulatory); 4) intangible assets (brands, patents, licenses); 5) efficient scale; 6) data advantages; 7) distribution and ecosystem.
+Then assess which moats are STRENGTHENING over 5 years, which are ERODING, and the single technology or competitor change that would most threaten the strongest moat. Give a final moat rating (1-10) with reasoning and compare to the closest 3 competitors on the same scale. Generic language ("strong brand") is not acceptable — be specific.${c?`\n\nAdditional context: ${c}`:""}` },
+
+  { id:"03", cat:"Valuation", name:"DCF — Three Scenarios",
+    blurb:"Bear / base / bull discounted cash flow with an explicit sensitivity table.",
+    label:"Stock ticker", ph:"e.g. UBER",
+    ctxHint:"Optional: assumptions you want to pin (margins, growth rate, WACC).",
+    build:(p,c)=>`You are a valuation specialist deeply familiar with ${p}'s sector. Build a DCF for ${p} with three scenarios (Bear / Base / Bull). For each, state: revenue growth for years 1-5 and terminal; EBIT-margin progression; tax rate; capex as % of revenue; working capital as % of revenue; terminal growth rate; discount rate (WACC) with components broken out.
+Output, per scenario: free-cash-flow projections by year; enterprise value; equity value (subtract net debt); implied price per share; current price vs implied price (% over/undervalued). Then a sensitivity table showing how implied price moves when the discount rate shifts ±1% and when terminal growth shifts ±0.5%. Final verdict: cheap / fair / expensive with one-sentence reasoning. State every assumption explicitly and mark any input that needs checking with [VERIFY].${c?`\n\nAdditional context: ${c}`:""}` },
+
+  { id:"10", cat:"Valuation", name:"Macro Sensitivity Decoder",
+    blurb:"How the stock behaves across soft-landing, reacceleration, recession, and stagflation.",
+    label:"Stock ticker", ph:"e.g. MSFT",
+    ctxHint:"Optional: a specific macro regime you're most worried about.",
+    build:(p,c)=>`You are a macro strategist at a global hedge fund. Analyze how ${p}'s business and stock are likely to behave over the next 12 months in four scenarios: A) Soft landing (inflation normalizes, Fed cuts 50-100bps, positive GDP, risk-on); B) Reacceleration (inflation re-emerges, Fed pauses/hikes, above-trend GDP, curve steepens); C) Recession (unemployment rises, Fed cuts >200bps, GDP contracts, spreads widen); D) Stagflation (persistent inflation, weak GDP, Fed stuck, multiples compress).
+For each: how revenue responds; how margins respond; how the multiple responds; estimated price impact (range); best macro hedge to pair. Then synthesize: which scenario the current price most assumes; which is the most asymmetric trade vs current price; and the single macro indicator that would shift conviction fastest.${c?`\n\nAdditional context: ${c}`:""}` },
+
+  { id:"08", cat:"Decision", name:"Bull vs Bear Pressure Test",
+    blurb:"An adversarial investment-committee debate that ends by telling you what makes you wrong.",
+    label:"Stock ticker", ph:"e.g. PLTR",
+    ctxHint:"Your current view in 3–5 sentences, and whether you're long or short (defaults to long).",
+    build:(p,c)=>`You are running an investment-committee debate. Position: ${c?`as described below on`:`LONG`} ${p} at the current price.${c?`\nMy current view: ${c}`:""}
+Run the debate in four rounds. ROUND 1 — THE BULL: strongest possible case for the long; be aggressive; quote real numbers, catalysts, timeframes. ROUND 2 — THE BEAR: strongest possible case for the short; equally aggressive; real numbers. ROUND 3 — REBUTTAL: bull answers the bear's 3 strongest points; bear answers the bull's 3 strongest. ROUND 4 — SYNTHESIS: which side is stronger; the single fact/event that would make the weaker side correct; the asymmetry of the trade (upside if right vs downside if wrong); and a position size that respects both the asymmetry and the uncertainty. End by stating clearly what is most likely to make this view wrong.` },
+
+  { id:"11", cat:"Decision", name:"Position Sizing Decision",
+    blurb:"Kelly, risk-of-ruin, correlation, and conviction sizing before you place the trade.",
+    label:"Stock ticker", ph:"e.g. NVDA",
+    ctxHint:"Conviction, time horizon, expected upside, stop level, portfolio size — anything missing will be assumed and flagged.",
+    build:(p,c)=>`You are a portfolio-construction specialist. I am considering a position in ${p}.
+Parameters provided: ${c||"none — make reasonable assumptions and flag each one"}.
+Run the sizing analysis: 1) Kelly criterion (win-probability estimate from the thesis, win/loss R-multiple, full Kelly, and half Kelly — recommended for a non-fund investor); 2) Risk-of-ruin (max drawdown the portfolio can absorb, the size that respects it, worst case if the stop triggers); 3) Correlation sizing (existing exposure to similar factor bets, adjusted size); 4) Conviction sizing (high 3-7%, medium 1-3%, low 0.5-1% or skip); 5) Final recommendation (size in % and $, entry plan, stop-loss, first profit target with sizing). Be honest about what you don't know and flag any assumption that requires verification with [VERIFY].` },
+
+  { id:"05", cat:"Monitoring", name:"Earnings Call Decoder",
+    blurb:"Decode a fresh quarterly print: the numbers, what management dodged, and the bear case.",
+    label:"Stock ticker", ph:"e.g. AMD",
+    ctxHint:"Paste the earnings-call transcript and reported numbers for the deepest read — otherwise the agent uses the latest reported quarter.",
+    build:(p,c)=>`You are an experienced sell-side analyst reviewing the most recent quarterly earnings for ${p}. ${c?`Transcript and numbers provided below.\n${c}\n`:`Use web search to pull the latest reported quarter, the call commentary, and consensus.\n`}
+Section 1 — THE NUMBERS: revenue (vs consensus, prior year, prior quarter); EPS (vs consensus, prior year); key segment performance; guidance change (prior vs new, next quarter and full year); margins (gross, operating, FCF — direction). Section 2 — THE NARRATIVE: 3 things management emphasized that were NOT in the press release; 3 things they were asked about and dodged or answered thinly; tone shift vs prior quarter; new language introduced. Section 3 — IMPLICATIONS: does this change the thesis (yes/no + why); 3 things to track over the next 90 days; updated 12-month target with key assumption changes; position action (add/hold/trim/exit). Section 4 — THE BEAR CASE FROM THIS CALL: what a thoughtful short-seller would emphasize; what gets worse from here; the cleanest signal the bear case is starting to play out. Be direct; skip platitudes.` },
+
+  { id:"09", cat:"Monitoring", name:"Portfolio Risk Audit",
+    blurb:"Concentration, hidden factor bets, tail-risk scenarios, and the hedges that fix them.",
+    label:"Your positions and weights", ph:"e.g. AAPL 12% @ $150, NVDA 9% @ $400, XOM 7% @ $95 ...", long:true,
+    ctxHint:"Optional: total portfolio value and any cost basis you didn't include above.",
+    build:(p,c)=>`You are a portfolio risk manager at a top hedge fund. My current portfolio: ${p}.${c?`\nAdditional detail: ${c}`:""}
+Run a comprehensive risk audit: 1) Concentration (any single position >10%? any sector >30%? geography; style — all growth/small-cap/USD?); 2) Correlation clusters (positions that move together >0.7 over 2 years; the implied factor bets hidden in the book; any unintended factor exposure); 3) Tail-risk scenarios (a -20% S&P drawdown; a sudden +200bps rate move; a recession; a tech-specific selloff if relevant); 4) Liquidity profile (days to liquidate at 25% of ADV; positions taking >3 days to exit); 5) Specific hedges (3 ranked by cost-effectiveness, each with instrument, structure, cost, and what it hedges); 6) Immediate actions ("if this were my money I would change X tomorrow because…", top 3 ranked by urgency). Use web search for current prices and correlations where needed.` },
+
+  { id:"12", cat:"Monitoring", name:"Thesis Update",
+    blurb:"Re-examine a position you hold — and confront whether your view evolved or went stale.",
+    label:"Stock ticker", ph:"e.g. TSLA",
+    ctxHint:"Your original thesis, cost basis, and current size — paste it so the agent can challenge it.",
+    build:(p,c)=>`You are a portfolio manager reviewing an existing position in ${p}. ${c?`Position details and original thesis:\n${c}\n`:`(No original thesis provided — use web search for current fundamentals and reconstruct a fair prior view, flagging assumptions.)\n`}
+Walk through the review: 1) What has CHANGED since purchase (earnings vs original assumption; catalysts that played out or didn't; new catalysts; competitive shifts); 2) What has NOT changed but should be re-examined (untested assumptions; deprioritized risks; macro shifts); 3) Where am I being lazy (holding from inertia? emotionally attached? rationalizing under-performance?); 4) Updated thesis (one-sentence view; updated 12-month target; updated risk/reward; updated conviction 1-10); 5) Decision (hold at weight / add to % / trim to % / exit). Be direct — challenge the position, don't protect it. If you would not buy it fresh today at the current price, say so and explain why holding still makes sense (or doesn't).` },
+];
+
+let active = FRAMEWORKS.find(f=>f.id==="02");
+let style = "growth";
+let busy = false;
+let lastMarkdown = "";
+
+const $ = id => document.getElementById(id);
+const dd=$("dd"), ddBtn=$("ddBtn"), ddPanel=$("ddPanel"), ddTag=$("ddTag"), ddName=$("ddName");
+const descText=$("descText"), styleField=$("styleField"), styleSeg=$("styleSeg");
+const primaryLbl=$("primaryLbl"), primary=$("primary"), primaryTa=$("primaryTa");
+const context=$("context"), ctxHint=$("ctxHint"), runBtn=$("run");
+const fid=$("fid"), live=$("live"), liveText=$("liveText");
+const output=$("output"), paperTitle=$("paperTitle"), copyBtn=$("copyBtn");
+
+(function buildDropdown(){
+  const cats=[]; FRAMEWORKS.forEach(f=>{ if(!cats.includes(f.cat)) cats.push(f.cat); });
+  let html="";
+  cats.forEach(cat=>{
+    html += `<div class="dd-cat">${cat}</div>`;
+    FRAMEWORKS.filter(f=>f.cat===cat).forEach(f=>{
+      html += `<div class="opt" data-id="${f.id}" role="option"><span class="tag">F-${f.id}</span><div class="body"><div class="nm">${f.name}</div><div class="bl">${f.blurb}</div></div></div>`;
+    });
+  });
+  ddPanel.innerHTML = html;
+  ddPanel.querySelectorAll(".opt").forEach(o=> o.addEventListener("click", ()=>{ selectFramework(o.dataset.id); closeDD(); }));
+})();
+
+function openDD(){ dd.classList.add("open"); ddBtn.setAttribute("aria-expanded","true"); markSelected(); }
+function closeDD(){ dd.classList.remove("open"); ddBtn.setAttribute("aria-expanded","false"); }
+function markSelected(){ ddPanel.querySelectorAll(".opt").forEach(o=>o.classList.toggle("sel", o.dataset.id===active.id)); }
+ddBtn.addEventListener("click", ()=> dd.classList.contains("open") ? closeDD() : openDD());
+document.addEventListener("click", e=>{ if(!dd.contains(e.target)) closeDD(); });
+
+function selectFramework(id){
+  active = FRAMEWORKS.find(f=>f.id===id) || active;
+  ddTag.textContent="F-"+active.id; ddName.textContent=active.name;
+  fid.innerHTML = `F-${active.id} <span class="cur">_</span>`;
+  descText.textContent = active.blurb;
+  styleField.style.display = active.style ? "block" : "none";
+  if(active.long){ primary.style.display="none"; primaryTa.style.display="block"; primaryTa.placeholder=active.ph; }
+  else { primaryTa.style.display="none"; primary.style.display="block"; primary.placeholder=active.ph; }
+  primaryLbl.firstChild.nodeValue = active.label;
+  ctxHint.textContent = active.ctxHint || "";
+  context.placeholder = active.ctxHint || "Optional context…";
+}
+
+styleSeg.querySelectorAll("button").forEach(b=> b.addEventListener("click", ()=>{
+  styleSeg.querySelectorAll("button").forEach(x=>x.classList.remove("on")); b.classList.add("on"); style=b.dataset.v;
+}));
+
+/* ---- markdown ---- */
+function renderMarkdown(src){
+  src = src.replace(/<\/?cite[^>]*>/gi,"");
+  const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const inline = t => {
+    t = esc(t);
+    t = t.replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>");
+    t = t.replace(/\*(.+?)\*/g,"<em>$1</em>");
+    t = t.replace(/`([^`]+?)`/g,"<code>$1</code>");
+    t = t.replace(/\[(https?:[^\]\s]+)\]/g,'<a href="$1" target="_blank" rel="noopener">link</a>');
+    t = t.replace(/\[VERIFY([^\]]*)\]/g,'<span class="verify">[VERIFY$1]</span>');
+    return t;
+  };
+  const lines = src.replace(/\r/g,"").split("\n");
+  let html="", i=0;
+  const isList = l => /^\s*[-*•]\s+/.test(l);
+  const isNum = l => /^\s*\d+[.)]\s+/.test(l);
+  while(i<lines.length){
+    let line = lines[i];
+    if(/^\s*$/.test(line)){ i++; continue; }
+    if(line.includes("|") && i+1<lines.length && /^[\s:|-]+$/.test(lines[i+1]) && lines[i+1].includes("-")){
+      const cells = r => r.replace(/^\s*\|/,"").replace(/\|\s*$/,"").split("|").map(c=>c.trim());
+      const head = cells(line); i+=2; const rows=[];
+      while(i<lines.length && lines[i].includes("|") && lines[i].trim()!==""){ rows.push(cells(lines[i])); i++; }
+      html += `<div class="tbl-wrap"><table><thead><tr>${head.map(c=>`<th>${inline(c)}</th>`).join("")}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(c=>`<td>${inline(c)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+      continue;
+    }
+    const h = line.match(/^(#{1,6})\s+(.*)$/);
+    if(h){ const tag = h[1].length<=1?"h1":(h[1].length===2?"h2":"h3"); html += `<${tag}>${inline(h[2])}</${tag}>`; i++; continue; }
+    if(/^\s*---+\s*$/.test(line)){ html += "<hr/>"; i++; continue; }
+    if(isList(line)){ const it=[]; while(i<lines.length && isList(lines[i])){ it.push(lines[i].replace(/^\s*[-*•]\s+/,"")); i++; } html += `<ul>${it.map(x=>`<li>${inline(x)}</li>`).join("")}</ul>`; continue; }
+    if(isNum(line)){ const it=[]; while(i<lines.length && isNum(lines[i])){ it.push(lines[i].replace(/^\s*\d+[.)]\s+/,"")); i++; } html += `<ol>${it.map(x=>`<li>${inline(x)}</li>`).join("")}</ol>`; continue; }
+    const para=[line]; i++;
+    while(i<lines.length && !/^\s*$/.test(lines[i]) && !/^#{1,6}\s/.test(lines[i]) && !isList(lines[i]) && !isNum(lines[i]) && !lines[i].includes("|") && !/^\s*---+\s*$/.test(lines[i])){ para.push(lines[i]); i++; }
+    html += `<p>${inline(para.join(" "))}</p>`;
+  }
+  return html;
+}
+
+/* ---- views ---- */
+function setEmpty(){
+  paperTitle.textContent="Output"; copyBtn.style.display="none";
+  output.innerHTML = `<div class="empty"><div class="mk">⌗</div><h3>The desk is ready</h3><p>Pick a framework, enter a ticker, and run the desk. The agent pulls live data and streams an analyst-grade note.</p><div class="steps"><span>1 · framework</span><span>2 · ticker</span><span>3 · run</span></div></div>`;
+}
+let loadingMsgEl=null;
+function setLoading(){
+  paperTitle.textContent="Working"; copyBtn.style.display="none";
+  output.innerHTML = `<div class="loading"><div class="scanner"></div><div class="msg" id="lmsg">Connecting to the desk…</div><div class="sub">live web search · the note streams in as it's written</div></div>`;
+  loadingMsgEl = $("lmsg");
+}
+function updateStatus(phase){
+  if(!loadingMsgEl) return;
+  const map = { search:"Pulling live market data…", results:"Reading the results…", write:"Writing the note…" };
+  loadingMsgEl.textContent = map[phase] || "Working…";
+}
+let liveEl=null, rafPending=false;
+function beginReport(){
+  paperTitle.textContent = `F-${active.id} · ${active.name}`;
+  output.innerHTML = `<div class="stream-flag"><span class="sd"></span>streaming live</div><div class="report" id="reportLive"></div>`;
+  liveEl = $("reportLive");
+}
+function scheduleRender(acc){
+  if(rafPending) return; rafPending = true;
+  requestAnimationFrame(()=>{ rafPending=false; if(liveEl) liveEl.innerHTML = renderMarkdown(acc); });
+}
+function finalizeReport(acc){
+  lastMarkdown = acc;
+  paperTitle.textContent = `F-${active.id} · ${active.name}`;
+  output.innerHTML = `<div class="report">${renderMarkdown(acc)}</div>`;
+  copyBtn.style.display="inline-block";
+  output.parentElement.parentElement.scrollTop = 0;
+}
+function setError(msg){
+  paperTitle.textContent="Error"; copyBtn.style.display="none";
+  output.innerHTML = `<div class="err"><div class="ttl">Request failed</div><h3>The desk couldn't complete that run</h3><p>${msg}</p></div>`;
+}
+function setLive(on){ if(on){ live.classList.add("on"); liveText.textContent="live data"; } else { live.classList.remove("on"); liveText.textContent="standby"; } }
+
+/* ---- run (streams from /api/analyze) ---- */
+async function run(){
+  if(busy) return;
+  const field = active.long ? primaryTa : primary;
+  const p = field.value.trim();
+  const c = context.value.trim();
+  if(!p){ field.focus(); field.style.borderColor="var(--down)"; setTimeout(()=>{ field.style.borderColor=""; },1200); return; }
+
+  busy=true; runBtn.disabled=true; setLive(true); setLoading();
+  const prompt = active.build(p, c, style);
+  let acc = "", started = false;
+
+  try{
+    const resp = await fetch(API_ENDPOINT, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ prompt, model: MODEL })
+    });
+    if(!resp.ok){
+      let detail = "Request failed ("+resp.status+")";
+      try{ const j = await resp.json(); if(j && j.error) detail = j.error; }catch(_){}
+      throw new Error(detail);
+    }
+    if(!resp.body || !resp.body.getReader) throw new Error("Streaming not supported by this browser");
+
+    const reader = resp.body.getReader();
+    const dec = new TextDecoder();
+    let buf = "";
+    while(true){
+      const { value, done } = await reader.read();
+      if(done) break;
+      buf += dec.decode(value, { stream:true });
+      let idx;
+      while((idx = buf.indexOf("\n\n")) !== -1){
+        const raw = buf.slice(0, idx); buf = buf.slice(idx+2);
+        let event="message", data="";
+        raw.split("\n").forEach(ln=>{
+          if(ln.startsWith("event:")) event = ln.slice(6).trim();
+          else if(ln.startsWith("data:")) data += ln.slice(5).trim();
+        });
+        if(!data) continue;
+        let payload; try{ payload = JSON.parse(data); }catch(_){ continue; }
+        if(event==="status") updateStatus(payload.phase);
+        else if(event==="delta"){ if(!started){ started=true; beginReport(); } acc += payload.text; scheduleRender(acc); }
+        else if(event==="error") throw new Error(payload.message || "Stream error");
+        else if(event==="done"){ /* finalize after loop */ }
+      }
+    }
+    if(!acc.trim()) throw new Error("The model returned no text");
+    finalizeReport(acc);
+  }catch(e){
+    setError((e && e.message) || "Something went wrong. Check your connection and the /api/analyze function, then try again.");
+  }finally{
+    busy=false; runBtn.disabled=false; setLive(false);
+  }
+}
+runBtn.addEventListener("click", run);
+primary.addEventListener("keydown", e=>{ if(e.key==="Enter") run(); });
+
+copyBtn.addEventListener("click", async ()=>{
+  try{ await navigator.clipboard.writeText(lastMarkdown); copyBtn.textContent="Copied"; setTimeout(()=>copyBtn.textContent="Copy",1400); }
+  catch(_){ copyBtn.textContent="Copy failed"; setTimeout(()=>copyBtn.textContent="Copy",1400); }
+});
+
+selectFramework("02");
+setEmpty();
+</script>
+</body>
+</html>
