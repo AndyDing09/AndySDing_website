@@ -4,11 +4,12 @@ live_account_acknowledgement.md
 credentials.json
 token.json
 
-# Runtime artifacts.
-state/
-logs/
-journal/
-config.yaml
+# Runtime artifacts (anchored to the project root so they don't match the
+# warrior/journal/ source package).
+/state/
+/logs/
+/journal/
+/config.yaml
 
 # Python
 __pycache__/
