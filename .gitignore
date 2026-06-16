@@ -1,0 +1,4 @@
+# Dev/QA artifacts — never deploy or commit
+.playwright-mcp/
+*.jpeg
+.shots/

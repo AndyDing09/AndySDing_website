@@ -13,7 +13,7 @@
   border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color 0.15s ease;
 }
 .sa-subtab:hover { color: var(--ink); }
-.sa-subtab.active { color: var(--ink); border-bottom-color: var(--clay); font-weight: 600; }
+.sa-subtab.active { color: var(--ink); border-bottom-color: var(--green); font-weight: 600; }
 .sa-pane.hidden { display: none; }
 .sa-desk-intro { margin-bottom: 18px; }
 .sa-desk-intro .db-eyebrow { display: block; margin-bottom: 4px; }
@@ -21,7 +21,7 @@
 
 .sa-disclaimer {
   background: var(--clay-soft);
-  border: 1px solid rgba(166, 83, 9, 0.3);
+  border: 1px solid rgba(138, 111, 83, 0.3);
   border-radius: var(--radius);
   padding: 14px 18px;
   font-size: 0.84rem;
@@ -389,7 +389,7 @@
 .desk-modes label { display: inline-flex; align-items: center; gap: 5px; cursor: pointer; }
 .desk-warn { color: var(--clay); font-weight: 600; font-size: 0.78rem; }
 .desk-live-warn {
-  background: var(--clay-soft); border: 1px solid rgba(166,83,9,0.3); border-radius: var(--radius-sm);
+  background: var(--clay-soft); border: 1px solid rgba(138,111,83,0.3); border-radius: var(--radius-sm);
   padding: 10px 12px; font-size: 0.8rem; line-height: 1.55; color: var(--ink-2);
 }
 .desk-live-warn strong { color: var(--clay); }
@@ -412,7 +412,7 @@
 .db-eyebrow { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.16em; color: var(--clay); font-weight: 600; }
 .db-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; color: var(--ink); margin-top: 2px; }
 .db-disclaimer {
-  background: var(--clay-soft); border: 1px solid rgba(166,83,9,0.25); border-radius: var(--radius-sm);
+  background: var(--clay-soft); border: 1px solid rgba(138,111,83,0.25); border-radius: var(--radius-sm);
   padding: 10px 12px; font-size: 0.8rem; line-height: 1.55; color: var(--ink-2); margin: 14px 0;
 }
 .db-disclaimer strong { color: var(--clay); }
