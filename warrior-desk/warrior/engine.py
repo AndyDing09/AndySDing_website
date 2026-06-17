@@ -34,6 +34,30 @@ from .state import State
 log = get_logger("engine")
 
 
+def _short_reason(p) -> str:
+    """Boil a rejected proposal's reasons down to a one-word tag for the scan line."""
+    r = "; ".join(p.decision.reasons).lower() if (p and p.decision) else ""
+    if "bull flag" in r or "flat top" in r or "pattern" in r:
+        return "no-setup"
+    if "rvol" in r:
+        return "low-rvol"
+    if "stop too wide" in r:
+        return "stop-wide"
+    if "r:r" in r or "reward" in r:
+        return "rr<2"
+    if "spread" in r:
+        return "spread"
+    if "session" in r:
+        return "session"
+    if "price" in r and "range" in r:
+        return "price"
+    if "float" in r:
+        return "float"
+    if "halt" in r:
+        return "halted"
+    return "rej"
+
+
 class TradingEngine:
     def __init__(self, cfg: Config, provider: DataProvider, broker: Broker,
                  reasoner=None, journal=None, state: Optional[State] = None,
@@ -121,6 +145,29 @@ class TradingEngine:
             # gate) — not every polling tick where nothing was setting up.
             if self.journal is not None and self._pattern_valid(proposal):
                 self._safe(lambda p=proposal: self.journal.record_proposal(p))
+        # Show the whole field every cycle so you can see it's scanning many names.
+        self._scan_status(candidates, now)
+
+    def _scan_status(self, candidates, now: datetime) -> None:
+        """One compact line per cycle: every name scanned + where it stands."""
+        if self.alerter is None or not candidates:
+            return
+        recent = {p.symbol: p for p in self.recent_proposals}
+        parts = []
+        for c in candidates:
+            if c.symbol in self.state.open_positions:
+                parts.append(f"{c.symbol}:held")
+                continue
+            p = recent.get(c.symbol)
+            if p is None:
+                parts.append(f"{c.symbol}:?")
+            elif p.decision and p.decision.approved and p.triggered:
+                parts.append(f"{c.symbol}:\U0001F7E2GO")
+            elif p.decision and p.decision.approved:
+                parts.append(f"{c.symbol}:{p.grade.value}·watch")
+            else:
+                parts.append(f"{c.symbol}:✗{_short_reason(p)}")
+        print(f"[{now:%H:%M:%S}] scanned {len(candidates)}: " + "  ".join(parts))
 
     @staticmethod
     def _pattern_valid(proposal) -> bool:

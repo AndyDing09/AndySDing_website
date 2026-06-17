@@ -138,7 +138,7 @@ class Config:
     timeframe_prime: str = "1Min"
     timeframe_midday: str = "5Min"
     poll_seconds: int = 30
-    max_evaluate_per_pass: int = 6      # cap deep gauntlet runs per cycle (speed)
+    max_evaluate_per_pass: int = 10     # how many top movers to deep-analyze per cycle
     scan_cache_seconds: int = 25        # reuse the market scan within a cycle
     log_level: str = "INFO"
     use_llm_reasoning: bool = True         # uses anthropic if a key is present
