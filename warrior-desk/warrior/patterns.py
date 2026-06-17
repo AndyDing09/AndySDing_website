@@ -43,7 +43,7 @@ def detect_pattern(
         res.reasons.append("not enough bars to read a pattern")
         return res
 
-    look = min(n, 15)
+    look = min(n, 10)
     recent = list(bars[-look:])
     current = recent[-1]
     prior = recent[:-1]
@@ -51,7 +51,9 @@ def detect_pattern(
     # The swing high among the prior bars = the pole top / consolidation ceiling.
     sh_idx = max(range(len(prior)), key=lambda i: prior[i].high)
     sh_high = prior[sh_idx].high
-    pole_bars = prior[: sh_idx + 1]
+    # Anchor the pole to the RECENT run into that high (not the whole window) so a
+    # stale high-of-day from an hour ago can't produce a >100% "retrace".
+    pole_bars = prior[max(0, sh_idx - 5): sh_idx + 1]
     pole_low = min(b.low for b in pole_bars)
     pole_size = sh_high - pole_low
     if pole_low <= 0 or pole_size <= 0 or (pole_size / pole_low) < cfg.selection.min_pole_gain_pct:
@@ -67,6 +69,10 @@ def detect_pattern(
     pull = prior[sh_idx + 1:] if triggered_high else recent[sh_idx + 1:]
     if len(pull) < 1:
         res.reasons.append("no pullback yet — not a flag")
+        return res
+    if len(pull) > 5:
+        res.reasons.append(
+            f"the high is {len(pull)} bars old and price has faded — a stale move, not a fresh flag")
         return res
 
     pullback_low = min(b.low for b in pull)
