@@ -49,6 +49,7 @@ class TradingEngine:
         self.recent_proposals: list = []   # ring buffer for the website snapshot
         self._scan_cache: list = []        # cache the market scan within a cycle
         self._scan_at: Optional[datetime] = None
+        self._watched: set = set()         # symbols already given a "forming" heads-up
         self.state = state or State.load(cfg.state_path)
         try:
             self.account = account or broker.get_account()
@@ -101,15 +102,20 @@ class TradingEngine:
         for c in candidates:
             if c.symbol in st.open_positions:
                 continue
-            proposal = self.gauntlet.evaluate_symbol(c.symbol, self.account, st, now)
+            proposal = self.gauntlet.evaluate_symbol(c.symbol, self.account, st, now, candidate=c)
             self._record_recent(proposal)
             if proposal.tradeable and proposal.triggered:
                 # The breakout is confirmed — take it.
                 self.execution.execute(proposal, st, now, approval_fn=approval_fn)
                 return  # one entry attempt per pass
             if proposal.tradeable and not proposal.triggered:
-                # A valid setup that hasn't broken out yet — watch, don't chase.
-                log.debug("%s: setup ready, waiting for the breakout trigger.", c.symbol)
+                # A valid setup that hasn't broken out yet — heads-up once, then watch.
+                if self.alerter is not None and proposal.symbol not in self._watched:
+                    self._watched.add(proposal.symbol)
+                    try:
+                        self.alerter.watch(proposal)
+                    except Exception as exc:
+                        log.warning("watch alert failed: %s", exc)
                 continue
             # Only journal *meaningful* rejections (a real pattern that failed a
             # gate) — not every polling tick where nothing was setting up.

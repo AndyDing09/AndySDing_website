@@ -135,6 +135,27 @@ def test_flat_choppy_series_has_no_pattern():
     assert not res.decision.approved
 
 
+def test_candidate_rvol_used_when_daily_feed_is_thin():
+    # Alpaca daily bars empty (thin free feed) => computed RVOL would be 0 and the
+    # name would wrongly fail step 3. The scanner's RVOL must rescue it.
+    class NoDailyProvider(SyntheticProvider):
+        def get_bars(self, symbol, timeframe, limit=200):
+            if timeframe == "1Day":
+                return []
+            return super().get_bars(symbol, timeframe, limit)
+
+    prov = NoDailyProvider(bars={"ABCD": bull_flag_bars()},
+                           quotes={"ABCD": Quote(bid=3.66, ask=3.68)},
+                           floats={"ABCD": FloatInfo(8_000_000, True, "test")})
+    cand = Candidate("ABCD", price=3.67, gap_pct=0.4, rvol=5.0, avg_dollar_volume=5_000_000)
+    g = Gauntlet(Config(), prov)
+    st = State(path="/tmp/warrior_cand_state.json")
+    p = g.evaluate_symbol("ABCD", account(), st, NOW, short_circuit=False, candidate=cand)
+    assert p.metrics["rvol"] == 5.0                 # used the scanner value, not 0
+    assert step(p, 3).status == StepStatus.PASS      # criteria pass on real RVOL
+    assert not any("RVOL 0.0x" in r for r in (p.decision.reasons or []))
+
+
 def test_no_news_technical_only_caps_at_b():
     p = run(make_provider(material_news=False))
     if p.decision.approved:

@@ -213,12 +213,14 @@ def cmd_publish(args) -> int:
     g = Gauntlet(cfg, provider, reasoner=reasoner)
 
     watch = g.scan()
+    by_symbol = {c.symbol: c for c in watch}
     requested = fetch_requests(cfg) if cfg.secrets.publish_url else []
     syms: list[str] = []
     for s in list(args.symbols or []) + requested + [c.symbol for c in watch[:5]]:
         if s.upper() not in syms:
             syms.append(s.upper())
-    proposals = [g.evaluate_symbol(s, account, state, now, short_circuit=False) for s in syms]
+    proposals = [g.evaluate_symbol(s, account, state, now, short_circuit=False,
+                                   candidate=by_symbol.get(s)) for s in syms]
 
     window = classify_window(now, cfg)
     session = {"window": window.value, "halted": state.session_halted,

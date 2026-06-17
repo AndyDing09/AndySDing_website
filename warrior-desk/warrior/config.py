@@ -48,6 +48,7 @@ class RiskConfig:
     # stop-too-wide policy (§2.4): "reject" or "mechanical"
     wide_stop_policy: str = "reject"
     mechanical_stop_distance: float = 0.20
+    max_stop_pct: float = 0.05      # a stop wider than this % of price is "too wide"
     # exit logic (§2.7): scale at the first target (~2R), sell into an extension
     # bar (a parabolic spike up ~4R), and never widen a stop.
     first_target_r: float = 2.0

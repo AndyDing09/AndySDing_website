@@ -120,11 +120,13 @@ class AlpacaProvider(DataProvider):
         self.scanner = scanner   # optional market scanner (e.g. YahooScanner) for get_movers
 
     def get_bars(self, symbol: str, timeframe: str, limit: int = 200) -> list[Bar]:
-        status, body = self.rest.get(
-            f"/v2/stocks/{symbol}/bars",
-            {"timeframe": timeframe, "limit": limit, "feed": self.feed, "adjustment": "raw"},
-            data_api=True,
-        )
+        params = {"timeframe": timeframe, "limit": limit, "feed": self.feed, "adjustment": "raw"}
+        # Daily bars: pin a start ~400 days back so we actually get history (prior
+        # close, 200-EMA) instead of just the most recent partial bar on free feeds.
+        if "Day" in timeframe:
+            from datetime import datetime, timedelta, timezone
+            params["start"] = (datetime.now(timezone.utc) - timedelta(days=400)).strftime("%Y-%m-%d")
+        status, body = self.rest.get(f"/v2/stocks/{symbol}/bars", params, data_api=True)
         if status != 200:
             raise MarketDataError(f"bars {symbol}: HTTP {status} {body}")
         return parse_bars(body)

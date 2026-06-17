@@ -19,7 +19,7 @@ from .models import ManageAction, Position, TradeProposal
 
 log = get_logger("alerts")
 
-_ICON = {"ENTER": "🟢", "EXIT": "🔴", "SCALE": "🟡", "STOP": "🟠", "INFO": "🔔"}
+_ICON = {"ENTER": "🟢", "EXIT": "🔴", "SCALE": "🟡", "STOP": "🟠", "WATCH": "👀", "INFO": "🔔"}
 
 
 class Alerter:
@@ -52,6 +52,15 @@ class Alerter:
             self._banner("STOP", symbol, [
                 f"MOVE STOP on {symbol} to break-even {a.price:.2f} — the trade is now free",
             ], headline=f"adjust stop in {self.broker_name}")
+
+    def watch(self, p: TradeProposal) -> None:
+        """Heads-up that a setup cleared the gauntlet but hasn't broken out yet —
+        so you can pre-stage the order instead of staring at silence."""
+        self._banner("WATCH", p.symbol, [
+            f"{p.pattern.value} forming (grade {p.grade.value}) — coiling under {p.entry:.2f}",
+            f"pre-stage: BUY {p.shares:,} over {p.entry:.2f}, stop {p.stop:.2f}, "
+            f"target {p.target:.2f} (R:R {p.reward_risk:.1f})",
+        ], headline="watching for the breakout — get ready")
 
     def info(self, title: str, lines: list[str]) -> None:
         self._banner("INFO", title, lines)

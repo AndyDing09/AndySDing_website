@@ -95,6 +95,7 @@ class Gauntlet:
         now: datetime,
         short_circuit: bool = True,
         watchlist_rank: Optional[int] = None,
+        candidate=None,
     ) -> TradeProposal:
         symbol = symbol.upper()
         cfg = self.cfg
@@ -150,6 +151,8 @@ class Gauntlet:
         catalyst = best_catalyst(news)
 
         price = quote.mid if quote else (intraday[-1].close if intraday else 0.0)
+        if price <= 0 and candidate is not None:
+            price = candidate.price
         closes = [b.close for b in intraday]
         e9 = ema_last(closes, 9)
         e20 = ema_last(closes, 20)
@@ -163,6 +166,17 @@ class Gauntlet:
         avg_daily_vol = (sum(b.volume for b in daily[-20:]) / len(daily[-20:])) if daily else 0.0
         avg_dollar_volume = avg_daily_vol * price
         rvol, rvol_approx = self._rvol(intraday, daily, tf, symbol, now)
+        # The intraday/daily feed (free IEX) is often too thin to compute RVOL or
+        # dollar-volume reliably — fall back to the market scanner's values, which
+        # are full-market. Never block a real mover just because IEX was sparse.
+        if rvol <= 0 and candidate is not None and candidate.rvol:
+            rvol, rvol_approx = candidate.rvol, True
+        if avg_dollar_volume <= 0 and candidate is not None and candidate.avg_dollar_volume:
+            avg_dollar_volume = candidate.avg_dollar_volume
+        if not fi.known and candidate is not None and candidate.float_shares:
+            from .data.provider import FloatInfo
+            fi = FloatInfo(candidate.float_shares, verified=False, source="scanner",
+                           note="shares-outstanding proxy from the scan (approximate)")
 
         m.update({
             "price": round(price, 4), "rvol": rvol, "rvol_approx": rvol_approx,
@@ -272,18 +286,23 @@ class Gauntlet:
         # ── Step 8: Define stop ──
         stop = round(pattern.pullback_low, 4)
         stop_distance = round(entry - stop, 4)
-        wide = stop_distance > cfg.risk.mechanical_stop_distance
+        # "Too wide" scales with price: a flat $0.20 only fits cheap stocks, so use
+        # the larger of the mechanical floor and a % of price.
+        wide_threshold = round(max(cfg.risk.mechanical_stop_distance,
+                                   cfg.risk.max_stop_pct * entry), 4)
+        wide = stop_distance > wide_threshold
         if wide and cfg.risk.wide_stop_policy == "mechanical":
-            stop = round(entry - cfg.risk.mechanical_stop_distance, 4)
+            stop = round(entry - wide_threshold, 4)
             stop_distance = round(entry - stop, 4)
             add(8, "Define stop", StepStatus.PASS,
-                f"pullback low was wide; using mechanical ${cfg.risk.mechanical_stop_distance:.2f} "
+                f"pullback low was wide; using a mechanical ${wide_threshold:.2f} "
                 f"stop at {stop:.2f}, plan to re-enter on a tighter setup",
                 metrics={"stop": stop, "stop_distance": stop_distance, "mechanical": True})
         elif wide:
             add(8, "Define stop", StepStatus.FAIL,
                 f"pullback-low stop {stop:.2f} is ${stop_distance:.2f} away "
-                f"(> ${cfg.risk.mechanical_stop_distance:.2f}) — reject, wait for a tighter setup",
+                f"(> ${wide_threshold:.2f} = {cfg.risk.max_stop_pct:.0%} of price) — "
+                f"too loose, wait for a tighter setup",
                 metrics={"stop": stop, "stop_distance": stop_distance})
             aborted.append("stop too wide for good R:R")
             skip_rest(9, "stop too wide")
