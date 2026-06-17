@@ -30,12 +30,12 @@ def detect_pattern(
     ema9: Optional[float] = None,
     vwap: Optional[float] = None,
 ) -> PatternResult:
-    """Detect a bull flag / flat top in the trailing candles.
+    """Detect a bull flag / flat top using a forgiving "recent-high + pullback +
+    break" model that survives choppy real-world intraday bars.
 
-    Handles both the *forming* state (last candle is the pullback) and the
-    *triggered* state (last candle is the green breakout that broke the pullback
-    high). ``ema9``/``vwap`` are the latest indicator values used to judge whether
-    the pullback held support.
+    The pole is the run up into the most recent swing high; the flag is the
+    pullback off that high. The entry trigger is the break of that swing high.
+    A *breakout* (triggered) is the current candle pushing a green bar through it.
     """
     res = PatternResult()
     n = len(bars)
@@ -43,105 +43,70 @@ def detect_pattern(
         res.reasons.append("not enough bars to read a pattern")
         return res
 
-    # 1) Locate the trailing pullback (consecutive non-green candles). If the last
-    #    candle is green it may be the breakout, so the pullback ends one bar back.
-    last = bars[-1]
-    breakout_candle: Optional[Bar] = None
-    end = n - 1
-    if last.is_green:
-        breakout_candle = last
-        end = n - 2
+    look = min(n, 15)
+    recent = list(bars[-look:])
+    current = recent[-1]
+    prior = recent[:-1]
 
-    pull_idx: list[int] = []
-    i = end
-    while i >= 0 and not bars[i].is_green and len(pull_idx) < MAX_PULLBACK:
-        pull_idx.append(i)
-        i -= 1
-    pull_idx.reverse()
-
-    if not pull_idx:
-        res.reasons.append("no pullback — price is trending without a flag")
-        return res
-    if len(pull_idx) > MAX_PULLBACK - 1 and end - i > MAX_PULLBACK:
-        res.reasons.append("pullback too long to be a tight flag")
-
-    pull_bars = [bars[j] for j in pull_idx]
-    pole_end = pull_idx[0] - 1
-    if pole_end < 0:
-        res.reasons.append("no pole before the pullback")
-        return res
-
-    # 2) Walk back to find the pole base (rising candles / higher lows).
-    pole_start = pole_end
-    steps = 0
-    while pole_start - 1 >= 0 and steps < MAX_POLE:
-        prev = bars[pole_start - 1]
-        cur = bars[pole_start]
-        if cur.low >= prev.low or prev.is_green:
-            pole_start -= 1
-            steps += 1
-        else:
-            break
-    pole_bars = bars[pole_start:pole_end + 1]
-    if not pole_bars:
-        res.reasons.append("could not isolate a pole")
-        return res
-
-    pole_high = max(b.high for b in pole_bars)
+    # The swing high among the prior bars = the pole top / consolidation ceiling.
+    sh_idx = max(range(len(prior)), key=lambda i: prior[i].high)
+    sh_high = prior[sh_idx].high
+    pole_bars = prior[: sh_idx + 1]
     pole_low = min(b.low for b in pole_bars)
-    pole_size = pole_high - pole_low
-    if pole_size <= 0 or pole_bars[-1].close <= pole_bars[0].open:
-        res.reasons.append("no real upward pole (move is not sharp/positive)")
+    pole_size = sh_high - pole_low
+    if pole_low <= 0 or pole_size <= 0 or (pole_size / pole_low) < cfg.selection.min_pole_gain_pct:
+        res.reasons.append("no real pole (move too small to be momentum)")
         return res
     if not any(b.is_green for b in pole_bars):
         res.reasons.append("pole has no green candles")
         return res
 
-    pullback_low = min(b.low for b in pull_bars)
-    retrace = (pole_high - pullback_low) / pole_size if pole_size else 1.0
+    triggered_high = current.high >= sh_high
+    # The pullback is everything between the swing high and now. If we're breaking
+    # out this bar, the pullback is the bars *before* the breakout candle.
+    pull = prior[sh_idx + 1:] if triggered_high else recent[sh_idx + 1:]
+    if len(pull) < 1:
+        res.reasons.append("no pullback yet — not a flag")
+        return res
 
-    res.pole_high = round(pole_high, 4)
+    pullback_low = min(b.low for b in pull)
+    retrace = (sh_high - pullback_low) / pole_size
+
+    res.kind = PatternKind.BULL_FLAG
+    # Flat top = the high was tested by 2+ bars (a seller capping one price).
+    near_ceiling = sum(1 for b in prior if abs(b.high - sh_high) <= 0.003 * sh_high)
+    if near_ceiling >= 2:
+        res.kind = PatternKind.FLAT_TOP
+        res.flat_top_price = round(sh_high, 4)
+
+    res.pole_high = round(sh_high, 4)
     res.pole_low = round(pole_low, 4)
     res.pullback_low = round(pullback_low, 4)
     res.retrace_pct = round(retrace, 4)
-    res.pullback_len = len(pull_bars)
+    res.pullback_len = len(pull)
     res.pole_volume = round(_avg_vol(pole_bars), 2)
-    res.pullback_volume = round(_avg_vol(pull_bars), 2)
-    res.confirm_volume = round(max(_avg_vol(pole_bars), _avg_vol(pull_bars)), 2)
-
+    res.pullback_volume = round(_avg_vol(pull), 2)
+    res.confirm_volume = round(max(_avg_vol(pole_bars), _avg_vol(pull)), 2)
+    res.trigger_price = round(sh_high, 4)
+    res.triggered = triggered_high and current.is_green
     if ema9 is not None:
-        res.holds_9ema = pullback_low >= ema9 * 0.999  # tiny tolerance
+        res.holds_9ema = pullback_low >= ema9 * 0.999
     if vwap is not None:
         res.holds_vwap = pullback_low >= vwap * 0.999
 
-    # 3) Trigger = break of the pullback high (prior red candle / flat-top line).
-    pull_highs = [b.high for b in pull_bars]
-    res.trigger_price = round(max(pull_highs), 4)
-
-    # 4) Flat top vs bull flag: a flat ceiling = pullback highs cluster tightly.
-    ref_price = pole_high or 1.0
-    flatness = (max(pull_highs) - min(pull_highs)) / ref_price if ref_price else 1.0
-    if len(pull_bars) >= 2 and flatness <= 0.005:
-        res.kind = PatternKind.FLAT_TOP
-        res.flat_top_price = res.trigger_price
-    else:
-        res.kind = PatternKind.BULL_FLAG
-
-    # 5) Was the breakout already confirmed (green candle broke the trigger on volume)?
-    if breakout_candle is not None and breakout_candle.high > res.trigger_price:
-        res.triggered = breakout_candle.volume >= res.confirm_volume * 0.8
-
-    # 6) Validity verdict.
     if retrace > cfg.selection.pullback_max_retrace:
         res.reasons.append(
             f"pullback retraced {retrace:.0%} of the pole (> "
             f"{cfg.selection.pullback_max_retrace:.0%}) — too deep")
-        res.valid = False
+        return res
+    if current.close < pole_low:
+        res.reasons.append("price broke down below the base — not a flag")
         return res
 
     res.valid = True
     res.reasons.append(
-        f"{res.kind.value}: pole {pole_low:.2f}->{pole_high:.2f}, "
-        f"{len(pull_bars)}-candle pullback to {pullback_low:.2f} "
-        f"({retrace:.0%} retrace), trigger {res.trigger_price:.2f}")
+        f"{res.kind.value}: pole {pole_low:.2f}->{sh_high:.2f} "
+        f"({pole_size / pole_low:.0%}), {len(pull)}-bar pullback to {pullback_low:.2f} "
+        f"({retrace:.0%} retrace), "
+        + ("broke out" if res.triggered else f"trigger {sh_high:.2f}"))
     return res

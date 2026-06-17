@@ -86,6 +86,7 @@ class SelectionConfig:
     max_price: float = 20.0          # small-cap focus; momentum names are cheap
     major_exchanges_only: bool = True            # drop OTC / pink-sheet names
     pullback_max_retrace: float = 0.50   # reject pullbacks deeper than 50% of pole
+    min_pole_gain_pct: float = 0.015     # the pole must be a real move (>=1.5%), not noise
 
 
 @dataclass
