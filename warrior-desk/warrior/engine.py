@@ -47,6 +47,8 @@ class TradingEngine:
         self.execution = ExecutionEngine(cfg, broker, journal=journal, alerter=alerter)
         self.pm = PositionManager(cfg, broker, alerter=alerter)
         self.recent_proposals: list = []   # ring buffer for the website snapshot
+        self._scan_cache: list = []        # cache the market scan within a cycle
+        self._scan_at: Optional[datetime] = None
         self.state = state or State.load(cfg.state_path)
         try:
             self.account = account or broker.get_account()
@@ -94,7 +96,8 @@ class TradingEngine:
         window = classify_window(now, cfg)
         if not in_allowed_session(window, cfg):
             return
-        candidates = self.gauntlet.scan()
+        # Only run the (expensive) deep gauntlet on the top names this cycle.
+        candidates = self.scan_cached(now)[: max(1, cfg.max_evaluate_per_pass)]
         for c in candidates:
             if c.symbol in st.open_positions:
                 continue
@@ -117,6 +120,21 @@ class TradingEngine:
     def _pattern_valid(proposal) -> bool:
         from .models import StepStatus
         return any(s.number == 6 and s.status == StepStatus.PASS for s in proposal.steps)
+
+    def scan_cached(self, now: datetime) -> list:
+        """Scan the market, reusing the result within ``scan_cache_seconds`` so a
+        single cycle (enter + publish) doesn't hit the scanner twice."""
+        ttl = getattr(self.cfg, "scan_cache_seconds", 25)
+        if (self._scan_at is not None and self._scan_cache
+                and (now - self._scan_at).total_seconds() < ttl):
+            return self._scan_cache
+        try:
+            self._scan_cache = self.gauntlet.scan()
+        except Exception as exc:
+            log.warning("scan failed: %s", exc)
+            self._scan_cache = []
+        self._scan_at = now
+        return self._scan_cache
 
     # ── website snapshot ──
     def _record_recent(self, proposal, limit: int = 12) -> None:
@@ -145,10 +163,7 @@ class TradingEngine:
             "consecutive_losses": self.state.consecutive_losses,
             "open_positions": self.state.open_count,
         }
-        try:
-            watchlist = self.gauntlet.scan()
-        except Exception:
-            watchlist = []
+        watchlist = self.scan_cached(now)   # reuse this cycle's scan (no double fetch)
         alerts = self.alerter.history if self.alerter is not None else []
         return build_snapshot(
             self.cfg, mode=mode_label, account_equity=self.account.equity, session=session,

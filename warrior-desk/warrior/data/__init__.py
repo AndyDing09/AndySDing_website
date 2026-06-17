@@ -21,6 +21,7 @@ __all__ = [
 def build_scan_sources(cfg):
     """Return (scanner, float_source) per cfg.scanner (yahoo | alpaca | none)."""
     if getattr(cfg, "scanner", "yahoo") == "yahoo":
+        from .float_source import CachingFloatSource
         from .yahoo import YahooFloatSource, YahooScanner
-        return YahooScanner(cfg), YahooFloatSource()
+        return YahooScanner(cfg), CachingFloatSource(YahooFloatSource())
     return None, UnknownFloatSource()

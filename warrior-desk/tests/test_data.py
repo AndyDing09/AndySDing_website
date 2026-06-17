@@ -77,6 +77,21 @@ def test_static_float_source():
     assert fs.get_float("NOPE").known is False
 
 
+def test_caching_float_source_memoizes():
+    from warrior.data.float_source import CachingFloatSource, FloatSource
+    from warrior.data.provider import FloatInfo
+    calls = {"n": 0}
+
+    class Counting(FloatSource):
+        def get_float(self, s):
+            calls["n"] += 1
+            return FloatInfo(8_000_000, True, "x")
+
+    c = CachingFloatSource(Counting())
+    c.get_float("ABCD"); c.get_float("abcd"); c.get_float("ABCD")
+    assert calls["n"] == 1          # one underlying fetch despite 3 (case-insensitive) calls
+
+
 def test_synthetic_provider_cursor_replay():
     bars = [Bar(ts=datetime(2026, 6, 16, 9, 30 + i), open=5, high=5.5, low=4.9,
                 close=5.0 + i * 0.1, volume=100) for i in range(5)]

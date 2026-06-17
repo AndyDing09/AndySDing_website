@@ -61,3 +61,18 @@ class StaticFloatSource(FloatSource):
             return UnknownFloatSource().get_float(symbol)
         return FloatInfo(shares=v, verified=True, source=self._source,
                          note="operator-provided float")
+
+
+class CachingFloatSource(FloatSource):
+    """Memoize float lookups for the session — float doesn't change intraday, so a
+    slow per-symbol fetch (e.g. Yahoo) should happen at most once per symbol."""
+
+    def __init__(self, inner: FloatSource):
+        self._inner = inner
+        self._cache: dict[str, FloatInfo] = {}
+
+    def get_float(self, symbol: str) -> FloatInfo:
+        s = symbol.upper()
+        if s not in self._cache:
+            self._cache[s] = self._inner.get_float(symbol)
+        return self._cache[s]
