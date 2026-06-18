@@ -40,6 +40,10 @@ class RiskConfig:
     max_trades_per_day: int = 5
     consecutive_loss_halt: int = 2
     loss_cooldown_minutes: int = 10
+    # Require A-grade setups during the midday window (§1). Off by default: grade A
+    # needs a VERIFIED float feed, which free data can't provide, so leaving this on
+    # would silently lock out all midday trading. B setups are already sized down.
+    midday_requires_a: bool = False
     max_spread: float = 0.10
     max_chase: float = 0.05
     # B-grade setups are auto-sized down by this factor (§3.1 "no oversized

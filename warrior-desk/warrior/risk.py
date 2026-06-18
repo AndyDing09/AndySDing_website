@@ -223,8 +223,10 @@ class RiskEngine:
             "A or B",
             f"grade {p.grade.value} is not tradeable" if p.grade not in (Grade.A, Grade.B) else "",
         )
-        # midday window: A+ only (§1)
-        if ctx.session_window == SessionWindow.MIDDAY:
+        # midday window: optionally A+ only (§1). Off by default — without a verified
+        # float feed grade A is unreachable, which would silently lock out ALL midday
+        # trading. B setups are already auto-sized-down for midday caution.
+        if ctx.session_window == SessionWindow.MIDDAY and self.r.midday_requires_a:
             gate(
                 "midday_A_only",
                 p.grade == Grade.A,

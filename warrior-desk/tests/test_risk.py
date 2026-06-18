@@ -156,9 +156,18 @@ def test_grade_c_rejected():
     assert "setup_grade_tradeable" in _fail_names(d)
 
 
-def test_midday_requires_grade_a():
+def test_midday_allows_b_by_default():
+    # Default: midday is NOT A-only (free data can't reach A), so a B setup trades.
     ctx = good_ctx(session_window=SessionWindow.MIDDAY)
     d = engine().evaluate(good_proposal(grade=Grade.B, session_window=SessionWindow.MIDDAY), ctx)
+    assert d.approved, d.reasons
+
+
+def test_midday_a_only_when_enabled():
+    eng = engine()
+    eng.r.midday_requires_a = True   # opt in (e.g. with a verified float feed)
+    ctx = good_ctx(session_window=SessionWindow.MIDDAY)
+    d = eng.evaluate(good_proposal(grade=Grade.B, session_window=SessionWindow.MIDDAY), ctx)
     assert "midday_A_only" in _fail_names(d)
 
 
