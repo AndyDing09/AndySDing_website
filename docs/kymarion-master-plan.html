@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ISEF Master Plan — Microplastic Detection Buoy — Andy S. Ding</title>
+  <meta name="description" content="20-week master plan for a low-cost autonomous buoy that maps coastal microplastic concentrations — courses, hardware build, field deployments, and ISEF prep." />
+  <link rel="canonical" href="https://www.andysding.com/docs/kymarion-master-plan.html" />
+  <meta name="theme-color" content="#3f5b50" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌊%3C/text%3E%3C/svg%3E" />
+  <meta property="og:title" content="ISEF Master Plan — Microplastic Detection Buoy — Andy S. Ding" />
+  <meta property="og:description" content="20-week master plan for a low-cost autonomous buoy that maps coastal microplastic concentrations — courses, hardware build, field deployments, and ISEF prep." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.andysding.com/docs/kymarion-master-plan.html" />
+  <meta property="og:image" content="https://www.andysding.com/photo.jpg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://www.andysding.com/photo.jpg" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css?v=19" />
+  <link rel="stylesheet" href="doc.css?v=1" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav id="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-leaf">🌊</span> Andy S. Ding
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#home"      class="nav-link">Home</a></li>
+      <li><a href="../index.html#about"     class="nav-link">About</a></li>
+      <li><a href="../index.html#blog"      class="nav-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="nav-link active">Research</a></li>
+      <li><a href="../index.html#resume"    class="nav-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="nav-link">Interests</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── Mobile drawer ─── -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <ul>
+      <li><a href="../index.html#home"      class="drawer-link">Home</a></li>
+      <li><a href="../index.html#about"     class="drawer-link">About</a></li>
+      <li><a href="../index.html#blog"      class="drawer-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="drawer-link">Research</a></li>
+      <li><a href="../index.html#resume"    class="drawer-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="drawer-link">Interests</a></li>
+    </ul>
+  </div>
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <main class="doc-page" id="main">
+
+    <a href="../kymarion.html" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 3L5 8l5 5"/>
+      </svg>
+      Back to Project Kymarion
+    </a>
+
+    <header class="doc-header">
+      <span class="doc-project-chip">🌊 Project Kymarion</span>
+      <h1 class="doc-title">ISEF Master Plan — Microplastic Detection Buoy</h1>
+      <div class="doc-meta">
+        <span class="doc-type">Plan</span>
+        <span>June 2026</span>
+        <span>6 min read</span>
+      </div>
+    </header>
+
+    <article class="doc-body">
+      <p>This is a 20-week master plan for an ISEF environmental science project in the ocean/marine category. The project involves building a low-cost autonomous surface vehicle (buoy) that detects and spatially maps microplastic concentrations along a coastal ocean zone, supported by a publishable research paper.</p>
+      <p><strong>Project title (draft):</strong> "Low-Cost Autonomous Surface Vehicle for Spatial Microplastic Mapping in Coastal Waters"</p>
+      <p><strong>Hypothesis:</strong> Microplastic concentration varies significantly by proximity to storm drains, shoreline, and tidal patterns along the local coastline.</p>
+      <p><strong>Key outputs:</strong></p>
+      <ul>
+        <li>Physical buoy demonstrated at ISEF</li>
+        <li>GPS heatmap of local coastal microplastic distribution</li>
+        <li>Research paper submitted to PLOS ONE or Marine Pollution Bulletin</li>
+      </ul>
+      <div class="doc-figure-note">The project's Task Tracker (an inline database) lives in Notion and is not mirrored here.</div>
+      <p>Parent project: <a href="kymarion-project-overview.html">Project: Kymarion</a></p>
+
+      <hr />
+
+      <h2>20-Week Timeline</h2>
+
+      <h3>Phase 1 — Foundation (Weeks 1–4)</h3>
+      <p><strong>Goal:</strong> Build scientific vocabulary, order parts, start the first two courses.</p>
+      <h4>Courses</h4>
+      <ul>
+        <li><strong>AMNH Marine Biology</strong> (Coursera) — ~7 hrs total, finish by week 3. This is your main anchor course. Covers ocean ecosystems, marine organisms, species interactions, and environmental threats. ~2 hrs/week.</li>
+        <li><strong>MIT Marine Chemistry OCW (12.742)</strong> — Free at <a href="https://ocw.mit.edu">ocw.mit.edu</a>. Read 1–2 lecture note PDFs per week. Focus on how pollutants enter and move through seawater. ~1.5 hrs/week.</li>
+        <li><strong>P. Lee Ferguson lab papers</strong> (Google Scholar) — Don't start these yet. Begin background reading first (see Reading section below).</li>
+      </ul>
+      <h4>Build</h4>
+      <ul>
+        <li>Research and order all components (see Parts List section)</li>
+        <li>Sketch hull design — PVC pontoon catamaran</li>
+        <li>Set up Arduino IDE on laptop</li>
+      </ul>
+      <p><strong>Weekly time commitment:</strong> ~6 hrs</p>
+
+      <h3>Phase 2 — Build + Deepen (Weeks 5–8)</h3>
+      <p><strong>Goal:</strong> Buoy assembled and bench-tested. Oceanography course underway.</p>
+      <h4>Courses</h4>
+      <ul>
+        <li><strong>Oceanography: A Key to Better Understand Our World</strong> (Coursera, University of Barcelona) — Start week 5 now that AMNH is done. ~18 hrs total, ~2 hrs/week. Covers ocean currents, tidal dynamics, coastal circulation — directly explains why plastic concentrates where it does.</li>
+        <li><strong>MIT Transport Processes in the Environment (1.061)</strong> — Free at <a href="https://ocw.mit.edu">ocw.mit.edu</a>. Covers diffusion, advection, turbulent mixing in water bodies. Start week 5 alongside Barcelona. ~1.5 hrs/week.</li>
+        <li><strong>Microplastics content</strong> (Class Central — <a href="https://classcentral.com/subject/microplastics">classcentral.com/subject/microplastics</a>) — Pick 2–3 short courses. Run passively. ~1 hr/week.</li>
+      </ul>
+      <h4>Build</h4>
+      <ul>
+        <li>Assemble PVC hull</li>
+        <li>Wire all sensors (turbidity, GPS, temp, SD card)</li>
+        <li>Write Arduino C code for sensor logging</li>
+        <li>Test in bathtub or pool — confirm GPS + turbidity writing to SD card</li>
+      </ul>
+      <p><strong>Weekly time commitment:</strong> ~7 hrs</p>
+
+      <h3>Phase 3 — Calibrate + Python (Weeks 9–12)</h3>
+      <p><strong>Goal:</strong> Sensors validated against known concentrations. Python data pipeline built. First ocean test.</p>
+      <h4>Courses</h4>
+      <ul>
+        <li><strong>Udemy — GIS &amp; Geospatial Analysis with Python, GeoPandas, and Folium</strong> — ~$15–20. Start week 9. This is what builds your GPS heatmap — the central ISEF figure. ~2 hrs/week.</li>
+        <li><strong>Udemy — Spatial Analysis &amp; Geospatial Data Science in Python</strong> — ~$15–20. Run alongside the Folium course. Covers choropleth maps, heatmaps, spatial joins. ~1.5 hrs/week.</li>
+      </ul>
+      <h4>Lab Calibration</h4>
+      <ul>
+        <li>Create microplastic solutions: 0, 10, 50, 100, 500 particles/L</li>
+        <li>Build turbidity sensor calibration curve</li>
+        <li>Validate filter samples under microscope (contact local university lab)</li>
+      </ul>
+      <h4>Field</h4>
+      <ul>
+        <li>First ocean deployment: 1–2 test runs</li>
+        <li>Define GPS waypoints — 6 sites = 3 matched pairs (3 convergence + 3 control)</li>
+        <li>Confirm data logging works end-to-end</li>
+        <li>Fix any hardware issues before full deployment</li>
+      </ul>
+      <p><strong>Weekly time commitment:</strong> ~7 hrs</p>
+
+      <h3>Phase 4 — Full Field Deployment (Weeks 13–16)</h3>
+      <p><strong>Goal:</strong> All field data collected. Python heatmap generated. Paper introduction and methods drafted.</p>
+      <h4>Field Deployment</h4>
+      <ul>
+        <li>3+ full ocean deployments on different days</li>
+        <li>Vary tide state, time of day, weather conditions</li>
+        <li>6 GPS waypoints per run (3 matched pairs: 3 convergence + 3 control)</li>
+        <li>Collect mesh filter samples (100μm) at each waypoint</li>
+        <li>Log: GPS coordinates, timestamp, turbidity reading, water temp</li>
+      </ul>
+      <h4>Data Processing</h4>
+      <ul>
+        <li>Pull CSV files from SD card</li>
+        <li>Clean data in Python (pandas)</li>
+        <li>Run ANOVA on spatial zones</li>
+        <li>Generate GPS heatmap with Folium</li>
+        <li>Iterate on visualization — this becomes your key ISEF figure</li>
+      </ul>
+      <h4>Writing</h4>
+      <ul>
+        <li>Draft Introduction and Methods sections now — don't wait</li>
+        <li>Your methods are finalized and hypothesis is live</li>
+      </ul>
+      <h4>Courses</h4>
+      <ul>
+        <li>Return to MIT OCW materials with fresh eyes — field experience makes the transport and chemistry content click much faster</li>
+      </ul>
+      <p><strong>Weekly time commitment:</strong> ~7 hrs</p>
+
+      <h3>Phase 5 — Paper + ISEF Prep (Weeks 17–20)</h3>
+      <p><strong>Goal:</strong> Full paper complete. ISEF display board ready. Journal submission sent.</p>
+      <h4>Writing</h4>
+      <ul>
+        <li>Results section: interpret heatmap, report ANOVA findings, describe spatial patterns</li>
+        <li>Discussion: tie findings back to coastal current dynamics (Barcelona course) and pollutant transport (MIT OCW)</li>
+        <li>Conclusion: implications, limitations, future work</li>
+        <li>Abstract: write last</li>
+      </ul>
+      <h4>ISEF Board</h4>
+      <ul>
+        <li>Central figure = GPS heatmap (print large)</li>
+        <li>Bring the physical buoy to your display</li>
+        <li>Prepare 2-minute demo script</li>
+        <li>Practice explaining calibration methodology — judges will ask</li>
+        <li>Emphasize low-cost angle: ~$200 tool that rivals $5,000 equipment</li>
+      </ul>
+      <h4>Publication</h4>
+      <ul>
+        <li>Target journal: PLOS ONE (open access, accepts student research) or Marine Pollution Bulletin</li>
+        <li>Follow author guidelines carefully</li>
+        <li>Ask mentor (if found) to co-review before submission</li>
+      </ul>
+      <h4>Professor Outreach</h4>
+      <ul>
+        <li>Email UMass Boston Marine Science or Woods Hole Oceanographic Institution</li>
+        <li>Lead with your real data and course background</li>
+        <li>Ask for 20-min call, not ongoing commitment</li>
+        <li>Reference MIT Marine Chemistry and Barcelona Oceanography coursework</li>
+      </ul>
+      <p><strong>Weekly time commitment:</strong> ~7 hrs</p>
+
+      <hr />
+
+      <h2>Key Milestones</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Week</th>
+              <th>Milestone</th>
+              <th>What it unlocks</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>4</td>
+              <td>Parts ordered, AMNH done, MIT OCW underway</td>
+              <td>Can discuss marine ecosystems + pollutant chemistry with a professor</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td>Buoy built and bench-tested</td>
+              <td>Arduino logging GPS + turbidity to SD card reliably</td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td>Sensors calibrated, first ocean deployment done</td>
+              <td>Python pipeline working on real data</td>
+            </tr>
+            <tr>
+              <td>16</td>
+              <td>All field data collected, heatmap generated</td>
+              <td>ANOVA complete, intro + methods drafted</td>
+            </tr>
+            <tr>
+              <td>20</td>
+              <td>Full paper complete, ISEF board ready</td>
+              <td>Submitted to journal, demo practiced</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <hr />
+
+      <h2>Hardware Build</h2>
+
+      <h3>Parts List</h3>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Purpose</th>
+              <th>Est. Cost</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Arduino Mega</td>
+              <td>Brain of the buoy</td>
+              <td>~$20</td>
+            </tr>
+            <tr>
+              <td>NEO-6M GPS module</td>
+              <td>Records exact position of each reading</td>
+              <td>~$10</td>
+            </tr>
+            <tr>
+              <td>Turbidity sensor (TSS)</td>
+              <td>Detects particle scattering — proxy for microplastic concentration</td>
+              <td>~$15</td>
+            </tr>
+            <tr>
+              <td>OPT101 photodiode</td>
+              <td>Optical particle detection</td>
+              <td>~$10</td>
+            </tr>
+            <tr>
+              <td>DS18B20 waterproof temp sensor</td>
+              <td>Water temperature at surface</td>
+              <td>~$5</td>
+            </tr>
+            <tr>
+              <td>SD card module + card</td>
+              <td>Logs all data with timestamp + GPS</td>
+              <td>~$8</td>
+            </tr>
+            <tr>
+              <td>L298N motor driver</td>
+              <td>Controls propulsion motors</td>
+              <td>~$8</td>
+            </tr>
+            <tr>
+              <td>RC receiver + motors</td>
+              <td>Navigation — start RC, add autonomy later</td>
+              <td>~$30</td>
+            </tr>
+            <tr>
+              <td>100μm mesh filter net</td>
+              <td>Physical microplastic sample collection</td>
+              <td>~$15</td>
+            </tr>
+            <tr>
+              <td>PVC pipe + foam board</td>
+              <td>Catamaran hull — stable, waterproof</td>
+              <td>~$25</td>
+            </tr>
+            <tr>
+              <td>LiPo battery + charger</td>
+              <td>Power supply</td>
+              <td>~$25</td>
+            </tr>
+            <tr>
+              <td>Waterproof enclosure</td>
+              <td>Protects electronics</td>
+              <td>~$15</td>
+            </tr>
+            <tr>
+              <td><strong>Total</strong></td>
+              <td></td>
+              <td><strong>~$186</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Build Order</h3>
+      <ol>
+        <li>Assemble and waterproof hull first</li>
+        <li>Mount electronics in dry enclosure</li>
+        <li>Wire GPS → Arduino → SD card (simplest chain first)</li>
+        <li>Add turbidity sensor and verify readings</li>
+        <li>Add motor driver + RC control</li>
+        <li>Field test in pool before ocean</li>
+        <li>Add autonomy (waypoint navigation) after RC is reliable</li>
+      </ol>
+
+      <h3>Arduino C — Key Libraries</h3>
+      <ul>
+        <li><code>TinyGPS++</code> — GPS parsing</li>
+        <li><code>SD.h</code> — SD card logging</li>
+        <li><code>OneWire</code> + <code>DallasTemperature</code> — temp sensor</li>
+        <li><code>SoftwareSerial</code> — GPS serial communication</li>
+      </ul>
+
+      <hr />
+
+      <h2>Professor Outreach</h2>
+
+      <h3>Where to reach out (Massachusetts)</h3>
+      <ul>
+        <li><strong>UMass Boston — School for the Environment</strong> — <a href="https://umb.edu/academics/environment">umb.edu/academics/environment</a></li>
+        <li><strong>Woods Hole Oceanographic Institution</strong> — <a href="https://whoi.edu">whoi.edu</a> (world's top ocean research institution, literally in your state)</li>
+        <li><strong>MIT EAPS (Earth, Atmospheric and Planetary Sciences)</strong> — the same department whose OCW you're studying</li>
+        <li><strong>Northeastern University Marine Science Center</strong> — in Nahant, MA — very close to you</li>
+      </ul>
+      <h3>Email template approach</h3>
+      <ul>
+        <li>Subject: "High school ISEF student — microplastic coastal mapping project"</li>
+        <li>3 sentences: who you are + what you're doing, what specific question you have for them, ask for 20-min call or email exchange</li>
+        <li>Mention MIT OCW Marine Chemistry and Barcelona Oceanography coursework — shows you're serious</li>
+        <li>Attach your 1-page project summary if you have one</li>
+        <li>Send to 4–5 professors, expect 1–2 replies</li>
+      </ul>
+      <p>A full email template is kept in a separate document (private correspondence, not published here).</p>
+
+      <hr />
+
+      <h2>Notes &amp; Resources</h2>
+      <ul>
+        <li>MIT Marine Chemistry OCW: <a href="https://ocw.mit.edu">ocw.mit.edu</a> → search "12.742"</li>
+        <li>MIT Transport Processes OCW: <a href="https://ocw.mit.edu">ocw.mit.edu</a> → search "1.061"</li>
+        <li>Ferguson Lab: <a href="https://ferguson.cee.duke.edu">ferguson.cee.duke.edu</a></li>
+        <li>GESAMP report: search "GESAMP microplastics 2016 PDF" on Google</li>
+        <li>Class Central microplastics: <a href="https://classcentral.com/subject/microplastics">classcentral.com/subject/microplastics</a></li>
+        <li>Google Scholar for papers: <a href="https://scholar.google.com">scholar.google.com</a></li>
+        <li>NOAA microplastics: <a href="https://oceanservice.noaa.gov/facts/microplastics.html">oceanservice.noaa.gov/facts/microplastics.html</a></li>
+      </ul>
+    </article>
+
+    <footer class="doc-footer">
+      <a href="../kymarion.html" class="to-project">← Project Kymarion project</a>
+      <a href="../kymarion.html#documents" class="to-library">All documents</a>
+    </footer>
+
+  </main>
+
+  <script src="../script.js?v=9"></script>
+  <script src="../interactions.js?v=2" defer></script>
+</body>
+</html>

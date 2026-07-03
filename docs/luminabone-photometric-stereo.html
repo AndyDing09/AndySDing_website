@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Photometric Stereo Depth Reconstruction — Andy S. Ding</title>
+  <meta name="description" content="Development notes on recovering absolute-scale depth maps from three lit images via photometric stereo: derivations, bug fixes, and 2.75% error results." />
+  <link rel="canonical" href="https://www.andysding.com/docs/luminabone-photometric-stereo.html" />
+  <meta name="theme-color" content="#3f5b50" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🦴%3C/text%3E%3C/svg%3E" />
+  <meta property="og:title" content="Photometric Stereo Depth Reconstruction — Andy S. Ding" />
+  <meta property="og:description" content="Development notes on recovering absolute-scale depth maps from three lit images via photometric stereo: derivations, bug fixes, and 2.75% error results." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.andysding.com/docs/luminabone-photometric-stereo.html" />
+  <meta property="og:image" content="https://www.andysding.com/photo.jpg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://www.andysding.com/photo.jpg" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css?v=19" />
+  <link rel="stylesheet" href="doc.css?v=1" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav id="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-leaf">🌊</span> Andy S. Ding
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#home"      class="nav-link">Home</a></li>
+      <li><a href="../index.html#about"     class="nav-link">About</a></li>
+      <li><a href="../index.html#blog"      class="nav-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="nav-link active">Research</a></li>
+      <li><a href="../index.html#resume"    class="nav-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="nav-link">Interests</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── Mobile drawer ─── -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <ul>
+      <li><a href="../index.html#home"      class="drawer-link">Home</a></li>
+      <li><a href="../index.html#about"     class="drawer-link">About</a></li>
+      <li><a href="../index.html#blog"      class="drawer-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="drawer-link">Research</a></li>
+      <li><a href="../index.html#resume"    class="drawer-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="drawer-link">Interests</a></li>
+    </ul>
+  </div>
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <main class="doc-page" id="main">
+
+    <a href="../luminabone.html" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 3L5 8l5 5"/>
+      </svg>
+      Back to LuminaBone
+    </a>
+
+    <header class="doc-header">
+      <span class="doc-project-chip">🦴 LuminaBone</span>
+      <h1 class="doc-title">Photometric Stereo Depth Reconstruction</h1>
+      <div class="doc-meta">
+        <span class="doc-type">Technical notes</span>
+        <span>May 16, 2026</span>
+        <span>10 min read</span>
+      </div>
+    </header>
+
+    <article class="doc-body">
+      <h2>1. Background and motivation</h2>
+      <p>Traditional bone registration relies on manually selecting optical markers and CT fiducials. This is slow and error-prone. The goal here is to recover a dense depth map of the surgical surface directly from images, so the depth map can be registered to a pre-operative CT scan automatically.</p>
+      <p>Commercial inspiration: MedicalTek's MonoStereo system in Taiwan converts 2D endoscope video into 3D in real time using a single-image inverse-square + Lambertian model plus learned priors. The classical multi-light version of the same idea, photometric stereo, recovers true surface normals algebraically from three or more images, then integrates them into a depth map. That is the technique implemented here.</p>
+
+      <h2>2. Physical model</h2>
+      <h3>2.1 Lambertian reflection</h3>
+      <p>A matte surface scatters incoming light equally in all directions. Its observed brightness depends only on the angle between the surface normal and the light direction:</p>
+      <pre><code>I = ρ · L · cos(θ)</code></pre>
+      <p>where <code>ρ</code> is albedo (surface reflectivity), <code>L</code> is light intensity, and <code>θ</code> is the angle between surface normal <code>n</code> and light direction <code>L</code>. This is Lambert's cosine law.</p>
+
+      <h3>2.2 Inverse-square falloff</h3>
+      <p>For a point light source, intensity at the surface drops with the square of distance because the same energy spreads over a sphere of area <code>4πr²</code>:</p>
+      <pre><code>I ∝ 1 / r²</code></pre>
+
+      <h3>2.3 Combined endoscope model (single light, coaxial)</h3>
+      <p>When the light source is on the camera axis (e.g. endoscope tip), the two combine:</p>
+      <pre><code>I(p) = ρ · L · cos(θ) / r²</code></pre>
+      <p>Inverting this for <code>r</code> gives the single-image depth estimator. Useful but limited: it conflates <code>ρ</code>, <code>cos(θ)</code>, and <code>r²</code> into a single brightness number.</p>
+
+      <h3>2.4 Photometric stereo (Woodham 1980)</h3>
+      <p>With three images of the same surface lit from three known different directions, the per-pixel equation system becomes:</p>
+      <pre><code>I_k = ρ · (n · L_k)    for k = 1, 2, 3</code></pre>
+      <p>Stacking into matrix form:</p>
+      <pre><code>[I₁]   [L₁ᵀ]
+[I₂] = [L₂ᵀ] · (ρn)
+[I₃]   [L₃ᵀ]</code></pre>
+      <p>Let <code>g = ρn</code>. Then <code>g = L⁻¹ · I</code>, computed once per pixel by a single matrix multiply. From <code>g</code>:</p>
+      <ul>
+        <li>Albedo: <code>ρ = |g|</code></li>
+        <li>Surface normal: <code>n = g / |g|</code></li>
+      </ul>
+      <p>Critical advantage over the single-image method: distance does not appear in these equations. Photometric stereo recovers the surface orientation directly, with no inverse-square assumption.</p>
+
+      <h3>2.5 Recovering depth from normals</h3>
+      <p>Surface normals give the gradient of the depth function, not depth itself. The relationship (with <code>nz &gt; 0</code> pointing toward the camera and <code>z</code> increasing away from camera):</p>
+      <pre><code>dz/dx_image = +nx / nz
+dz/dy_image = −ny / nz   ← sign flip: image y points down, world Y points up</code></pre>
+      <p>Integrate these gradients across the image to recover <code>z(x, y)</code> up to an additive constant. Sign convention bit us during development — see section 6.</p>
+
+      <h3>2.6 Absolute scale anchoring (coaxial light)</h3>
+      <p>Pure photometric stereo produces depth up to an additive offset. To get real centimeters, take one additional image with a coaxial light source (light on the camera axis) and use the inverse-square law at the brightest pixel:</p>
+      <pre><code>r_near = sqrt(ρ · L / I_brightest)</code></pre>
+      <p>This single measurement fixes the offset for the entire depth map.</p>
+
+      <h2>3. Pipeline</h2>
+      <p>The implementation has five stages:</p>
+      <ol>
+        <li>Render or capture three lit images of the same scene with three different known light directions.</li>
+        <li>Solve photometric stereo per pixel: <code>g = L⁻¹ · I</code> → albedo, surface normal.</li>
+        <li>Integrate surface normals into a relative depth map (weighted least-squares Poisson solve).</li>
+        <li>Calibrate absolute scale using a coaxial-light reference image (inverse-square at the brightest point).</li>
+        <li>Visualize as a heatmap with numerical labels in cm.</li>
+      </ol>
+      <div class="doc-figure-note">Figure: Stage 1 — the three input images of the same sphere lit from three different known directions.</div>
+
+      <h2>4. Code structure (photometric_stereo_sphere.py)</h2>
+      <h3>4.1 <code>make_sphere_scene(size, radius_cm, center_dist_cm, albedo, light_dirs)</code></h3>
+      <p>Generates a synthetic test scene:</p>
+      <ul>
+        <li>A sphere of radius 1.5 cm centered at depth 4.0 cm from the camera</li>
+        <li>300×300 image, ~60 pixels per cm</li>
+        <li>Three lit images using directional lights at [−1, 1, 1.5], [1, 1, 1.5], [0, −1, 1.5] (unit-normalized)</li>
+        <li>Returns: list of RGB images, ground truth depth map, ground truth normals, foreground mask, light direction matrix</li>
+      </ul>
+
+      <h3>4.2 <code>solve_photometric_stereo(images, light_dirs, mask)</code></h3>
+      <p>The core Woodham step. Stack three luminance images into a (3, N) matrix where N = H × W. Compute <code>L⁻¹</code> once (3×3 inverse), then <code>G = L⁻¹ · I_stack</code> recovers <code>g = ρn</code> for every pixel in a single matrix multiply. Split into albedo = <code>|g|</code> and normal = <code>g / |g|</code>.</p>
+      <div class="doc-figure-note">Figure: Stage 2 — recovered surface normals vs ground truth, plus the recovered albedo (uniform gray, as expected for a uniform-reflectivity sphere).</div>
+
+      <h3>4.3 <code>integrate_normals_to_depth(normals, mask, cm_per_pixel)</code></h3>
+      <p>Sparse weighted least-squares Poisson solver. For each masked pixel, write two equations:</p>
+      <pre><code>nz · (z[y, x+1] − z[y, x]) = +nx · cm_per_pixel
+nz · (z[y+1, x] − z[y, x]) = −ny · cm_per_pixel</code></pre>
+      <p>The <code>nz</code> weighting downweights silhouette pixels where <code>nz ≈ 0</code> and the slope estimate <code>nx/nz</code> would otherwise blow up. Anchor one pixel to 0 to make the system non-singular. Build as a sparse CSR matrix, solve with <code>scipy.sparse.linalg.lsqr</code>.</p>
+
+      <h3>4.4 <code>calibrate_scale_with_coaxial(z_relative, mask, coaxial_image, albedo, light_power_cm2)</code></h3>
+      <p>Fixes the additive offset. Take the top 0.1% brightest pixels in the coaxial image (where cos θ ≈ 1, so they are the nearest points). Average their red-channel intensity → <code>r_near = sqrt(ρL / I)</code>. Set the offset so the integrated depth at those bright pixels equals <code>r_near</code>. Also handles sign flip if photometric stereo returned a flipped-orientation solution.</p>
+
+      <h3>4.5 <code>render_coaxial(normals, mask, albedo_map, light_power_cm2, z_true, noise)</code></h3>
+      <p>Helper that synthesizes the calibration image used by <code>calibrate_scale_with_coaxial</code>. For real hardware, this image comes from the actual scope.</p>
+
+      <h3>4.6 Visualization helpers</h3>
+      <p><code>annotate_sphere</code>, <code>labeled</code>, and the figure-generating code in <code>main()</code> produce five output PNGs with depth labels, comparison plots, and a 3D surface rendering.</p>
+
+      <h2>5. Light direction calibration</h2>
+      <p>In the synthetic demo, light directions are hardcoded because we both generate the images and solve them. In a real rig you must measure them. Four standard methods:</p>
+
+      <h3>5.1 Chrome sphere calibration (gold standard)</h3>
+      <p>Place a shiny ball of known size in the scene. The specular highlight on the ball pinpoints the light source position. For a highlight at pixel (x, y) on a sphere with center (cx, cy) and radius r pixels:</p>
+      <pre><code>nx = (x − cx) / r
+ny = −(y − cy) / r       ← image-y flip
+nz = sqrt(1 − nx² − ny²)
+L = 2(n · V)n − V        ← mirror reflection of view direction V = [0, 0, 1]</code></pre>
+      <p>Do this once per light. Re-calibrate whenever any light moves.</p>
+
+      <h3>5.2 Known-geometry object</h3>
+      <p>Image a calibration target whose shape you know. Solve for the L that best explains the observed brightness pattern. A 3-parameter nonlinear least-squares fit.</p>
+
+      <h3>5.3 Direct physical measurement</h3>
+      <p>If the lights are fixed in a rig (LED ring, scope tip), measure their positions in millimeters from a reference point and convert to camera coordinates. This is what surgical scopes effectively do — LED positions are known from manufacturing.</p>
+
+      <h3>5.4 Uncalibrated photometric stereo</h3>
+      <p>Solve for lights and surface jointly. Suffers from the generalized bas-relief ambiguity — multiple (lights, surface) pairs explain the same images. Needs additional constraints (integrability, prior on one normal, multiple objects). Active research area.</p>
+
+      <h3>5.5 Geometric requirement</h3>
+      <p>The three light directions must form a linearly independent set for <code>L⁻¹</code> to exist. Lights all roughly above the object → L becomes near-singular → solver explodes on noise. Recommended configuration: roughly 120° apart in azimuth, all tilted 30–45° above the horizon.</p>
+
+      <h2>6. Bugs encountered and fixed</h2>
+      <h3>6.1 Unit mismatch in integration (factor of ~60,000 error)</h3>
+      <p><strong>Symptom:</strong> Integrated depth span was 153 cm when the true span was 1.5 cm.</p>
+      <p><strong>Cause:</strong> Wrote forward differences as <code>z[y, x+1] − z[y, x] = −nx/nz</code> (unitless slope) instead of <code>= −nx/nz · cm_per_pixel</code>. The integration accumulated slope × pixel-count, producing depth in “pixels” instead of cm.</p>
+      <p><strong>Fix:</strong> Multiply gradient RHS by <code>cm_per_pixel</code> everywhere. For our 300-pixel image with 1.5 cm sphere radius spanning 0.3 × W pixels, <code>cm_per_pixel = 1.5 / 90 ≈ 0.0167</code>.</p>
+
+      <h3>6.2 RGB vs luminance in coaxial calibration</h3>
+      <p><strong>Symptom:</strong> Coaxial calibration produced <code>r_near</code> = 3.09 cm when true depth at brightest pixel was 2.52 cm.</p>
+      <p><strong>Cause:</strong> Computed luminance with weighted RGB sum (0.15R + 0.70G + 0.15B), but the tissue tint applied to the rendered image scaled G and B by 0.55. So luminance was 0.6175× the raw intensity. The calibration was applying <code>sqrt(ρL / I_luminance)</code> instead of <code>sqrt(ρL / I_raw)</code>.</p>
+      <p><strong>Fix:</strong> Use the red channel directly for coaxial calibration. R preserves the raw intensity in our tissue-tinted rendering.</p>
+
+      <h3>6.3 Sign convention on y-axis (factor of 2 shape error)</h3>
+      <p><strong>Symptom:</strong> Even with true normals, integration produced span 3.45 cm vs true 1.5 cm — the shape was stretched.</p>
+      <p><strong>Cause:</strong> Textbook photometric stereo writes <code>dz/dx = −nx/nz</code>, <code>dz/dy = −ny/nz</code> for a coordinate system where z increases toward the camera and y increases upward. Our convention has z increasing away from the camera and image y increasing downward. The two sign flips do not cancel — they affect different equations.</p>
+      <p><strong>Fix:</strong> A sign sweep on true normals showed (+nx, −ny) produces the correct shape:</p>
+      <pre><code>sx=+1, sy=+1: best slope=0.000,  error after best-fit=0.296 cm  ← wrong
+sx=+1, sy=−1: best slope=0.995,  error after best-fit=0.013 cm  ← CORRECT
+sx=−1, sy=+1: best slope=−0.995, error after best-fit=0.013 cm
+sx=−1, sy=−1: best slope=0.000,  error after best-fit=0.296 cm  ← wrong</code></pre>
+      <p>Settled on <code>dz/dx_img = +nx/nz</code>, <code>dz/dy_img = −ny/nz</code>.</p>
+
+      <h3>6.4 Silhouette instability</h3>
+      <p><strong>Symptom:</strong> Near the sphere silhouette, nz → 0, so <code>−nx/nz</code> and <code>−ny/nz</code> blow up. Tried clamping nz with <code>safe_nz = max(nz, 1e-3)</code> — produced huge spurious gradients at the boundary that corrupted the entire integration.</p>
+      <p><strong>Fix:</strong> Reformulate the gradient equations in their undivided form:</p>
+      <pre><code>nz · (z[y, x+1] − z[y, x]) = +nx · cm_per_pixel</code></pre>
+      <p>Now silhouette pixels (nz ≈ 0) contribute negligibly to the least-squares system, exactly proportional to how reliable they are. No clamping needed.</p>
+
+      <h2>7. Results</h2>
+      <p>Synthetic sphere, radius 1.5 cm, center at depth 4.0 cm:</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Metric</th><th>Value</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>True depth range</td><td>2.500 – 4.000 cm (span 1.5 cm)</td></tr>
+            <tr><td>Estimated depth range</td><td>2.418 – 3.987 cm</td></tr>
+            <tr><td>Mean absolute error</td><td>0.082 cm (2.75% of mean depth)</td></tr>
+            <tr><td>Normal recovery error</td><td>0.041 (vs unit vectors)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="doc-figure-note">Figure: final depth heatmap with five sample points labeled in cm — nearest pixel ~2.5 cm (deep blue), silhouette edges ~4.0 cm (red/orange).</div>
+      <div class="doc-figure-note">Figure: estimated depth (left) vs ground truth (right) with a shared colorbar; mean absolute error 0.082 cm.</div>
+      <div class="doc-figure-note">Figure: reconstructed 3D surface of the visible hemisphere of the sphere.</div>
+      <p>Reference: the academic photometric-endoscopy paper from Batlle, Montiel &amp; Tardós (arXiv:2204.09083) reports 7% mean error in vivo. Our 2.75% on a synthetic sphere with known lights is in the same ballpark, slightly better as expected because the scene is noise-free and the lights are perfectly known.</p>
+
+      <h2>8. Limitations and next steps</h2>
+      <h3>8.1 What this implementation does well</h3>
+      <ul>
+        <li>Recovers absolute-scale depth from three lit images plus a coaxial reference</li>
+        <li>Robust to silhouette boundaries via weighted Poisson integration</li>
+        <li>Handles arbitrary masks (works on any object outline, not just spheres)</li>
+        <li>Real-units output (cm) via the coaxial calibration step</li>
+      </ul>
+
+      <h3>8.2 What it does NOT handle</h3>
+      <ul>
+        <li>Specular highlights on wet/shiny surfaces — would need a detection-and-masking pre-step (the earlier single-image version does this; can be ported)</li>
+        <li>Cast shadows — pixels in shadow violate <code>I = ρ · n · L</code>. Standard fix: detect dark pixels per-image, exclude them from that light's equation, fall back to two-light solve where needed</li>
+        <li>Non-Lambertian materials — only the diffuse term is modeled</li>
+        <li>Unknown light directions — current code assumes calibrated lights (see section 5)</li>
+        <li>Moving lights or moving camera between frames — assumes the three exposures are temporally coregistered</li>
+      </ul>
+
+      <h3>8.3 Next milestones for Lumina Bone</h3>
+      <ol>
+        <li>Hardware light calibration — implement chrome-sphere calibration routine (section 5.1) and integrate into capture workflow.</li>
+        <li>Real image testing — capture three lit images of a bone phantom and run the pipeline end-to-end.</li>
+        <li>CT registration — implement ICP between the photometric depth map and the pre-op CT surface.</li>
+        <li>Shadow/specular handling — port the masking code from the single-image pipeline.</li>
+        <li>Latency optimization — current sparse-solve takes a few seconds at 300×300; for real-time use, port to GPU (cuSPARSE) or use a multigrid Poisson solver.</li>
+      </ol>
+
+      <h2>9. Files in the repository</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>File</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>photometric_depth.py</code></td><td>Single-image inverse-square + Lambertian pipeline. Handles specular masking, edge-aware smoothing, and stereo view synthesis. Input: one image.</td></tr>
+            <tr><td><code>photometric_heatmap.py</code></td><td>Wrapper around the single-image pipeline that produces labeled heatmaps with cm values.</td></tr>
+            <tr><td><code>photometric_stereo_sphere.py</code></td><td>Main file. Three-light photometric stereo on a synthetic sphere. Produces five output PNGs including the labeled depth heatmap and 3D surface.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>9.1 How to run</h3>
+      <pre><code>pip install numpy scipy matplotlib pillow
+python photometric_stereo_sphere.py</code></pre>
+      <p>Outputs five PNGs to <code>./outputs/</code> (path is configurable at the top of <code>main()</code>):</p>
+      <ul>
+        <li><code>ps_01_inputs.png</code> — the three lit input images</li>
+        <li><code>ps_02_normals.png</code> — recovered vs ground-truth surface normals</li>
+        <li><code>ps_03_depth_heatmap.png</code> — depth heatmap with numerical labels in cm</li>
+        <li><code>ps_04_comparison.png</code> — estimated vs ground-truth depth side by side</li>
+        <li><code>ps_05_3d_surface.png</code> — 3D surface plot of the reconstructed sphere</li>
+      </ul>
+
+      <h2>10. References</h2>
+      <ul>
+        <li>Woodham, R. J. (1980). Photometric method for determining surface orientation from multiple images. Optical Engineering 19(1).</li>
+        <li>Batlle, V. M., Montiel, J. M. M., &amp; Tardós, J. D. (2022). Photometric single-view dense 3D reconstruction in endoscopy. arXiv:2204.09083.</li>
+        <li>Frankot, R. T. &amp; Chellappa, R. (1988). A method for enforcing integrability in shape from shading algorithms. IEEE PAMI 10(4).</li>
+        <li>MedicalTek (MDTK) MonoStereo product documentation: <a href="https://www.medicaltek.biz/" target="_blank" rel="noopener">medicaltek.biz</a></li>
+      </ul>
+    </article>
+
+    <footer class="doc-footer">
+      <a href="../luminabone.html" class="to-project">← LuminaBone project</a>
+      <a href="../luminabone.html#documents" class="to-library">All documents</a>
+    </footer>
+
+  </main>
+
+  <script src="../script.js?v=9"></script>
+  <script src="../interactions.js?v=2" defer></script>
+</body>
+</html>

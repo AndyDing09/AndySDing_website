@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sensor Design V1 — Andy S. Ding</title>
+  <meta name="description" content="Design of the buoy's internal analytical payload: a light-tight 3D-printed flow cell with 470nm excitation, dual optical sensors, and Nile Red chemistry." />
+  <link rel="canonical" href="https://www.andysding.com/docs/kymarion-sensor-design-v1.html" />
+  <meta name="theme-color" content="#3f5b50" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌊%3C/text%3E%3C/svg%3E" />
+  <meta property="og:title" content="Sensor Design V1 — Andy S. Ding" />
+  <meta property="og:description" content="Design of the buoy's internal analytical payload: a light-tight 3D-printed flow cell with 470nm excitation, dual optical sensors, and Nile Red chemistry." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.andysding.com/docs/kymarion-sensor-design-v1.html" />
+  <meta property="og:image" content="https://www.andysding.com/photo.jpg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://www.andysding.com/photo.jpg" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css?v=19" />
+  <link rel="stylesheet" href="doc.css?v=1" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav id="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-leaf">🌊</span> Andy S. Ding
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#home"      class="nav-link">Home</a></li>
+      <li><a href="../index.html#about"     class="nav-link">About</a></li>
+      <li><a href="../index.html#blog"      class="nav-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="nav-link active">Research</a></li>
+      <li><a href="../index.html#resume"    class="nav-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="nav-link">Interests</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── Mobile drawer ─── -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <ul>
+      <li><a href="../index.html#home"      class="drawer-link">Home</a></li>
+      <li><a href="../index.html#about"     class="drawer-link">About</a></li>
+      <li><a href="../index.html#blog"      class="drawer-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="drawer-link">Research</a></li>
+      <li><a href="../index.html#resume"    class="drawer-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="drawer-link">Interests</a></li>
+    </ul>
+  </div>
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <main class="doc-page" id="main">
+
+    <a href="../kymarion.html" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 3L5 8l5 5"/>
+      </svg>
+      Back to Project Kymarion
+    </a>
+
+    <header class="doc-header">
+      <span class="doc-project-chip">🌊 Project Kymarion</span>
+      <h1 class="doc-title">Sensor Design V1</h1>
+      <div class="doc-meta">
+        <span class="doc-type">Design doc</span>
+        <span>May 2026</span>
+        <span>8 min read</span>
+      </div>
+    </header>
+
+    <article class="doc-body">
+      <p>To overcome the limitations of open-water optical sensing—where ambient sunlight, wave action, and depth variations severely compromise data integrity—the Autonomous Surface Vehicle (ASV) is equipped with a highly controlled internal analytical payload. Rather than exposing sensors directly to the open water, the ASV pumps water through a custom, light-tight optical flow cell to measure particle fluorescence and turbidity under identical, repeatable conditions.</p>
+
+      <h2>Plumbing and Fluid Sequence</h2>
+      <p>The fluid path is designed to ensure valid, measured sample volumes while protecting the sensors from macroscopic debris. The sequence operates as follows:</p>
+      <ul>
+        <li><strong>Intake &amp; Pre-Screen:</strong> A rigid pipe extends below the surface turbulence, fitted with a 1mm–2mm coarse stainless steel mesh to block large debris (e.g., algae, twigs) from jamming the system.</li>
+        <li><strong>Pump:</strong> A 12V peristaltic or diaphragm pump draws water into the payload at a constant, controlled rate.</li>
+        <li><strong>Volumetric Measurement:</strong> An inline YF-S201 Hall-effect flow sensor measures the exact fluid volume of each sample, allowing for precise concentration calculations (e.g., particles per liter).</li>
+        <li><strong>Optical Flow Cell:</strong> The water enters the primary 3D-printed testing chamber where optical and environmental sensors take their readings.</li>
+        <li><strong>Outflow Filter:</strong> Before exiting the ASV, the analyzed water passes through a 50-micron mesh filter cartridge. This captures a physical sample of the exact water that was optically scanned, allowing for laboratory microscope validation and sensor calibration.</li>
+      </ul>
+
+      <h2>Optical Flow-Cell Geometry</h2>
+      <p>The flow cell is the core scientific instrument of the ASV. It is a custom 3D-printed chamber (made of matte-black PETG or ABS) designed to eliminate ambient light and standardize the physical geometry of every reading.</p>
+      <ul>
+        <li><strong>Fluorescence Excitation:</strong> A high-power <strong>470nm blue LED</strong> illuminates the water through a transparent waterproof window to excite the Nile-Red-stained microplastics. It is powered by an external <strong>constant-current driver</strong>, which is required to eliminate voltage fluctuations and maintain stable, calibrated illumination.</li>
+        <li><strong>90-Degree Detection Offset:</strong> The primary optical detectors are mounted exactly 90 degrees offset from the excitation LED. This classic fluorometer geometry ensures the detectors never read the direct beam of the LED, only the light emitted by the fluorescing particles suspended in the water.</li>
+        <li><strong>Emission Filter:</strong> A <strong>longpass optical gel filter</strong> sits directly in front of the optical detectors to block the 470nm excitation wavelength. This ensures the sensors strictly measure the plastic's longer-wavelength emitted glow rather than the LED's direct light.</li>
+        <li><strong>Dual Optical Sensing Array:</strong> The chamber houses two complementary I2C digital light sensors to analyze the emission signal:
+          <ul>
+            <li><strong>TSL2591 High-Dynamic-Range Sensor:</strong> Functions as the primary fluorescence reader. It features extreme sensitivity and separate IR/full-spectrum channels to reliably capture faint microplastic fluorescence across a wide brightness range.</li>
+            <li><strong>TCS34725 RGB Color Sensor:</strong> Functions as a secondary fluorescence reader. By tracking the ratios of the red, green, and blue color channels, it confirms that the fluorescent glow falls within the expected spectral band and provides data hints regarding the polymer type.</li>
+          </ul>
+        </li>
+        <li><strong>Turbidity Baseline &amp; Signal Conditioning:</strong> A <strong>DFRobot Gravity SEN0189 turbidity sensor</strong> is mounted downstream to measure total light scattering from all suspended particles. To bypass the microcontroller's noisy and non-linear native analog-to-digital converter, the analog signal routes through an <strong>ADS1115 16-bit external ADC</strong>. This upgrades particle resolution to a highly precise, linear depth, allowing the system to isolate the true plastic fraction by establishing a ratio between total turbidity (the control) and plastic fluorescence.</li>
+        <li><strong>Temperature:</strong> A waterproof <strong>DS18B20 probe</strong> is tapped into the flow path to log water temperature, providing environmental context for local current boundaries and allowing for minor temperature-dependent fluorescence corrections if necessary.</li>
+      </ul>
+
+      <h2>Planned Sensors</h2>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Category</th>
+            <th>Component</th>
+            <th>Role</th>
+            <th>Est. Cost</th>
+            <th>Interface</th>
+          </tr>
+          <tr>
+            <td>Microcontroller &amp; Data</td>
+            <td>ESP32 Microcontroller</td>
+            <td>32-bit system brain; handles multitasking, interrupt pins for flow counting, I2C sensor polling, and data routing.</td>
+            <td>~$5–$10</td>
+            <td>Main Controller</td>
+          </tr>
+          <tr>
+            <td>Microcontroller &amp; Data</td>
+            <td>U-blox NEO-M8N GPS</td>
+            <td>Provides fast, high-accuracy satellite locks to map precise geospatial coordinates of sensor readings.</td>
+            <td>~$15–$20</td>
+            <td>UART / I2C</td>
+          </tr>
+          <tr>
+            <td>Microcontroller &amp; Data</td>
+            <td>ADS1115 16-bit ADC</td>
+            <td>Bypasses the ESP32's noisy internal ADC to provide ultra-high-resolution, linear analog readings from the turbidity sensor.</td>
+            <td>~$5</td>
+            <td>I2C</td>
+          </tr>
+          <tr>
+            <td>Microcontroller &amp; Data</td>
+            <td>MicroSD Card Module + 16GB Card</td>
+            <td>Provides a redundant, localized storage backup for all CSV log files to prevent data loss if a Wi-Fi connection drops.</td>
+            <td>~$10</td>
+            <td>SPI</td>
+          </tr>
+          <tr>
+            <td>Optical Detection</td>
+            <td>TSL2591 HDR Light Sensor</td>
+            <td>Primary fluorescence reader; I2C digital interface, highly sensitive with separate IR/full-spectrum channels.</td>
+            <td>~$7</td>
+            <td>I2C</td>
+          </tr>
+          <tr>
+            <td>Optical Detection</td>
+            <td>TCS34725 RGB Color Sensor</td>
+            <td>Secondary fluorescence reader; tracks RGB channel ratios to confirm the target spectral band.</td>
+            <td>~$8</td>
+            <td>I2C</td>
+          </tr>
+          <tr>
+            <td>Optical Control</td>
+            <td>470nm Blue LED + Driver</td>
+            <td>High-stability excitation source; constant-current regulation ensures reliable calibration.</td>
+            <td>~$15</td>
+            <td>GPIO / MOSFET</td>
+          </tr>
+          <tr>
+            <td>Optical Control</td>
+            <td>Emission Filter (Longpass Gel)</td>
+            <td>Blocks direct 470nm excitation light so sensors only read the plastic's emitted fluorescence.</td>
+            <td>~$10</td>
+            <td>Physical Optical</td>
+          </tr>
+          <tr>
+            <td>Baseline / Context</td>
+            <td>DFRobot Gravity SEN0189</td>
+            <td>Measures total light scattering (non-plastic baseline control) through the ADS1115 ADC.</td>
+            <td>~$10</td>
+            <td>Analog (to ADC)</td>
+          </tr>
+          <tr>
+            <td>Baseline / Context</td>
+            <td>DS18B20 Temp Probe Kit</td>
+            <td>Logs ambient water temperature via a 1-Wire bus.</td>
+            <td>~$7.50</td>
+            <td>1-Wire</td>
+          </tr>
+          <tr>
+            <td>Fluidics</td>
+            <td>YF-S201 Flow Sensor</td>
+            <td>Uses a Hall-effect turbine to output electrical pulses, translating to precise sample volume.</td>
+            <td>~$10</td>
+            <td>Pulse / Interrupt</td>
+          </tr>
+          <tr>
+            <td>Fluidics</td>
+            <td>12V Diaphragm Pump</td>
+            <td>Draws a consistent water sample into the flow cell.</td>
+            <td>~$20</td>
+            <td>Power / Relay</td>
+          </tr>
+          <tr>
+            <td>Mechanical &amp; Actuation</td>
+            <td colspan="4"><em>Rows left blank in the source document (to be specified)</em></td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="doc-figure-note">The source document includes two images here — illustrations of the sensor payload and flow-cell layout — not mirrored on this page.</div>
+
+      <h2>1. Internal Flow-Cell Fluidics and Hardware Architecture</h2>
+      <p>To overcome the limitations of open-water optical sensing—where ambient sunlight, wave action, and depth variations severely compromise data integrity—the Autonomous Surface Vehicle (ASV) utilizes a highly controlled internal analytical payload.</p>
+      <p><code>[Intake &amp; Pre-Screen] ➔ [12V Pump] ➔ [Flow Sensor] ➔ [Optical Flow Cell] ➔ [50μm Filter]</code></p>
+      <p>Water is drawn through a 1mm–2mm coarse intake screen by a 12V pump and measured volumetrically by an inline YF-S201 Hall-effect flow sensor to establish precise quantitative metrics (particles per liter). The fluid then enters a custom, light-tight, matte-black 3D-printed optical flow cell before passing through a terminal 50-micron mesh filter cartridge, which captures a physical ground-truth sample for laboratory microscope validation.</p>
+      <p>The flow cell utilizes a classic 90-degree fluorometer geometry to isolate target signals:</p>
+      <ul>
+        <li><strong>Excitation Source:</strong> A high-power 470nm blue LED powered by an external constant-current driver provides a stable, non-fluctuating illumination beam.</li>
+        <li><strong>Optical Barriers:</strong> A longpass optical gel emission filter sits flush against the detection array, blocking 100% of the scattered 470nm blue light so the detectors strictly evaluate shifted emission wavelengths.</li>
+        <li><strong>Dual-Detection Array:</strong> A TSL2591 High-Dynamic-Range (HDR) sensor acts as the primary fluorescence reader to capture faint emissions across separate infrared and full-spectrum channels. Concurrently, an adjacent TCS34725 RGB color sensor monitors red, green, and blue channel ratios to verify the exact spectral band of the glow.</li>
+      </ul>
+
+      <h2>2. Nile Red Fluorometric Chemistry and Seawater Compatibility</h2>
+      <p>The analytical sequence relies on the lipophilic, hydrophobic fluorescent dye <strong>Nile Red</strong>, which undergoes <strong>solvatochromism</strong>—a property where a molecule's photoluminescence alters based on the polarity of its immediate environment.</p>
+      <ul>
+        <li><strong>Fluorescence Quenching in Water:</strong> In highly polar environments like water, free-floating, unbound Nile Red molecules experience aggressive fluorescence quenching. The dye absorbs the 470nm excitation light but safely dissipates the energy as invisible, microscopic heat rather than light. Consequently, the background water column remains entirely dark to the optical sensors.</li>
+        <li><strong>Activation on Plastics:</strong> When the dye encounters non-polar, hydrophobic synthetic polymers (e.g., polyethylene, polypropylene), it rapidly adsorbs to their surfaces. This hydrophobic bond shields the dye from water molecules, unlocking its photoluminescence mechanism and producing a brilliant orange-red fluorescent emission (515nm–650nm) under the 470nm light source.</li>
+        <li><strong>Marine Chemical Compatibility:</strong> The chemical profile of ocean water actively optimizes this reaction. Nile Red remains structurally stable in the ocean's mildly alkaline baseline (average pH 8.1). Furthermore, the high salinity of seawater triggers a <strong>"salting-out" effect</strong>; the highly polar dissolved salts increase the water's repulsion of the hydrophobic dye, driving the Nile Red molecules onto the synthetic microplastic fragments faster and more efficiently than in freshwater environments.</li>
+      </ul>
+
+      <h2>3. Signal Conditioning and False-Positive Mitigation Matrix</h2>
+      <p>Because Nile Red bonds to any hydrophobic substance, natural marine lipids (e.g., algae, zooplankton, fish eggs) will absorb the dye and fluoresce, posing a distinct risk for false-positive readings. The ASV circumvents this limitation through integrated hardware signal conditioning and multi-sensor data cross-referencing.</p>
+
+      <h3>Hardware Signal Conditioning</h3>
+      <p>The raw analog signal from a downstream DFRobot Gravity SEN0189 turbidity sensor is routed through an external <strong>ADS1115 16-bit analog-to-digital converter (ADC)</strong> connected via I2C. This bypasses the noisy, non-linear native ADC of the ESP32 microcontroller, upgrading the system's baseline particle resolution to a highly precise, linear depth capable of detecting minute changes in suspended solids.</p>
+
+      <h3>Mathematical &amp; Data Filtering Matrix</h3>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Mitigation Layer</th>
+            <th>Technical Mechanism</th>
+            <th>Analytical Target</th>
+          </tr>
+          <tr>
+            <td><strong>Turbidity-to-Fluorescence Ratio</strong></td>
+            <td>Compares total light scattering (mass) against emission intensity. High turbidity paired with moderate fluorescence indicates organic mud or sediment. Low turbidity paired with a sharp fluorescence spike flags a sparse, highly reflective microplastic fragment.</td>
+            <td>Filters out general organic/inorganic suspended sediment.</td>
+          </tr>
+          <tr>
+            <td><strong>Spectral Fingerprinting</strong></td>
+            <td>Tracks the Red-to-Green (R/G) channel ratio via the TCS34725 sensor. Nile Red bound to natural biological lipids shifts toward a yellow-gold wavelength, while bonds with synthetic polymers emit a distinct red-orange wavelength.</td>
+            <td>Differentiates biological lipids (algae/plankton) from synthetic plastics.</td>
+          </tr>
+          <tr>
+            <td><strong>Physical Ground-Truth Backup</strong></td>
+            <td>Captures the exact water sample scanned by the sensors on a terminal 50-micron physical mesh.</td>
+            <td>Allows for manual laboratory microscope verification to validate digital sensor calculations.</td>
+          </tr>
+        </table>
+      </div>
+
+      <h3>Systemic Constraints and Analytical Limitations</h3>
+      <p>The primary challenges encountering the Autonomous Surface Vehicle (ASV) center on the sharp engineering trade-off between fluidic sample volume and data integrity. Because microplastics are mathematically sparse in natural aquatic environments, dropping the sample volume to a highly manageable micro-scale (such as 250 mL) creates an extreme risk of false-negative readings, as the statistical probability of capturing an individual floating particle within such a small volume is low. Furthermore, at standard pumping rates, a micro-sample reduces the data-acquisition window to less than ten seconds per waypoint, leaving an exceptionally narrow frame of time for the digital sensors to register transient fluorescence spikes before the volume is exhausted.</p>
+      <p>Compounding this volume constraint is the persistent issue of biological matrix interference within natural water bodies. Because Nile Red is an indiscriminately lipophilic dye, it aggressively binds to natural marine lipids found in algae, zooplankton, and organic detritus. In highly productive environments, these biological materials fluoresce under a 470nm light source right alongside target synthetic polymers, generating severe optical background noise that can trigger false-positive spikes. The system must therefore rely entirely on downstream multi-sensor data processing—cross-referencing total light scattering against specific spectral color ratios—to mathematically differentiate natural organic matter from actual synthetic microplastics.</p>
+      <p>Beyond hardware and biological limitations, the vehicle's operational architecture is strictly bounded by environmental law. The direct discharge of Nile Red dye and its volatile carrier solvents (such as acetone or ethanol) into aquatic ecosystems is illegal under environmental protection regulations like the Clean Water Act. Unregulated chemical discharge introduces toxic hazards to local habitats and violates stringent field-testing safety protocols. Consequently, the ASV cannot utilize a simple open-loop, in-situ staining mechanism; the system is forced to rely on an ex-situ laboratory staining protocol, where the ASV physically harvests the samples in the field while all chemical handling is strictly isolated to a controlled lab environment.</p>
+    </article>
+
+    <footer class="doc-footer">
+      <a href="../kymarion.html" class="to-project">← Project Kymarion project</a>
+      <a href="../kymarion.html#documents" class="to-library">All documents</a>
+    </footer>
+
+  </main>
+
+  <script src="../script.js?v=9"></script>
+  <script src="../interactions.js?v=2" defer></script>
+</body>
+</html>

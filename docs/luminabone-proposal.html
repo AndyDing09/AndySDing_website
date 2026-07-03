@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Proposal — Andy S. Ding</title>
+  <meta name="description" content="Proposal for a low-cost 6 mm endoscope that reconstructs 3D bone topography using dual off-axis LEDs and near-light photometric stereo." />
+  <link rel="canonical" href="https://www.andysding.com/docs/luminabone-proposal.html" />
+  <meta name="theme-color" content="#3f5b50" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🦴%3C/text%3E%3C/svg%3E" />
+  <meta property="og:title" content="Project Proposal — Andy S. Ding" />
+  <meta property="og:description" content="Proposal for a low-cost 6 mm endoscope that reconstructs 3D bone topography using dual off-axis LEDs and near-light photometric stereo." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.andysding.com/docs/luminabone-proposal.html" />
+  <meta property="og:image" content="https://www.andysding.com/photo.jpg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://www.andysding.com/photo.jpg" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css?v=19" />
+  <link rel="stylesheet" href="doc.css?v=1" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav id="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-leaf">🌊</span> Andy S. Ding
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#home"      class="nav-link">Home</a></li>
+      <li><a href="../index.html#about"     class="nav-link">About</a></li>
+      <li><a href="../index.html#blog"      class="nav-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="nav-link active">Research</a></li>
+      <li><a href="../index.html#resume"    class="nav-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="nav-link">Interests</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── Mobile drawer ─── -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <ul>
+      <li><a href="../index.html#home"      class="drawer-link">Home</a></li>
+      <li><a href="../index.html#about"     class="drawer-link">About</a></li>
+      <li><a href="../index.html#blog"      class="drawer-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="drawer-link">Research</a></li>
+      <li><a href="../index.html#resume"    class="drawer-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="drawer-link">Interests</a></li>
+    </ul>
+  </div>
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <main class="doc-page" id="main">
+
+    <a href="../luminabone.html" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 3L5 8l5 5"/>
+      </svg>
+      Back to LuminaBone
+    </a>
+
+    <header class="doc-header">
+      <span class="doc-project-chip">🦴 LuminaBone</span>
+      <h1 class="doc-title">Project Proposal</h1>
+      <div class="doc-meta">
+        <span class="doc-type">Proposal</span>
+        <span>April–May 2026</span>
+        <span>5 min read</span>
+      </div>
+    </header>
+
+    <article class="doc-body">
+      <p><strong>LuminaBone: Development of a Low-Cost Shading-Based 3D Bone Endoscope Using a Near-Light Photometric Stereo Approach.</strong></p>
+
+      <div class="doc-note">
+        <p><strong>Project duration:</strong> 8–12 weeks</p>
+      </div>
+
+      <h2>1. Background &amp; Motivation</h2>
+      <p>In orthopedic and ENT procedures, surgeons often work on rigid, low-texture bone surfaces under monocular endoscopic vision. Currently, standard endoscopes use coaxial lighting, which produces weak shading cues and limits depth perception.</p>
+      <p>However, newer technology, like near-light photometric stereo and Shape-from-Shading (SfS) techniques, recover high-quality 3D surface geometry by exploiting controlled off-axis illumination and brightness variations. These methods are especially suitable for hard bone, which is rigid and produces stable, clear shading gradients under the Lambertian reflectance model combined with inverse-square distance fall-off.</p>
+      <p>Commercial products like MonoStereo® (MedicalTek, Taiwan) have already demonstrated that shading/light-distribution analysis from a single monocular endoscope can generate useful 3D depth information in real time. With FDA 510(k) clearance and clinical evidence of improved precision, MonoStereo proves that shading-based depth technology is technically valid and commercially feasible. This project builds directly on this foundation by optimizing hardware (off-axis LEDs) and algorithms specifically for bone surfaces using near-light photometric stereo.</p>
+
+      <h2>2. Project Objectives</h2>
+      <ol>
+        <li>Design and fabricate a 6 mm endoscope that has deliberate off-axis LED placement to maximize shading cues on bone.</li>
+        <li>Implement a near-light photometric stereo pipeline tailored to endoscopic near-field conditions (Lambertian reflectance + inverse-square fall-off).</li>
+        <li>Reconstruct accurate 3D bone topography from sequential illumination frames.</li>
+        <li>Validate the system on artificial bone phantoms and quantify reconstruction accuracy.</li>
+        <li>Produce a working prototype, demo video, and technical report.</li>
+      </ol>
+
+      <h2>3. Project Scope</h2>
+
+      <h3>Hardware Design</h3>
+      <ul>
+        <li><strong>Distal tip specifications:</strong> 6 mm outer diameter with one 2D camera (~1.5–2 mm) and 2 LEDs for illumination.</li>
+      </ul>
+      <div class="doc-figure-note">The source had an inline figure here (distal-tip layout), not mirrored on this page.</div>
+      <ul>
+        <li><strong>LED configuration (key component):</strong> Two micro-LEDs placed directly opposite at 1.8–2.5 mm radial offset from the optical axis — the maximum feasible distance within the tight 6 mm package while still having a working channel.</li>
+      </ul>
+
+      <h3>Reason for Off-Axis Placement of LEDs</h3>
+      <p>A single coaxial light produces weak, radially symmetric shading with limited angular variation. Adding a second off-axis LED allows for diverse illumination directions; this results in stronger cosine-based shading gradients across the bone surface. This makes the photometric stereo problem easier, as with two known light positions, surface normals can be solved directly using least-squares instead of relying on single-light constraints. During operation, the LEDs are driven sequentially via PWM. This captures two distinct illumination images without any noticeable flicker for the surgeon, allowing for clear multi-light normal estimation while still benefiting from inverse-square fall-off (<code>1/r²</code>) from each LED. On rigid bones, inter-frame motion is negligible, giving a significantly higher depth accuracy and surface detail compared to coaxial single-light designs.</p>
+
+      <h3>Software &amp; Algorithm Component (Weeks 3–8)</h3>
+      <ul>
+        <li><strong>Core method:</strong> near-light perspective photometric stereo, building on foundational work such as Wu et al. (2007) for orthopedic endoscopy.</li>
+        <li>Image formation model incorporates:
+          <ul>
+            <li>Lambertian reflectance</li>
+            <li>Inverse-square distance fall-off (<code>1/r²</code>) from each of the two LEDs</li>
+            <li>Perspective projection</li>
+            <li>Known LED positions (obtained via one-time calibration)</li>
+          </ul>
+        </li>
+        <li>Use the two differently lit images to figure out which way each tiny patch of the bone surface is tilted, then stitch all those tilts together to rebuild the full 3D shape using Poisson or fast-marching integration.</li>
+        <li>Focus on bone regions for high-quality topography reconstruction.</li>
+        <li>Target real-time or near-real-time performance (≥15 fps) using Python + OpenCV/PyTorch.</li>
+      </ul>
+
+      <h4>Existing GitHub Implementations for Reference</h4>
+      <ul>
+        <li><strong>PPSNet:</strong> provides modular near-field photometric code that can be extended to incorporate multi-light setups.</li>
+        <li><strong>Endo-Depth-and-Motion:</strong> includes photometric residuals adaptable to the sequential-LED pipeline.</li>
+      </ul>
+
+      <h3>Validation — Detailed Testing Protocol (Weeks 9–10)</h3>
+
+      <h4>Phantom Preparation</h4>
+      <ul>
+        <li>3D-printed bone phantoms (cylinders for curvature testing + realistic total-knee femur models for more real-world testing).</li>
+        <li>Accurate 3D scans obtained with a high-precision laser scanner (accuracy &lt;0.1 mm).</li>
+        <li>Coat phantoms to achieve a Lambertian-like finish to match real bone reflectance.</li>
+      </ul>
+
+      <h4>Data Acquisition</h4>
+      <ul>
+        <li>Capture sequential frames (2 illuminations per view) at working distances 5–50 mm.</li>
+        <li>Different conditions: multiple camera poses, partial views, and simulated motion.</li>
+        <li>Record at least 50–100 views per phantom, including overlapping sequences.</li>
+      </ul>
+
+      <h4>Metrics</h4>
+      <ul>
+        <li><strong>Depth error:</strong> Mean Absolute Error, Root Mean Square Error, percentage error.</li>
+        <li><strong>Surface normal error:</strong> mean angular error in degrees.</li>
+        <li><strong>Reconstruction quality:</strong> Chamfer/Hausdorff distance; preservation of bone surface details.</li>
+      </ul>
+
+      <h4>Baselines &amp; Ablations</h4>
+      <ul>
+        <li>Compare: (a) coaxial single-LED lighting, (b) off-axis single-LED (if time permits), (c) off-axis dual-LED sequential.</li>
+        <li>Ablations: different radial offsets, with/without calibration.</li>
+      </ul>
+
+      <h4>Statistical Analysis</h4>
+      <ul>
+        <li>Repeat experiments 5–10 times; report means ± std; significance tests vs. baselines.</li>
+        <li>2-sample t-test.</li>
+      </ul>
+
+      <h4>Qualitative Evaluation</h4>
+      <ul>
+        <li>Simulated surgical tasks (virtual drilling or landmark identification on reconstructed femur).</li>
+      </ul>
+
+      <h2>4. Project Timeline (10-Week Example)</h2>
+      <ul>
+        <li><strong>Weeks 1–2:</strong> CAD design of the 6 mm tip, parts ordering.</li>
+        <li><strong>Weeks 3–5:</strong> Prototype fabrication, photometric and geometric calibration.</li>
+        <li><strong>Weeks 6–8:</strong> Implement photometric stereo pipeline and depth integration.</li>
+        <li><strong>Week 9:</strong> Phantom testing, analysis, and initial draft of the technical report.</li>
+        <li><strong>Week 10:</strong> Final analysis, demo video production, and final report/presentation.</li>
+      </ul>
+
+      <h2>5. Expected Deliverables</h2>
+      <ul>
+        <li>Functional LuminaBone prototype (6 mm distal tip + PWM-controlled dual-LED electronics).</li>
+        <li>Working near-light photometric stereo software (open-source GitHub repository).</li>
+        <li>Quantitative results demonstrating the accuracy gain from off-axis sequential LEDs on bone compared to the standard coaxial one-LED endoscopes.</li>
+        <li>Professional demo video and internship report suitable for lab presentation or conference poster.</li>
+      </ul>
+
+      <h2>6. Impact</h2>
+      <p>LuminaBone demonstrates how deliberate hardware design (off-axis sequential LEDs in a constrained 6 mm form factor) combined with near-light photometric stereo can enable low-cost, high-accuracy 3D visualization of bone surfaces. The added LED and dynamic switching provide a clear technical advantage over coaxial single-light systems, offering excellent hands-on experience in medical device prototyping, computer vision, and 3D reconstruction.</p>
+
+      <h2>7. Resources</h2>
+      <ul>
+        <li>3D printer, small cameras/LEDs, bone phantoms, GPU workstation.</li>
+        <li>Estimated parts budget: &lt;$500.</li>
+      </ul>
+
+      <h2>8. References</h2>
+      <ol>
+        <li>C. Wu, S. G. Narasimhan, and B. Jaramaz, “Shape-from-shading under near point lighting and partial views for orthopedic endoscopy,” in Proc. IEEE Pacific-Rim Conf. on Advanced Computer Vision (PACV), 2007, pp. 1–8.</li>
+        <li>V. Parot, D. Lim, G. González, N. S. Nishioka, B. J. Vakoc, and N. J. Durr, “Photometric stereo endoscopy,” J. Biomed. Opt., vol. 18, no. 7, p. 076017, Jul. 2013, doi: 10.1117/1.JBO.18.7.076017.</li>
+        <li>V. M. Batlle, J. M. M. Montiel, and J. D. Tardós, “Photometric single-view dense 3D reconstruction in endoscopy,” in Proc. IEEE/RSJ Int. Conf. on Intelligent Robots and Systems (IROS), 2022, doi: 10.1109/IROS47612.2022.9981742.</li>
+        <li>MedicalTek, “MonoStereo® 3D endoscopic imaging system (MS-301/MS-302),” MedicalTek Co., Ltd., Taiwan, 2024–2025. Available: <a href="https://medicaltek.biz">https://medicaltek.biz</a> (product documentation, FDA 510(k) clearance, and clinical studies).</li>
+      </ol>
+    </article>
+
+    <footer class="doc-footer">
+      <a href="../luminabone.html" class="to-project">← LuminaBone project</a>
+      <a href="../luminabone.html#documents" class="to-library">All documents</a>
+    </footer>
+
+  </main>
+
+  <script src="../script.js?v=9"></script>
+  <script src="../interactions.js?v=2" defer></script>
+</body>
+</html>

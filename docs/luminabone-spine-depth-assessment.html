@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Depth Technology Assessment — Uniportal Spine Endoscopy — Andy S. Ding</title>
+  <meta name="description" content="Comparative assessment of six depth-sensing technologies for uniportal spine endoscopy, concluding near-light photometric stereo is the only viable fit." />
+  <link rel="canonical" href="https://www.andysding.com/docs/luminabone-spine-depth-assessment.html" />
+  <meta name="theme-color" content="#3f5b50" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🦴%3C/text%3E%3C/svg%3E" />
+  <meta property="og:title" content="Depth Technology Assessment — Uniportal Spine Endoscopy — Andy S. Ding" />
+  <meta property="og:description" content="Comparative assessment of six depth-sensing technologies for uniportal spine endoscopy, concluding near-light photometric stereo is the only viable fit." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.andysding.com/docs/luminabone-spine-depth-assessment.html" />
+  <meta property="og:image" content="https://www.andysding.com/photo.jpg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://www.andysding.com/photo.jpg" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css?v=19" />
+  <link rel="stylesheet" href="doc.css?v=1" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav id="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-leaf">🌊</span> Andy S. Ding
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#home"      class="nav-link">Home</a></li>
+      <li><a href="../index.html#about"     class="nav-link">About</a></li>
+      <li><a href="../index.html#blog"      class="nav-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="nav-link active">Research</a></li>
+      <li><a href="../index.html#resume"    class="nav-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="nav-link">Interests</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── Mobile drawer ─── -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <ul>
+      <li><a href="../index.html#home"      class="drawer-link">Home</a></li>
+      <li><a href="../index.html#about"     class="drawer-link">About</a></li>
+      <li><a href="../index.html#blog"      class="drawer-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="drawer-link">Research</a></li>
+      <li><a href="../index.html#resume"    class="drawer-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="drawer-link">Interests</a></li>
+    </ul>
+  </div>
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <main class="doc-page" id="main">
+
+    <a href="../luminabone.html" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 3L5 8l5 5"/>
+      </svg>
+      Back to LuminaBone
+    </a>
+
+    <header class="doc-header">
+      <span class="doc-project-chip">🦴 LuminaBone</span>
+      <h1 class="doc-title">Depth Technology Assessment — Uniportal Spine Endoscopy</h1>
+      <div class="doc-meta">
+        <span class="doc-type">Technology assessment</span>
+        <span>May 2026</span>
+        <span>17 min read</span>
+      </div>
+    </header>
+
+    <article class="doc-body">
+<p><strong>Technology Assessment Report</strong> — Lumina-Bone Project | Spine Endoscopy Extension. <em>Depth Perception Technologies for Uniportal Endoscopic Spine Surgery: A Comparative Assessment.</em></p>
+
+<div class="table-wrap">
+  <table>
+    <tr><th>Document</th><td>LB-RPT-002</td><th>Version</th><td>1.0</td></tr>
+    <tr><th>Project</th><td>Lumina-Bone</td><th>Date</th><td>May 2026</td></tr>
+    <tr><th>Scope</th><td>Endoscopic Spine — Uniportal (4–10 mm OD)</td><th>Status</th><td>Final</td></tr>
+  </table>
+</div>
+
+<h2>1. Executive Summary</h2>
+
+<p>Endoscopic spine surgery offers patients substantially reduced tissue trauma, shorter hospital stays, and faster recovery compared to open procedures. However, the two dominant approaches — uniportal full-endoscopy and unilateral biportal endoscopy (UBE) — share a fundamental limitation: the surgeon operates with purely monocular, two-dimensional vision and has no quantitative depth information about the bone surfaces being operated on.</p>
+
+<p>This report evaluates six candidate technologies for providing depth information within the physical constraints of uniportal spine endoscopy, where the working channel inner diameter is typically 3.7–4.5 mm and the total instrument outer diameter is 7.3–10 mm. The analysis addresses physical feasibility, accuracy, hardware requirements, and the current state of evidence for each technology.</p>
+
+<p>The central finding is that the physical constraints of uniportal spine endoscopy eliminate the majority of otherwise-promising 3D sensing modalities. Stereo cameras, structured light systems, and time-of-flight sensors all require either a spatial baseline between two optical elements or a second instrument channel — neither of which is available in the uniportal working channel. This narrows the realistic candidates to three: monocular deep learning depth estimation, shape-from-motion (SfM/SLAM), and near-light photometric stereo.</p>
+
+<div class="doc-note">Of these, near-light photometric stereo — the approach developed in the Lumina-bone project — is the only physics-based, training-data-free method that works on the low-texture, rigid bone surfaces characteristic of spine endoscopy. It represents the strongest technical fit for this clinical problem, subject to the acknowledged challenge of specular reflections from saline-irrigated bone surfaces, for which mitigation strategies exist.</div>
+
+<h2>2. Clinical Context and the Depth Perception Problem</h2>
+
+<h3>2.1 Why Depth Perception Matters in Spine Endoscopy</h3>
+
+<p>Endoscopic spine surgery requires the surgeon to work millimetres from the spinal cord and exiting nerve roots, using powered instruments (burrs, Kerrison rongeurs) to remove bone under 2D video guidance. The consequences of spatial misjudgement are severe: pedicle cortex breach during drilling can injure nerve roots or the spinal cord; inadequate decompression leaves the patient symptomatic; over-resection compromises spinal stability. Three distinct depth tasks drive the need for 3D information:</p>
+
+<ul>
+  <li><strong>Spatial orientation</strong> — understanding the 3D topography of the bone surface in the field of view: which zones are raised, which are recessed, where the pedicle wall transitions from cortical to cancellous bone.</li>
+  <li><strong>Instrument-to-bone distance</strong> — knowing the metric distance from the instrument tip to the bone surface during drilling, burring, or probing, particularly within 1–5 mm of the spinal canal.</li>
+  <li><strong>Decompression completeness</strong> — confirming that sufficient bone has been removed across the intended zone, without being able to see the entire surgical corridor at once.</li>
+</ul>
+
+<p>Currently, all three tasks are performed by the surgeon using qualitative visual inference, tactile feedback through the instrument, and intermittent fluoroscopy confirmation — a combination that is effective in experienced hands but represents a steep learning curve and an irreducible source of spatial uncertainty.</p>
+
+<h3>2.2 The Physical Constraint: What the Instrument Allows</h3>
+
+<p>The defining constraint for this analysis is the uniportal instrument size:</p>
+
+<div class="table-wrap">
+  <table>
+    <tr><th>System</th><th>Outer Diameter</th><th>Working Channel Inner Diameter</th></tr>
+    <tr><td>Standard uniportal full-endoscopy</td><td>7.3–8.0 mm</td><td>3.7–4.5 mm</td></tr>
+    <tr><td>Wide-channel uniportal (stenosis)</td><td>8.4–10.0 mm</td><td>4.5–6.0 mm</td></tr>
+    <tr><td>Biportal UBE endoscope (viewing portal)</td><td>4.0 mm OD scope</td><td>No working channel (separate portal)</td></tr>
+  </table>
+</div>
+
+<p>The working channel must simultaneously accommodate the endoscope (camera + illumination) and one surgical instrument. No space exists for a second camera, a structured light projector, a ToF sensor, or any additional optical element beyond the modifications achievable within the existing illumination system at the distal tip. This constraint immediately rules out all triangulation-based depth methods.</p>
+
+<h2>3. Technology Assessments</h2>
+
+<h3>3.1 Stereo Camera</h3>
+
+<p>Stereo camera systems recover depth by triangulating matched features between two spatially separated cameras. The baseline distance (separation between the two cameras) determines the depth accuracy achievable.</p>
+
+<h4>Physical feasibility</h4>
+
+<p>Fundamentally incompatible with uniportal spine endoscopy. A stereo baseline of at least 3–5 mm is required for meaningful depth reconstruction at surgical working distances of 5–30 mm. This requires either two side-by-side cameras within the endoscope tip or a beam-splitter arrangement — neither of which fits within a 4 mm working channel alongside a surgical instrument. The da Vinci robotic system uses stereo laparoscopy with a 12 mm instrument, illustrating the size requirement.</p>
+
+<h4>Evidence in spine endoscopy</h4>
+
+<p>No stereo camera system has been demonstrated in uniportal spine endoscopy in the literature. Stereo endoscopes exist in laparoscopy and GI endoscopy but use 10–15 mm diameter instruments with dedicated dual imaging channels. The physical constraint is fundamental, not a matter of engineering effort.</p>
+
+<h4>Verdict</h4>
+
+<p>Not feasible for uniportal spine endoscopy. The constraint is physical, not technological.</p>
+
+<h3>3.2 Structured Light</h3>
+
+<p>Structured light projects a known pattern (laser stripe, coded fringes, dot array) onto the scene and recovers 3D geometry by triangulating the distortion of the projected pattern between the projector and the camera. Sub-millimetre accuracy is achievable under controlled conditions.</p>
+
+<h4>Physical feasibility</h4>
+
+<p>Equally incompatible with uniportal spine endoscopy for the same fundamental reason as stereo: triangulation requires a known spatial separation between the projector and the camera. The smallest structured light endoscope demonstrated in the literature uses a 3.6 mm diameter instrument with the camera and projector co-axial through the same lens system — but this still requires the two optical elements to be physically separated within the tip, and the resulting system has a central blind spot. Additionally, these systems have never been tested in a subaqueous environment (saline irrigation), which is standard in spine endoscopy.</p>
+
+<h4>Evidence in spine endoscopy</h4>
+
+<p>No structured light system has been applied to spine endoscopy. All published implementations use either: (a) two endoscopes — one for imaging, one for projection; (b) a laparoscope-scale instrument (10+ mm) with separate channels for camera and projector; or (c) a miniaturized research prototype not compatible with a working surgical instrument.</p>
+
+<h4>Verdict</h4>
+
+<p>Not feasible for uniportal spine endoscopy. Physical separation requirement for triangulation cannot be met within the working channel constraint.</p>
+
+<h3>3.3 Time-of-Flight (ToF) Depth Sensing</h3>
+
+<p>ToF sensors measure depth by emitting modulated light (typically infrared) and measuring the phase shift or round-trip time of the reflected signal. They do not require a baseline separation and can in principle be integrated into a single compact tip.</p>
+
+<h4>Physical feasibility</h4>
+
+<p>Theoretically more compatible with single-channel integration than triangulation-based methods, as the emitter and detector can be co-located. However, current miniaturized ToF sensors (e.g., STMicroelectronics VL53L5CX: 6.4 × 3.0 mm footprint) remain too large to fit within a 4 mm working channel that must also accommodate an instrument. Medical-grade miniaturized ToF at the required scale does not yet exist commercially.</p>
+
+<h4>Accuracy</h4>
+
+<p>Standard ToF sensors achieve 4–20 mm depth accuracy in good conditions. At the close working distances of spine endoscopy (5–30 mm), accuracy degrades further. The clinical requirement for pedicle navigation is sub-2 mm — a gap of at least an order of magnitude from current ToF performance.</p>
+
+<h4>Irrigation water interaction</h4>
+
+<p>IR-based ToF sensors are significantly attenuated by water. Spine endoscopy uses continuous saline irrigation for visualisation and haemostasis. Water absorption at standard IR wavelengths (850–940 nm) would severely degrade signal quality. ToF operation in a subaqueous environment has not been demonstrated for surgical applications.</p>
+
+<h4>Verdict</h4>
+
+<p>Not currently feasible. Sensor miniaturisation is a decade-scale problem; accuracy is insufficient; irrigation water is a fundamental interference source. May become revisable with future sensor developments, but not a near-term candidate.</p>
+
+<h3>3.4 Shape from Motion (SfM) and Monocular SLAM</h3>
+
+<p>As the endoscope moves through the surgical field, structure-from-motion algorithms can recover the 3D geometry of the scene by tracking feature points across frames and triangulating their positions from the changing camera viewpoint. This requires no additional hardware beyond the standard endoscope camera.</p>
+
+<h4>Physical feasibility</h4>
+
+<p>Compatible with any single-camera endoscope — requires no hardware modification. Implementation is entirely in software, making this approach superficially attractive for spine endoscopy.</p>
+
+<h4>Fundamental limitation: texture</h4>
+
+<p>Structure-from-motion requires identifiable, trackable feature points across frames. Bone surfaces — particularly cortical bone in the lumbar and thoracic spine — are nearly featureless: uniform colour, smooth texture, no distinctive landmarks at the spatial scale of the endoscope field of view. The standard feature detectors (SIFT, ORB, SURF) fail to find reliable correspondences on such surfaces. Without correspondences, SfM produces no depth information. This is a fundamental algorithmic failure on the specific surface type encountered in spine endoscopy, not a limitation that additional processing can overcome.</p>
+
+<h4>Dynamic scene problem</h4>
+
+<p>SfM and SLAM require a static scene during motion. The spine surgical environment includes: soft tissue (epidural fat, nerve roots) that moves independently of bone; blood and irrigation fluid flow; instrument motion within the frame. These dynamic elements make robust static scene reconstruction difficult even where texture exists.</p>
+
+<h4>Evidence in spine endoscopy</h4>
+
+<p>Not demonstrated. SLAM has been applied to GI endoscopy where mucosal surfaces have sufficient texture (vascular patterns, haustra folds). Bone surfaces lack this texture. The limitation is specific to the spine bone surface, not to endoscopy in general.</p>
+
+<h4>Verdict</h4>
+
+<p>Not suitable for bone surface depth recovery in spine endoscopy due to the texture requirement. May provide camera localisation information in regions where soft tissue is visible, but cannot recover bone surface geometry — the primary need.</p>
+
+<h3>3.5 Monocular Deep Learning Depth Estimation</h3>
+
+<p>Convolutional neural networks and transformer architectures trained on endoscopic image datasets can predict per-pixel depth from a single image. Recent systems (PPSNet, EndoSfMLearner, EndoMUST) achieve competitive performance on GI and laparoscopic datasets and require no hardware modification.</p>
+
+<h4>Physical feasibility</h4>
+
+<p>Fully compatible with any existing endoscope. Software-only, no hardware change required. Real-time performance is achievable on modern GPUs. This is the most actively researched monocular approach in the medical endoscopy literature.</p>
+
+<h4>Performance on GI tissue</h4>
+
+<p>On GI endoscopy datasets (SCARED, EndoMapper, synthetic colon data), recent self-supervised monocular models achieve absolute relative errors of 0.06–0.12 and RMSE of 3–8 mm. Performance has improved substantially over the past three years driven by large-scale GI dataset availability.</p>
+
+<h4>Critical gap: no bone training data</h4>
+
+<p>Every published depth estimation model for endoscopy has been trained and evaluated on GI or laparoscopic soft tissue data. There exists no annotated dataset of endoscopic bone surface depth for spine surgery. Models trained on colon mucosa and applied to vertebral lamina will fail — the visual appearance, reflectance, and geometric structure of bone are fundamentally different from soft tissue. Generating a sufficiently large bone depth dataset requires either intraoperative ground-truth measurement (no viable method exists at scale) or high-quality physically-accurate synthetic rendering of bone under near-field endoscope illumination (a non-trivial computer graphics problem).</p>
+
+<h4>Illumination dependency</h4>
+
+<p>Deep learning models that exploit photometric shading cues (such as PPSNet) implicitly assume that shading patterns reflect the underlying surface geometry. This assumption is undermined by the same specular reflection problem that affects photometric stereo — and without an explicit physical model, deep learning approaches have no principled mechanism to distinguish specular from diffuse components on unseen bone surface types.</p>
+
+<h4>Verdict</h4>
+
+<p>Technically feasible in principle, but currently blocked by the complete absence of annotated bone depth training data for spine endoscopy. A research programme to generate this data would be required before this approach can be practically applied. This represents a 3–5 year bottleneck even with significant investment.</p>
+
+<h3>3.6 Near-Light Photometric Stereo (Lumina-Bone Approach)</h3>
+
+<p>Photometric stereo recovers surface normals from images of the same scene captured under different illumination directions. In the near-light endoscope setting, sequential activation of multiple off-axis LEDs at the distal tip provides the illumination variation required. Surface normals are integrated into a depth map. No second camera, no projector, and no spatial baseline are required.</p>
+
+<h4>Physical feasibility</h4>
+
+<p>Directly compatible with the uniportal spine endoscope. The hardware modification is limited to replacing the standard co-axial LED arrangement with two or more off-axis micro-LEDs at the distal tip — within the same LED footprint, requiring no increase in instrument diameter. PWM-controlled sequential illumination is already implemented in the Lumina-bone prototype. The existing working channel and surgical instrument workflow are entirely unaffected.</p>
+
+<h4>Why bone is well-suited</h4>
+
+<p>Photometric stereo requires surfaces that produce shading gradients under directional illumination — it does not require surface texture. Rigid, low-texture bone is actually ideal: it does not deform between sequential frames (unlike soft tissue), it does not move independently of the camera, and its nearly-Lambertian diffuse reflectance produces predictable, algebraically-solvable shading patterns under the near-light model. The very property that makes bone unsuitable for SfM (no texture features) is not a limitation for photometric stereo.</p>
+
+<h4>No training data required</h4>
+
+<p>The photometric stereo algorithm is derived directly from the physics of light reflection — the Lambertian cosine law and inverse-square distance falloff. Surface normals are computed algebraically from a system of linear equations solved per-pixel. No machine learning training is required, no bone-specific dataset must be created, and the algorithm generalises to any bone surface type (cortical, cancellous, endplate) without retraining.</p>
+
+<h4>Accuracy on bone</h4>
+
+<p>Published results on artificial bone phantoms with known geometry report RMS errors of 1.0–1.5 mm. The Lumina-bone implementation achieves 2.75% mean absolute error on a synthetic sphere under controlled conditions. Under ideal (dry bone, calibrated illumination) conditions, sub-millimetre relative accuracy is achievable for surface topography. Under realistic surgical conditions (saline irrigation, blood, variable working distance), practical accuracy is estimated at 1–3 mm RMS based on analogous endoscopic photometric stereo results on tissue.</p>
+
+<h4>Primary limitation: specular reflections</h4>
+
+<p>Wet bone and saline-irrigated surfaces produce specular highlights — bright pixels where the illumination angle equals the viewing angle. These pixels violate the Lambertian assumption and produce erroneous surface normal estimates, degrading local accuracy and creating artefacts in the depth map. This is the primary technical challenge specific to the clinical environment.</p>
+
+<h4>Mitigation pathways for specular reflections</h4>
+
+<ul>
+  <li><strong>Specular masking</strong> — detect and exclude specular pixels per-frame, falling back to interpolation from neighbours. Already implemented in the Lumina-bone single-image pipeline. Effective when specular zones cover &lt; 30% of the image.</li>
+  <li><strong>Colour photometric stereo (dichromatic separation)</strong> — replace white LEDs with RGB or narrow-band LEDs at different angular positions. Specular components retain the colour of the illuminating light; diffuse (Lambertian) components retain the bone surface colour. A colour-space rotation separates the two, enabling photometric stereo on the diffuse-only image. Requires changing LED colour only — no change to instrument diameter or working channel.</li>
+  <li><strong>Sparse robust estimation</strong> — treat specular pixels as outliers in the per-pixel linear system, using L1 minimisation or RANSAC. Software-only, works with existing white-LED hardware.</li>
+  <li><strong>Hybrid physics + learning</strong> — use the physical photometric stereo model as a backbone constraint, with a lightweight CNN refinement to correct residual specular artefacts. Requires far less training data than full deep learning depth estimation, as the physics model constrains the solution space.</li>
+</ul>
+
+<h4>Evidence</h4>
+
+<p>Near-light photometric stereo on bone was demonstrated in the Wu, Narasimhan and Jaramaz (2010) IJCV paper — the direct academic antecedent of the Lumina-bone project — on artificial spine models using a 4 mm arthroscope. No subsequent work has extended this to real bone or clinical spine endoscopy, confirming that the space remains unoccupied.</p>
+
+<h4>Verdict</h4>
+
+<p>The strongest technical fit for uniportal spine endoscopy among all evaluated approaches. Physics-based, no training data required, works on low-texture bone, requires only LED modification within the existing distal tip footprint. Accuracy under clinical conditions (wet bone, irrigation) requires empirical validation — the primary outstanding research question for the Lumina-bone project.</p>
+
+<h2>4. Comparative Summary</h2>
+
+<div class="table-wrap">
+  <table>
+    <tr><th>Technology</th><th>Fits Uniportal Channel?</th><th>Works on Low-Texture Bone?</th><th>Training Data Needed?</th><th>Works Subaqueous?</th><th>Accuracy (est.)</th><th>Overall Verdict</th></tr>
+    <tr><td>Stereo Camera</td><td>NO</td><td>Yes</td><td>No</td><td>Yes</td><td>&lt; 0.5 mm</td><td>Not Feasible</td></tr>
+    <tr><td>Structured Light</td><td>NO</td><td>Yes</td><td>No</td><td>Untested</td><td>&lt; 0.5 mm</td><td>Not Feasible</td></tr>
+    <tr><td>Time-of-Flight</td><td>Not Yet</td><td>Yes</td><td>No</td><td>NO (IR loss)</td><td>5–20 mm</td><td>Not Feasible</td></tr>
+    <tr><td>Shape from Motion / SLAM</td><td>YES</td><td>NO</td><td>No</td><td>Moderate</td><td>2–10 mm</td><td>Not Suitable</td></tr>
+    <tr><td>Monocular Deep Learning</td><td>YES</td><td>No Data</td><td>YES — unavailable</td><td>Yes</td><td>3–8 mm (soft tissue); unknown on bone</td><td>Future Candidate</td></tr>
+    <tr><td>Near-Light Photometric Stereo (Lumina-Bone)</td><td>YES</td><td>YES</td><td>None</td><td>Partial *</td><td>1–3 mm (est. clinical); &lt; 1 mm (dry bench)</td><td>Best Current Fit</td></tr>
+  </table>
+</div>
+
+<p>* Specular reflections from saline irrigation degrade accuracy in wet conditions. Mitigation strategies (specular masking, colour LED separation) are available and do not require instrument diameter change.</p>
+
+<h2>5. Why Near-Light Photometric Stereo is the Right Approach</h2>
+
+<p>The convergence of constraints from the uniportal spine endoscopy environment points unambiguously toward near-light photometric stereo as the only viable physics-based depth sensing technology for this application. The reasoning is worth making explicit.</p>
+
+<h3>5.1 The Constraint Eliminates All Triangulation Methods</h3>
+
+<p>Depth sensing by triangulation — whether stereo cameras or structured light — requires two spatially separated optical elements with a known baseline. This is a physical law, not an engineering limitation. The uniportal working channel of 3.7–6.0 mm inner diameter, occupied simultaneously by the endoscope and one surgical instrument, physically cannot accommodate a triangulation baseline of the size needed for clinically useful depth accuracy at 5–30 mm working distance. No amount of miniaturisation will overcome this within the foreseeable future at the accuracy levels required.</p>
+
+<h3>5.2 The Surface Eliminates Feature-Based Methods</h3>
+
+<p>Structure-from-motion and SLAM require trackable surface features. Cortical bone in the lumbar and thoracic spine is nearly featureless at the spatial scale of the endoscope field of view. This eliminates the only other hardware-free monocular depth method that could work within the uniportal constraint.</p>
+
+<h3>5.3 The Data Gap Blocks Deep Learning</h3>
+
+<p>Deep learning monocular depth estimation is the most actively researched alternative, but it is currently blocked by the complete absence of labelled bone depth data for spine endoscopy. The gap is not in algorithm quality — it is in training data, which does not exist and is very difficult to generate. Until this gap is closed, deep learning cannot be applied reliably to this specific problem.</p>
+
+<h3>5.4 What Remains: Physics-Based Photometric Sensing</h3>
+
+<p>After eliminating triangulation-based, feature-based, and data-dependent methods, what remains is depth recovery from illumination physics — exploiting the known relationship between near-field light source position, surface orientation, and pixel brightness. This is exactly what near-light photometric stereo formalises. It requires no spatial baseline, no surface texture, and no training data. It is the only method that is simultaneously:</p>
+
+<ul>
+  <li>Compatible with the existing working channel and instrument footprint</li>
+  <li>Effective on low-texture rigid bone surfaces</li>
+  <li>Independent of surface appearance training data</li>
+  <li>Based on well-understood, calibratable physics</li>
+  <li>Implementable with a minor modification to the existing LED illumination system</li>
+</ul>
+
+<h2>6. Limitations and Research Priorities</h2>
+
+<h3>6.1 Known Limitations of Photometric Stereo on Bone</h3>
+
+<p>Acknowledging the limitations of photometric stereo on bone surfaces under clinical conditions is essential for realistic positioning of the Lumina-bone project:</p>
+
+<ul>
+  <li><strong>Specular reflections</strong> from irrigation-wet bone surfaces degrade surface normal estimates at highlight pixels. This is the primary accuracy-limiting factor under clinical conditions and the primary open research question.</li>
+  <li><strong>Absolute metric depth</strong> requires calibration of the LED-to-surface distance using the inverse-square falloff model. This introduces additional uncertainty compared to relative surface topography. Accuracy of absolute depth is estimated at 1–3 mm under clinical conditions, sufficient for spatial orientation but not for sub-millimetre metric tasks.</li>
+  <li><strong>The current Lumina-bone prototype uses two LEDs</strong>, which provides an underdetermined system for full photometric stereo (three non-coplanar illuminations are required for unique normal estimation). Adding a third LED or using the coaxial LED as a reference addresses this within the same distal tip footprint.</li>
+  <li><strong>Real bone is not perfectly Lambertian:</strong> spatial albedo variation (cortical vs. cancellous zones, residual periosteum) introduces albedo-normal ambiguity. The photometric stereo solver assumes uniform albedo per pixel unless albedo estimation is included in the pipeline.</li>
+</ul>
+
+<h3>6.2 Research Priorities</h3>
+
+<p>The following research steps define the path from the current Lumina-bone prototype to a clinical-grade depth tool for spine endoscopy, in priority order:</p>
+
+<ol>
+  <li><strong>Wet bone validation</strong> — characterise reconstruction accuracy on ex vivo bone specimens under saline irrigation using the existing prototype. This is the single most important open empirical question and should be the first experimental step.</li>
+  <li><strong>Specular masking pipeline</strong> — implement and validate the per-frame specular detection and exclusion step from the single-image pipeline, porting it to the three-image photometric stereo workflow.</li>
+  <li><strong>RGB LED evaluation</strong> — replace one or both white LEDs with RGB LEDs and implement the Mallick-Zickler colour-subspace specular separation. Evaluate the accuracy gain on wet bone phantoms relative to the white-LED baseline.</li>
+  <li><strong>Third LED addition</strong> — evaluate the accuracy improvement from a third off-axis LED (true three-source photometric stereo) on bone surfaces, within the existing 6 mm distal tip footprint.</li>
+  <li><strong>Cadaveric spine validation</strong> — repeat wet bone validation on cadaveric lumbar spine specimens under simulated surgical conditions (saline irrigation, blood, instrument in working channel).</li>
+  <li><strong>Clinical accuracy specification</strong> — define the minimum accuracy needed for each clinical task (spatial orientation: ~2–3 mm; completeness verification: ~1–2 mm; metric instrument guidance: &lt; 1 mm) and establish which tasks are achievable with the current and improved systems.</li>
+</ol>
+
+<h2>7. Conclusion</h2>
+
+<p>The physical constraints of uniportal endoscopic spine surgery — a 3.7–6.0 mm working channel shared between the endoscope and a surgical instrument — eliminate stereo cameras, structured light, and time-of-flight sensors from practical consideration. Shape-from-motion fails on the low-texture bone surfaces characteristic of spine surgery. Monocular deep learning depth estimation is blocked by the absence of annotated bone depth training data.</p>
+
+<p>Near-light photometric stereo, as developed in the Lumina-bone project, is the only physics-based depth sensing method that satisfies all the physical, surface, and data constraints simultaneously. It requires only an LED modification to the existing endoscope tip, works without any training data, and is uniquely suited to the rigid, low-texture bone surfaces that defeat feature-based methods.</p>
+
+<p>The primary outstanding challenge — specular reflections from saline-irrigated bone under clinical conditions — is a well-defined, tractable engineering problem with multiple established mitigation strategies, none of which require changes to the instrument outer diameter or working channel. This challenge does not undermine the fundamental suitability of the approach; it defines the experimental research agenda needed to quantify and manage it.</p>
+
+<p>Lumina-bone occupies a genuinely unoccupied position: no prior work has provided real-time depth information within a uniportal spine endoscope working channel, using any technology. The project's physics-based approach is not only technically sound — it is, given the constraints, the only sound approach currently available.</p>
+
+<h2>8. Key References</h2>
+
+<ol>
+  <li>C. Wu, S. G. Narasimhan, and B. Jaramaz, &quot;A multi-image shape-from-shading framework for near-lighting perspective endoscopes,&quot; Int. J. Comput. Vis., vol. 86, pp. 211-228, 2010.</li>
+  <li>V. Parot et al., &quot;Photometric stereo endoscopy,&quot; J. Biomed. Opt., vol. 18, no. 7, p. 076017, 2013.</li>
+  <li>T. L. Bobrow et al., &quot;Multi-contrast laser endoscopy for in vivo gastrointestinal imaging,&quot; npj Imaging, 2025.</li>
+  <li>S. Mallick, T. Zickler, D. Kriegman, and P. Belhumeur, &quot;Beyond Lambert: Reconstructing specular surfaces using color,&quot; CVPR 2005.</li>
+  <li>&quot;Leveraging near-field lighting for monocular depth estimation from endoscopy videos&quot; (PPSNet), MICCAI 2024.</li>
+  <li>C. Schmalz et al., &quot;An endoscopic 3D scanner based on structured light,&quot; Med. Image Anal., vol. 16, pp. 1063-1072, 2012.</li>
+  <li>R. J. Mobbs et al., &quot;Spine endoscopy in transition: the case for mastery of both uniportal and biportal techniques,&quot; J. Spine Surg., 2025.</li>
+  <li>V. M. Batlle, J. M. M. Montiel, and J. D. Tardos, &quot;Photometric single-view dense 3D reconstruction in endoscopy,&quot; IROS 2022.</li>
+  <li>MedicalTek, &quot;MonoStereo 3D endoscopic imaging system,&quot; 2024-2025. Available: <a href="https://medicaltek.biz" target="_blank" rel="noopener">medicaltek.biz</a>.</li>
+  <li>Lumina-Bone Project Documentation (internal), 2026.</li>
+</ol>
+    </article>
+
+    <footer class="doc-footer">
+      <a href="../luminabone.html" class="to-project">← LuminaBone project</a>
+      <a href="../luminabone.html#documents" class="to-library">All documents</a>
+    </footer>
+
+  </main>
+
+  <script src="../script.js?v=9"></script>
+  <script src="../interactions.js?v=2" defer></script>
+</body>
+</html>

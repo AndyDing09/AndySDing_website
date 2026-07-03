@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sensor Design V2 — Andy S. Ding</title>
+  <meta name="description" content="Continuous-flow ASV sampling design: GPS transects, metered pumping, and a three-stage 2 mm/500 µm/50 µm filter cascade for ex-situ microplastic counts." />
+  <link rel="canonical" href="https://www.andysding.com/docs/kymarion-sensor-design-v2.html" />
+  <meta name="theme-color" content="#3f5b50" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌊%3C/text%3E%3C/svg%3E" />
+  <meta property="og:title" content="Sensor Design V2 — Andy S. Ding" />
+  <meta property="og:description" content="Continuous-flow ASV sampling design: GPS transects, metered pumping, and a three-stage 2 mm/500 µm/50 µm filter cascade for ex-situ microplastic counts." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.andysding.com/docs/kymarion-sensor-design-v2.html" />
+  <meta property="og:image" content="https://www.andysding.com/photo.jpg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://www.andysding.com/photo.jpg" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css?v=19" />
+  <link rel="stylesheet" href="doc.css?v=1" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav id="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-leaf">🌊</span> Andy S. Ding
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#home"      class="nav-link">Home</a></li>
+      <li><a href="../index.html#about"     class="nav-link">About</a></li>
+      <li><a href="../index.html#blog"      class="nav-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="nav-link active">Research</a></li>
+      <li><a href="../index.html#resume"    class="nav-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="nav-link">Interests</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── Mobile drawer ─── -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <ul>
+      <li><a href="../index.html#home"      class="drawer-link">Home</a></li>
+      <li><a href="../index.html#about"     class="drawer-link">About</a></li>
+      <li><a href="../index.html#blog"      class="drawer-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="drawer-link">Research</a></li>
+      <li><a href="../index.html#resume"    class="drawer-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="drawer-link">Interests</a></li>
+    </ul>
+  </div>
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <main class="doc-page" id="main">
+
+    <a href="../kymarion.html" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 3L5 8l5 5"/>
+      </svg>
+      Back to Project Kymarion
+    </a>
+
+    <header class="doc-header">
+      <span class="doc-project-chip">🌊 Project Kymarion</span>
+      <h1 class="doc-title">Sensor Design V2</h1>
+      <div class="doc-meta">
+        <span class="doc-type">Design doc</span>
+        <span>June 2026</span>
+        <span>8 min read</span>
+      </div>
+    </header>
+
+    <article class="doc-body">
+      <div class="doc-note">
+        <p><strong>Project Architecture Shift:</strong> The Autonomous Surface Vehicle (ASV) utilizes a continuous-flow, mechanical harvesting protocol to map microplastics. Moving away from fragile and environmentally risky <em>in-situ</em> optical chemistry, the vehicle operates as a geospatial data-logger and autonomous filtration drone. It physically extracts suspended particulates along pre-programmed GPS transects, allowing for rigorous, legal, and highly accurate <em>ex-situ</em> laboratory analysis.</p>
+      </div>
+
+      <h2>Phase 1: In-Field Autonomous Data Collection</h2>
+
+      <h3>Segment 1: Continuous Transect Navigation</h3>
+      <p>Unlike static point-sampling methods, the ASV conducts continuous transect sampling. As the vehicle navigates a pre-programmed grid along the water's surface, the onboard NEO-6M GPS module continuously logs spatial coordinates. Simultaneously, an internal 12V diaphragm pump draws ambient surface water into the payload.</p>
+
+      <h3>Segment 2: Dynamic Volumetric Tracking</h3>
+      <p>To ensure strict quantitative accuracy, the water passes through an inline YF-S201 Hall-effect flow sensor. This sensor translates water flow into digital pulses via a magnetic turbine, allowing the ESP32 microcontroller to calculate and log the exact total volume of water processed during that specific transect run. All telemetry data is synced by timestamp and saved directly to an onboard Micro SD card module.</p>
+
+      <h3>Segment 3: Multi-Stage Serial Filtration</h3>
+      <p>To isolate microplastics without destroying the pump or clogging the system with organic debris, the payload utilizes a three-stage serial filtration cascade:</p>
+      <ul>
+        <li><strong>Stage 1 (Macro-Shield):</strong> A 2mm physical grate at the hull intake deflects large debris like leaves and plastic bags using the hydrodynamic cross-flow of the boat's forward motion.</li>
+        <li><strong>Stage 2 (Organic Pre-Filter):</strong> A 500-micron mesh traps mid-sized biological matter such as macro-algae and insect larvae.</li>
+        <li><strong>Stage 3 (Analytical Trap):</strong> A terminal 50-micron analytical mesh strictly isolates the target microscopic fragments.</li>
+      </ul>
+
+      <h3>Segment 4: Automated Hardware Power Cut Fail-Safe</h3>
+      <p>To extend operational uptime during autonomous transect sampling, the ASV incorporates a passive anti-fouling recovery routine driven by real-time electrical monitoring of the pump system. An INA219 current sensor continuously measures the diaphragm pump's amperage draw during operation. As upstream filters accumulate suspended sediment, algae, or fibrous organic matter, hydraulic resistance across the filtration pathway increases, producing a measurable rise in pump load.</p>
+      <p>When the ESP32 detects a sustained current threshold exceedance above calibrated baseline conditions, the vehicle temporarily suspends active sampling by shutting down both the diaphragm pump and propulsion thrusters. Removing the pressure differential across the intake reduces suction forces holding loosely adhered debris against the upstream meshes. During a brief programmed settling interval, ambient water movement and gravity may partially release transient obstructions from the intake assembly.</p>
+      <p>Following the recovery delay, the ASV repositions several meters away from the affected region before resuming filtration operations. This passive recovery cycle is intended to reduce temporary intake obstruction and extend mission endurance, though persistent fouling under high suspended-solid conditions may still require manual servicing or filter replacement.</p>
+
+      <h2>Phase 2: Ex-Situ Laboratory Quantification</h2>
+
+      <h3>Segment 5: Environmental Safety and Compliance Protection</h3>
+      <div class="doc-note">
+        <p><strong>Legal Boundary:</strong> The direct discharge of chemical dyes like Nile Red and volatile carrier solvents (such as acetone or ethanol) into natural aquatic ecosystems is illegal under environmental protection regulations like the Clean Water Act. By shifting to this mechanical harvesting method, the ASV introduces zero chemical hazards to local habitats, fully satisfying safety protocols for field deployment.</p>
+      </div>
+
+      <h3>Segment 6: Laboratory Data Processing</h3>
+      <p>Once the ASV completes its mission and returns to shore, the terminal 50-micron analytical filter is manually extracted and transported to a controlled laboratory environment. In the lab, the filter is examined under a microscope to yield a definitive physical particle count.</p>
+
+      <h3>Segment 7: Mathematical Concentration Formula</h3>
+      <p>Following laboratory inspection of the analytical filter, the concentration of recovered microparticles is normalized against the total sampled water volume recorded during the transect mission.</p>
+      <pre><code>Concentration = Identified Particle Count / (Sampled Water Volume × Recovery Efficiency)</code></pre>
+      <p>Where:</p>
+      <ul>
+        <li><strong>Concentration</strong> = Estimated microplastic concentration in particles per liter</li>
+        <li><strong>Identified Particle Count</strong> = Microscopically identified microplastic particles recovered on the analytical mesh</li>
+        <li><strong>Sampled Water Volume</strong> = Total water volume recorded by the calibrated flow sensor</li>
+        <li><strong>Recovery Efficiency</strong> = Experimentally determined fraction of particles successfully retained by the system</li>
+      </ul>
+      <p>Because filtration and particle retention are not perfectly efficient, the ASV sampling system will undergo controlled recovery-efficiency validation trials. Known quantities of laboratory reference microplastics spanning multiple morphologies and size classes will be introduced into measured water volumes and processed through the full collection system. Recovery efficiency will then be calculated as the fraction of particles successfully retained on the analytical mesh after sampling.</p>
+      <p>To improve quantitative reliability, the YF-S201 flow sensor will also be empirically calibrated against gravimetric volumetric measurements under representative pulsatile diaphragm-pump operating conditions. This calibration process will establish correction coefficients for flow-rate nonlinearities and turbine response variation caused by pulsed flow behavior and suspended particulate loading.</p>
+
+      <h2>Sensor Overview</h2>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Component / Hardware</th>
+            <th>Category</th>
+            <th>Primary Function</th>
+            <th>Data / Power Interface</th>
+          </tr>
+          <tr>
+            <td><strong>ESP32 Microcontroller</strong></td>
+            <td>Core Processing</td>
+            <td>The central "brain" of the ASV. Reads all sensor data, calculates navigation, and triggers the pump safety protocols.</td>
+            <td>3.3V Logic</td>
+          </tr>
+          <tr>
+            <td><strong>Micro SD Card Module</strong></td>
+            <td>Data Storage</td>
+            <td>Logs all telemetry into a continuous CSV file (Time, GPS, Volume, Turbidity) for lab analysis.</td>
+            <td>SPI</td>
+          </tr>
+          <tr>
+            <td><strong>NEO-M8N GPS Module</strong></td>
+            <td>Geospatial Sensor</td>
+            <td>Tracks the exact latitude and longitude path (transect line) of the boat while the pump is active.</td>
+            <td>UART (Serial)</td>
+          </tr>
+          <tr>
+            <td><strong>YF-S201 Flow Sensor</strong></td>
+            <td>Fluidic Sensor</td>
+            <td>Dynamically measures the exact total volume of water (in Liters) pushed through the system to calculate plastic concentration.</td>
+            <td>Digital Pulse (Interrupt)</td>
+          </tr>
+          <tr>
+            <td><strong>12V Diaphragm Pump</strong></td>
+            <td>Actuator</td>
+            <td>Continuously pulls ambient surface water into the payload and forces it through the physical filter.</td>
+            <td>12V DC</td>
+          </tr>
+          <tr>
+            <td><strong>5V/12V Relay Module</strong></td>
+            <td>Power Control</td>
+            <td>Allows the low-voltage ESP32 to safely turn the high-voltage 12V pump on and off autonomously.</td>
+            <td>Digital (HIGH/LOW)</td>
+          </tr>
+          <tr>
+            <td><strong>INA219 Current Sensor</strong></td>
+            <td>System Fail-Safe</td>
+            <td>Monitors the pump's amperage. If the filter clogs, the current rises; the ESP32 detects this, shuts the pump off to let the debris fall away from the mesh, and relocates to fresh water before resuming — protecting both the pump and the captured sample.</td>
+            <td>I2C</td>
+          </tr>
+          <tr>
+            <td><strong>DFRobot SEN0189 Turbidity</strong></td>
+            <td>Environmental Sensor</td>
+            <td>Scans the continuous water flow to log water clarity/murkiness alongside the spatial GPS data.</td>
+            <td>Analog Voltage</td>
+          </tr>
+          <tr>
+            <td><strong>ADS1115 16-bit ADC</strong></td>
+            <td>Signal Processing</td>
+            <td>Bypasses the noisy native ESP32 pins to provide high-resolution, stable digital conversions for the analog turbidity sensor.</td>
+            <td>I2C</td>
+          </tr>
+          <tr>
+            <td><strong>MPU-9250 9-Axis IMU</strong></td>
+            <td>Navigation Sensor</td>
+            <td>Gyroscope, accelerometer, and digital compass to help the ASV maintain a perfectly straight heading against wind and waves.</td>
+            <td>I2C</td>
+          </tr>
+        </table>
+      </div>
+
+      <h2>Filter Stages</h2>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Filter Stage</th>
+            <th>Pore Size (Mesh)</th>
+            <th>Physical Material</th>
+            <th>Primary Target</th>
+            <th>Engineering Purpose &amp; Mechanism</th>
+          </tr>
+          <tr>
+            <td><strong>Stage 1: Macro-Shield</strong></td>
+            <td>2,000 µm (2.0 mm)</td>
+            <td>Stainless Steel Perforated Grate</td>
+            <td>Leaves, twigs, plastic bags, large organic debris, and wildlife.</td>
+            <td><strong>Intake Protection:</strong> Mounted at a 45-degree angle under the hull. Uses the hydrodynamic cross-flow of the boat's forward motion to passively shed large debris, preventing the intake pipe from choking before water even enters the pump.</td>
+          </tr>
+          <tr>
+            <td><strong>Stage 2: Organic Pre-Filter</strong></td>
+            <td>500 µm (0.5 mm)</td>
+            <td>Nylon or Stainless Steel Woven Mesh</td>
+            <td>Macro-algae, duckweed, small insect larvae, and coarse sand/sediment.</td>
+            <td><strong>Pump &amp; System Protection:</strong> Acts as the primary sacrificial filter inside the payload bay. It isolates large biological matter that would instantly blind (clog) the fine analytical mesh or lock up the internal valves of the 12V diaphragm pump.</td>
+          </tr>
+          <tr>
+            <td><strong>Stage 3: Analytical Trap</strong></td>
+            <td>50 µm (0.05 mm)</td>
+            <td>High-Precision Polyester (PET) or Stainless Steel Mesh</td>
+            <td>Target microplastic fragments, microfibers, pellets, and micro-algae.</td>
+            <td><strong>Data Isolation:</strong> The terminal boundary of the filtration system. Because Stages 1 and 2 remove the heavy organic clutter, this fine mesh strictly captures the target microscopic particulates. This is the physical mesh that is removed and brought to the lab for microscopic counting.</td>
+          </tr>
+        </table>
+      </div>
+
+      <h3>Particulate Distribution and Filter Blinding Mitigation</h3>
+      <p>In environmental fluid dynamics, attempting to force raw surface water directly through a lone 50-micron mesh causes immediate "filter blinding" — a rapid surface clogging driven by organic suspended solids and micro-algae. Implementing this three-tiered serial layout actively distributes the particulate load across distinct size fractions. This ensures that the terminal analytical mesh strictly captures the target microparticulates without getting buried under macro-debris, drastically extending the vehicle's operational uptime during a transect. When clogging does eventually build up, the passive stop-settle-relocate recovery cycle (Segment 4) clears the upstream meshes without reversing flow, so the captured microplastics on the analytical mesh are never disturbed.</p>
+
+      <h3>Polymer Contamination Control and Material Selection</h3>
+      <p>When sourcing the mesh for Stage 3 (the analytical trap), it is critical to select <strong>Stainless Steel 316</strong> or <strong>Polyester (PET)</strong> rather than standard Nylon. Because Nylon is a polyamide synthetic plastic, using a Nylon filter screen can introduce severe background contamination into your sample by shedding its own fibers during water friction. Utilizing non-nylon materials secures the integrity of your blank controls and ensures your final particle counts are scientifically defensible.</p>
+
+      <h3>Laboratory Microscopic Triage and Organic Digestion</h3>
+      <p>Because environmental microplastic analysis is highly susceptible to airborne and procedural contamination, strict contamination-control protocols are implemented during all post-collection handling and laboratory analysis stages. All recovered analytical meshes are stored in sealed non-plastic containers immediately following retrieval from the ASV payload. Laboratory processing surfaces are cleaned using filtered deionized water, and exposed samples remain covered whenever active observation is not occurring. Cotton laboratory garments and non-shedding nitrile gloves are used during handling procedures to minimize synthetic fiber introduction.</p>
+      <p>To quantify potential background contamination introduced during sampling and laboratory processing, both procedural blanks and field blanks are incorporated into the analytical workflow. Blank control filters are exposed to identical handling conditions without active water sampling and later examined microscopically alongside experimental samples.</p>
+      <p>Because a 50-micron analytical mesh captures both synthetic particles and naturally occurring biological material, recovered samples may undergo mild Wet Peroxide Oxidation (WPO) using 30% hydrogen peroxide (<code>H₂O₂</code>) to digest organic debris prior to microscopic examination. This process improves optical visibility of retained particles while preserving the majority of common environmental plastic polymers.</p>
+      <p>Microscopic inspection is used to generate a presumptive microplastic particle count based on visible morphological characteristics including particle geometry, coloration, surface texture, and fiber structure. Because microscopy alone cannot conclusively determine polymer identity, all classifications are considered preliminary unless verified using spectroscopic techniques such as Fourier Transform Infrared Spectroscopy (FTIR) or Raman spectroscopy.</p>
+
+      <hr />
+      <p>Continued in <a href="kymarion-sensor-design-v2-1.html">Sensor Design V2.1</a>.</p>
+    </article>
+
+    <footer class="doc-footer">
+      <a href="../kymarion.html" class="to-project">← Project Kymarion project</a>
+      <a href="../kymarion.html#documents" class="to-library">All documents</a>
+    </footer>
+
+  </main>
+
+  <script src="../script.js?v=9"></script>
+  <script src="../interactions.js?v=2" defer></script>
+</body>
+</html>

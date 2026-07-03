@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bench Results — 17-Sample Bone Depth Study — Andy S. Ding</title>
+  <meta name="description" content="Photometric-stereo depth results from 17 real bone samples imaged with a 3-LED rig: capture convention, per-location relief estimates, and caveats." />
+  <link rel="canonical" href="https://www.andysding.com/docs/luminabone-bench-results.html" />
+  <meta name="theme-color" content="#3f5b50" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🦴%3C/text%3E%3C/svg%3E" />
+  <meta property="og:title" content="Bench Results — 17-Sample Bone Depth Study — Andy S. Ding" />
+  <meta property="og:description" content="Photometric-stereo depth results from 17 real bone samples imaged with a 3-LED rig: capture convention, per-location relief estimates, and caveats." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.andysding.com/docs/luminabone-bench-results.html" />
+  <meta property="og:image" content="https://www.andysding.com/photo.jpg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://www.andysding.com/photo.jpg" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css?v=19" />
+  <link rel="stylesheet" href="doc.css?v=1" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav id="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-leaf">🌊</span> Andy S. Ding
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#home"      class="nav-link">Home</a></li>
+      <li><a href="../index.html#about"     class="nav-link">About</a></li>
+      <li><a href="../index.html#blog"      class="nav-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="nav-link active">Research</a></li>
+      <li><a href="../index.html#resume"    class="nav-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="nav-link">Interests</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── Mobile drawer ─── -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <ul>
+      <li><a href="../index.html#home"      class="drawer-link">Home</a></li>
+      <li><a href="../index.html#about"     class="drawer-link">About</a></li>
+      <li><a href="../index.html#blog"      class="drawer-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="drawer-link">Research</a></li>
+      <li><a href="../index.html#resume"    class="drawer-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="drawer-link">Interests</a></li>
+    </ul>
+  </div>
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <main class="doc-page" id="main">
+
+    <a href="../luminabone.html" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 3L5 8l5 5"/>
+      </svg>
+      Back to LuminaBone
+    </a>
+
+    <header class="doc-header">
+      <span class="doc-project-chip">🦴 LuminaBone</span>
+      <h1 class="doc-title">Bench Results — 17-Sample Bone Depth Study</h1>
+      <div class="doc-meta">
+        <span class="doc-type">Results</span>
+        <span>June 2026</span>
+        <span>3 min read</span>
+      </div>
+    </header>
+
+    <article class="doc-body">
+      <p>17 bone samples (&ldquo;locations&rdquo;), each photographed 4 times by a multi-LED rig. Depth was recovered per sample with Woodham photometric stereo (per-pixel surface normals from 3 single-LED images) + Frankot&ndash;Chellappa FFT integration.</p>
+
+      <h2>Capture convention (verified on all 17 locations)</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>File</th>
+              <th>Lighting</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>pN-1.jpg</code></td><td>All LEDs on</td><td>Uniform reference; NOT used for the depth solve</td></tr>
+            <tr><td><code>pN-2.jpg</code></td><td>RIGHT LED</td><td>Light azimuth ~0&deg;</td></tr>
+            <tr><td><code>pN-3.jpg</code></td><td>TOP/upper LED</td><td>Light azimuth ~40&ndash;90&deg;</td></tr>
+            <tr><td><code>pN-4.jpg</code></td><td>LEFT LED</td><td>Light azimuth ~180&deg;</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Files in this folder</h2>
+      <ul>
+        <li><strong><code>depth_summary</code></strong> — Google Sheet, one row per location (see columns below)</li>
+        <li><strong><code>bone_depth_batch.py</code></strong> — the program that produced everything (re-runnable)</li>
+        <li><strong>Image bundle (.zip)</strong> — 17&times; depth maps + 17&times; normal maps + 17&times; panel figures (drag the zip in, then right-click and extract, or just open it — the PNGs are inside)</li>
+      </ul>
+      <div class="doc-figure-note">The bundled PNGs — per-sample depth maps, normal maps, and panel figures — are not mirrored on this page.</div>
+
+      <h2>depth_summary columns</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Column</th>
+              <th>Meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>location</code></td><td>Sample number 1..17</td></tr>
+            <tr><td><code>width, height</code></td><td>Working resolution used (640&times;360)</td></tr>
+            <tr><td><code>n_lights</code></td><td>LEDs used for the solve (3)</td></tr>
+            <tr><td><code>azimuths_deg</code></td><td>Light directions used (0; 90; 180 = right; top; left)</td></tr>
+            <tr><td><code>depth_min/max</code></td><td>Relative depth extremes</td></tr>
+            <tr><td><code>depth_mean/std</code></td><td>Mean is ~0 by construction; std = overall roughness</td></tr>
+            <tr><td><code>relief_p2_p98</code></td><td>Headline number: robust peak-to-valley surface relief (bigger = more pronounced 3-D structure on that sample)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>What the numbers mean</h2>
+      <div class="doc-note">
+        <p>Photometric stereo recovers SHAPE up to an unknown offset and scale, so depth is RELATIVE (working-pixel units), not absolute millimetres. The shape and the relative height differences are meaningful; the absolute value is not. To get true mm later you would add one coaxial point-light image and rescale — see the note at the bottom of <code>bone_depth_batch.py</code>.</p>
+      </div>
+
+      <h2>How to re-run</h2>
+      <pre><code>pip install numpy opencv-python scipy matplotlib
+# put the pN-M.jpg photos in a folder, set INPUT_FOLDER at the top of the
+# script to point at it, then:
+python bone_depth_batch.py</code></pre>
+      <p>Outputs land in <code>./depth_outputs</code> (the PNGs and the CSV in this folder).</p>
+
+      <h2>Caveat</h2>
+      <p>With 3 oblique, uncalibrated LEDs on a glossy specimen, fine relief is reliable but the very-low-frequency &ldquo;overall tilt&rdquo; of each map is approximate — inherent to photometric stereo, not a bug. Specular-glint removal is on by default.</p>
+
+      <h2>Per-location depth estimates</h2>
+      <p>One row per sample location. <code>depth_px</code> is the robust peak-to-valley relief in working-resolution pixels; <code>depth_mm_at_30mm_FOV</code> is the same relief converted to millimetres assuming a 30&nbsp;mm field of view.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>location</th>
+              <th>image_width_px</th>
+              <th>image_height_px</th>
+              <th>depth_px</th>
+              <th>depth_mm_at_30mm_FOV</th>
+              <th>max_relief_px</th>
+              <th>roughness_px</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>640</td><td>360</td><td>64.48</td><td>3.023</td><td>73.19</td><td>19.35</td></tr>
+            <tr><td>2</td><td>640</td><td>360</td><td>61.28</td><td>2.872</td><td>66.83</td><td>17.67</td></tr>
+            <tr><td>3</td><td>640</td><td>360</td><td>59.19</td><td>2.774</td><td>68.28</td><td>15.59</td></tr>
+            <tr><td>4</td><td>640</td><td>360</td><td>57.88</td><td>2.713</td><td>65.37</td><td>17.55</td></tr>
+            <tr><td>5</td><td>640</td><td>360</td><td>56.94</td><td>2.669</td><td>65.25</td><td>17.73</td></tr>
+            <tr><td>6</td><td>640</td><td>360</td><td>52.73</td><td>2.472</td><td>61.34</td><td>17.48</td></tr>
+            <tr><td>7</td><td>640</td><td>360</td><td>51.93</td><td>2.434</td><td>57.16</td><td>16.00</td></tr>
+            <tr><td>8</td><td>640</td><td>360</td><td>50.48</td><td>2.366</td><td>60.13</td><td>13.58</td></tr>
+            <tr><td>9</td><td>640</td><td>360</td><td>45.61</td><td>2.138</td><td>56.37</td><td>11.69</td></tr>
+            <tr><td>10</td><td>640</td><td>360</td><td>48.49</td><td>2.273</td><td>55.87</td><td>12.99</td></tr>
+            <tr><td>11</td><td>640</td><td>360</td><td>53.44</td><td>2.505</td><td>59.52</td><td>15.33</td></tr>
+            <tr><td>12</td><td>640</td><td>360</td><td>56.31</td><td>2.64</td><td>64.65</td><td>17.59</td></tr>
+            <tr><td>13</td><td>640</td><td>360</td><td>55.95</td><td>2.623</td><td>62.28</td><td>18.23</td></tr>
+            <tr><td>14</td><td>640</td><td>360</td><td>55.79</td><td>2.615</td><td>62.69</td><td>17.44</td></tr>
+            <tr><td>15</td><td>640</td><td>360</td><td>49.82</td><td>2.335</td><td>55.88</td><td>14.91</td></tr>
+            <tr><td>16</td><td>640</td><td>360</td><td>42.61</td><td>1.997</td><td>52.88</td><td>11.36</td></tr>
+            <tr><td>17</td><td>640</td><td>360</td><td>46.01</td><td>2.157</td><td>55.33</td><td>11.37</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Across the 17 locations, mean peak-to-valley relief is roughly 2.5&nbsp;mm (range 2.0&ndash;3.0&nbsp;mm) under the 30&nbsp;mm field-of-view assumption. These millimetre figures inherit the relative-scale caveat above: the pixel-to-mm conversion assumes the stated FOV rather than a metric calibration.</p>
+    </article>
+
+    <footer class="doc-footer">
+      <a href="../luminabone.html" class="to-project">← LuminaBone project</a>
+      <a href="../luminabone.html#documents" class="to-library">All documents</a>
+    </footer>
+
+  </main>
+
+  <script src="../script.js?v=9"></script>
+  <script src="../interactions.js?v=2" defer></script>
+</body>
+</html>

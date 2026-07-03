@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sensor Design V2.1 — Andy S. Ding</title>
+  <meta name="description" content="Build-and-test plan for the V2.1 pump-and-filter ASV: staged 300 µm filtration, ESP32 electronics integration, power isolation, and a July 18 pond shakedown." />
+  <link rel="canonical" href="https://www.andysding.com/docs/kymarion-sensor-design-v2-1.html" />
+  <meta name="theme-color" content="#3f5b50" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌊%3C/text%3E%3C/svg%3E" />
+  <meta property="og:title" content="Sensor Design V2.1 — Andy S. Ding" />
+  <meta property="og:description" content="Build-and-test plan for the V2.1 pump-and-filter ASV: staged 300 µm filtration, ESP32 electronics integration, power isolation, and a July 18 pond shakedown." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.andysding.com/docs/kymarion-sensor-design-v2-1.html" />
+  <meta property="og:image" content="https://www.andysding.com/photo.jpg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://www.andysding.com/photo.jpg" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css?v=19" />
+  <link rel="stylesheet" href="doc.css?v=1" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav id="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-leaf">🌊</span> Andy S. Ding
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#home"      class="nav-link">Home</a></li>
+      <li><a href="../index.html#about"     class="nav-link">About</a></li>
+      <li><a href="../index.html#blog"      class="nav-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="nav-link active">Research</a></li>
+      <li><a href="../index.html#resume"    class="nav-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="nav-link">Interests</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── Mobile drawer ─── -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <ul>
+      <li><a href="../index.html#home"      class="drawer-link">Home</a></li>
+      <li><a href="../index.html#about"     class="drawer-link">About</a></li>
+      <li><a href="../index.html#blog"      class="drawer-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="drawer-link">Research</a></li>
+      <li><a href="../index.html#resume"    class="drawer-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="drawer-link">Interests</a></li>
+    </ul>
+  </div>
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <main class="doc-page" id="main">
+
+    <a href="../kymarion.html" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 3L5 8l5 5"/>
+      </svg>
+      Back to Project Kymarion
+    </a>
+
+    <header class="doc-header">
+      <span class="doc-project-chip">🌊 Project Kymarion</span>
+      <h1 class="doc-title">Sensor Design V2.1</h1>
+      <div class="doc-meta">
+        <span class="doc-type">Design doc</span>
+        <span>June 2026</span>
+        <span>13 min read</span>
+      </div>
+    </header>
+
+    <article class="doc-body">
+      <div class="doc-note">
+        <p><strong>What this page is</strong> — the build-and-test plan for V2.1, the <strong>pump + filter</strong> ASV. We prove the mechanism works on our school pond (calm / no waves) by <strong>July 18</strong>, then take the same mechanism to the coast.</p>
+        <p><strong>Decision locked this revision</strong> — Architecture = <strong>on-boat pump + filter</strong> (old "Option A"). The pond run exists to prove the <em>mechanism</em>: navigate → pump a known volume → filter → recover countable particles → all sensors log together, without clogging or browning out.</p>
+        <p><strong>On <a href="kymarion-jeznach-meeting.html">Jeznach</a></strong> — we take her <em>transferable</em> advice (filter sizing, mesh material, lab digestion + contamination control) but we are <strong>not</strong> copying her field methodology (low-volume grab jars, river-reach site criteria). Her context is a river; ours is a pond now and a nearshore coastline later, and we pump-and-filter rather than grab-and-sieve.</p>
+      </div>
+
+      <p><strong>Legend:</strong> ✅ <strong>Locked</strong> · 🔲 <strong>Decide</strong> (still open) · ⭐ <strong>Recommended default</strong> (use unless you object) · ✏️ <strong>Fill in</strong> (a value/coord/measurement) · ☐ checkboxes = build/test actions.</p>
+
+      <hr />
+
+      <h2>0 · What the pond test proves</h2>
+      <p>The pond is a <strong>mechanism shakedown</strong>, not the convergence-zone study. Success = the pump-filter loop runs end to end and the data comes off clean.</p>
+      <ul>
+        <li>✅ <strong>Primary objective:</strong> <em>"The ASV reaches a set of pond waypoints, pumps a measured volume through the filter at each, and recovers a lab-countable sample — with flow, current, GPS and SD all logging together, no clog lockout, no electronics brownout."</em></li>
+        <li>⭐ <strong>Scope = mechanism + collection.</strong> Run the full pump/flow/clog/log loop and pull a real filter for lab counting, but don't gate success on a perfect particle count (that's the recovery trial, §8).</li>
+        <li><strong>Success criteria:</strong>
+          <ul>
+            <li>☐ Reaches each waypoint and holds position long enough to pump</li>
+            <li>☐ Pumps a repeatable target volume — ✏️ target (e.g. 5 L), ✏️ ± tolerance</li>
+            <li>☐ Flow + INA219 + GPS + (turbidity) all log to SD in one synced CSV</li>
+            <li>☐ No brownout/reset when the pump kicks on (see §5 power)</li>
+            <li>☐ Clog-recovery routine fires and clears, or never trips</li>
+          </ul>
+        </li>
+        <li><strong>Out of scope (write it down):</strong> FTIR/Raman confirmation, multi-day repeats, wave/chop handling, the real coastline sites.</li>
+      </ul>
+
+      <hr />
+
+      <h2>1 · Architecture — ✅ LOCKED: on-boat pump + filter</h2>
+      <ul>
+        <li>✅ Boat goes to a waypoint, a 12 V diaphragm pump draws surface water through a staged filter, the YF-S201 logs the exact volume, the analytical mesh is pulled for lab counting. This is the mechanism for the pond <strong>and</strong> the coast.</li>
+        <li><strong>Why this over grab-and-sieve:</strong> it keeps the <a href="kymarion-sensor-design-v2.html">V2</a> hardware story, it's the method we actually want to field at convergence zones, and pumping a <em>measured</em> volume gives a clean concentration normalization (particles ÷ litres) instead of relying on grab-jar representativeness.</li>
+        <li><strong>What it requires (all covered below):</strong> pump + switch (§5), volume measurement (§5), a staged filter that won't blind instantly (§3), clog handling (§3/§5), and one removable cartridge per site/run (§4).</li>
+        <li><em>Grab-and-sieve (Jeznach's river method) is set aside — noted here only so we remember we chose against it on purpose.</em></li>
+      </ul>
+
+      <hr />
+
+      <h2>2 · Where to sample (pond + real deployment)</h2>
+      <p>Jeznach's river site rules (wadeable/bridge access, streamflow gauges, up/down-stream of WWTPs, straight reaches not bends, mid-channel) <strong>don't transfer</strong> — those are river-science controls. We drop them.</p>
+      <p><strong>Pond (July 18) — a mechanism grid, not a science design.</strong> Pick waypoints that test <em>repeatability and navigation</em>, not a pollution gradient:</p>
+      <ul>
+        <li>⭐ <strong>4 waypoints</strong> spread across open water + one near the inflow + one in a sheltered corner. Enough to test "go there, pump, log, move on" several times; few enough to fit one battery.</li>
+        <li>✏️ <strong>Fill in — the actual pond waypoints</strong> (name + GPS lat/long). Drop a pond map screenshot here.</li>
+        <li>⭐ <strong>2 runs</strong> of the grid for repeatability (replaces "4 × 200 mL replicates" — we get repeatability from repeated pumped volumes, not from her jar count).</li>
+        <li>✏️ <strong>Fill in — sampling depth.</strong> Buoyant plastics ride the top → ⭐ surface intake (intake mouth 2–5 cm below waterline). Write down the choice.</li>
+      </ul>
+      <p><strong>Real deployment (coast, later).</strong> Site selection is driven by <em>our</em> hypothesis — current-convergence / accumulation zones — <strong>not</strong> river reaches. We'll redo §2 properly for the coast once the mechanism is proven.</p>
+
+      <hr />
+
+      <h2>3 · Filtration (pump-filter cascade) — Jeznach sizing applied</h2>
+      <ul>
+        <li>✅ <strong>Target band: 300 µm – 5 mm</strong> (Jeznach). Samples come back <strong>fiber-dominated</strong>, so the mesh has to retain fibers, not just fragments.</li>
+        <li>✅ <strong>Mesh material: 316 stainless or PET. Never nylon</strong> — nylon sheds polyamide fibers into a fiber-dominated count. This matters more than it did in V2.</li>
+        <li>✅ <strong>50 µm is out.</strong> Going coarser is the point.</li>
+        <li><strong>Why we still need stages (even though we went coarser):</strong> we're pumping <em>raw</em> pond water full of algae and organics. A lone 300 µm mesh would still blind fast. A short cascade spreads the load:</li>
+      </ul>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Stage</th>
+            <th>Pore size</th>
+            <th>Material</th>
+            <th>Removes</th>
+            <th>Pulled for lab?</th>
+          </tr>
+          <tr>
+            <td>1 — intake screen</td>
+            <td>~2 mm</td>
+            <td>316 SS perforated</td>
+            <td>leaves, twigs, wildlife</td>
+            <td>no</td>
+          </tr>
+          <tr>
+            <td>2 — pre-filter ⭐</td>
+            <td>~800 µm–1 mm</td>
+            <td>316 SS / PET woven</td>
+            <td>coarse algae, duckweed, sediment</td>
+            <td>no</td>
+          </tr>
+          <tr>
+            <td>3 — analytical</td>
+            <td>⭐ <strong>300 µm</strong> (🔲 confirm)</td>
+            <td>316 SS / PET</td>
+            <td>target 300 µm–5 mm</td>
+            <td><strong>yes — this is the count mesh</strong></td>
+          </tr>
+        </table>
+      </div>
+      <ul>
+        <li>🔲 <strong>Decide — analytical pore size.</strong> ⭐ 300 µm (matches Jeznach's floor, low clog/contamination risk). Going to 100–200 µm catches more but reintroduces blinding + fiber-contamination risk. Confirm 300 or pick a number.</li>
+        <li>🔲 <strong>Decide — 3-stage (above) vs 2-stage (2 mm → 300 µm).</strong> ⭐ Start 3-stage for raw pond water; drop stage 2 if it turns out unnecessary. The 500 µm from V2 is gone (too close to a 300 µm analytical to do real work).</li>
+        <li>✅ <strong>Keep the INA219 clog-recovery routine</strong> — coarse mesh clogs <em>less</em>, but pumping raw water still fouls; cheap insurance, and it's the headline "smart" feature for judging. (Routine detail in §5.)</li>
+      </ul>
+
+      <hr />
+
+      <h2>4 · Filter handling — one cartridge per site, no cross-contamination</h2>
+      <ul>
+        <li>⭐ <strong>Swappable 300 µm cartridge, one per waypoint/run.</strong> Pump → pull cartridge → drop into a labeled sealed <strong>non-plastic</strong> container → fresh cartridge → next waypoint.</li>
+        <li>✏️ <strong>Fill in — cartridge housing</strong> (inline filter holder spec / 3D-printed body + the mesh disc size).</li>
+        <li>☐ Carry a <strong>field blank</strong> cartridge (exposed, never pumped) to catch airborne fiber contamination.</li>
+        <li>☐ Rinse the intake/pump line with filtered water between waypoints so site N doesn't bleed into N+1.</li>
+      </ul>
+
+      <hr />
+
+      <h2>5 · Sensor + electronics suite — THE BUILD ⭐</h2>
+      <p>Taken from <a href="kymarion-sensor-design-v2.html">V2</a> and made electrically coherent. The headline risks aren't the sensors individually — they're <strong>voltage levels</strong> (ESP32 is 3.3 V and <strong>not</strong> 5 V-tolerant), the <strong>I2C bus</strong> sharing, and <strong>power isolation</strong> so the pump doesn't brown out the logic.</p>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Component</th>
+            <th>Role</th>
+            <th>Bus / interface</th>
+            <th>Power</th>
+            <th>From V2</th>
+            <th>Watch-for</th>
+          </tr>
+          <tr>
+            <td>ESP32 (WROOM)</td>
+            <td>brain</td>
+            <td>—</td>
+            <td>3.3 V logic</td>
+            <td>✅</td>
+            <td>GPIO are <strong>3.3 V max</strong>, not 5 V-tolerant</td>
+          </tr>
+          <tr>
+            <td>Micro-SD module</td>
+            <td>per-site CSV log</td>
+            <td>SPI</td>
+            <td>5 V or 3.3 V</td>
+            <td>✅</td>
+            <td>confirm it has a level shifter if 5 V</td>
+          </tr>
+          <tr>
+            <td>NEO-M8N GPS</td>
+            <td>position + timestamp tag</td>
+            <td>UART</td>
+            <td>3.3 V</td>
+            <td>✅</td>
+            <td>put on UART2; WROVER pin clash (below)</td>
+          </tr>
+          <tr>
+            <td>YF-S201 flow</td>
+            <td>volume pumped (→ concentration)</td>
+            <td>digital pulse (IRQ)</td>
+            <td>5 V</td>
+            <td>✅</td>
+            <td><strong>5 V pulse → must divide to 3.3 V</strong>; min flow ~1 L/min</td>
+          </tr>
+          <tr>
+            <td>INA219</td>
+            <td>pump current → clog detect</td>
+            <td>I2C <code>0x40</code></td>
+            <td>3.3 V</td>
+            <td>✅</td>
+            <td>in series w/ pump; default shunt maxes ~3.2 A</td>
+          </tr>
+          <tr>
+            <td>SEN0189 turbidity</td>
+            <td>per-site clarity (optional)</td>
+            <td>analog → ADS1115</td>
+            <td>5 V</td>
+            <td>✅</td>
+            <td>0–4.5 V out <strong>exceeds 3.3 V</strong> — see ADS note</td>
+          </tr>
+          <tr>
+            <td>ADS1115</td>
+            <td>16-bit ADC for turbidity</td>
+            <td>I2C <code>0x48</code></td>
+            <td>⭐ 5 V</td>
+            <td>✅</td>
+            <td>power at 5 V so it can read the 4.5 V signal</td>
+          </tr>
+          <tr>
+            <td>MPU-9250 IMU</td>
+            <td>heading for autonomous nav</td>
+            <td>I2C <code>0x68</code> (mag <code>0x0C</code>)</td>
+            <td>3.3 V</td>
+            <td>✅</td>
+            <td>magnetometer hates the pump/motors/SS mesh (below)</td>
+          </tr>
+          <tr>
+            <td>12 V diaphragm pump</td>
+            <td>the sampler</td>
+            <td>12 V DC</td>
+            <td>12 V, ✏️ ~1–2 A</td>
+            <td>✅</td>
+            <td>inductive load → <strong>needs flyback diode</strong></td>
+          </tr>
+          <tr>
+            <td>Pump switch</td>
+            <td>ESP32 controls pump</td>
+            <td>digital</td>
+            <td>—</td>
+            <td>⭐ upgrade</td>
+            <td>⭐ logic-level <strong>MOSFET</strong> (e.g. IRLZ44N) &gt; relay</td>
+          </tr>
+          <tr>
+            <td>2× thrusters + drivers</td>
+            <td>propulsion / steering</td>
+            <td>digital (PWM/on-off)</td>
+            <td>12 V, ✏️ ~1.5–3 A ea</td>
+            <td>➕ add</td>
+            <td>differential thrust = no rudder servo needed</td>
+          </tr>
+          <tr>
+            <td>12 V→5 V buck</td>
+            <td>5 V rail</td>
+            <td>—</td>
+            <td>—</td>
+            <td>➕ add</td>
+            <td>size for 5 V load; good input caps</td>
+          </tr>
+          <tr>
+            <td>3S LiPo (11.1 V)</td>
+            <td>single 12 V source</td>
+            <td>—</td>
+            <td>—</td>
+            <td>➕ add</td>
+            <td>drives pump + thrusters + buck</td>
+          </tr>
+        </table>
+      </div>
+
+      <h3>Making them work together</h3>
+      <p><strong>I2C bus — ✅ no address conflicts.</strong> INA219 <code>0x40</code>, ADS1115 <code>0x48</code>, MPU-9250 <code>0x68</code> (its AK8963 magnetometer at <code>0x0C</code>) are all distinct, so they share one bus fine. Use ESP32 default <code>SDA=GPIO21 / SCL=GPIO22</code> with 4.7 kΩ pull-ups to <strong>3.3 V</strong>. (Even with the ADS1115 powered at 5 V, the bus is open-drain pulled to 3.3 V, so the ESP32 sees safe 3.3 V — fine.)</p>
+      <p><strong>Flow sensor level-shift — the easiest thing to fry the ESP32 with.</strong> YF-S201 runs at 5 V and its pulse is ~5 V. Feed it through a level shifter or a simple divider (e.g. 10 kΩ / 20 kΩ → ~3.3 V) into an interrupt-capable GPIO (e.g. GPIO27). Calibrate volume gravimetrically (V2 already planned this). ✏️ <strong>Check the flow rate</strong> — YF-S201 is happy at 1–30 L/min; if our pump pushes &lt;1 L/min through a fine mesh, swap to a <strong>YF-S401</strong> (0.3–6 L/min) or it'll under-read.</p>
+      <p><strong>Pump switching.</strong> ⭐ Drive the pump with a <strong>logic-level MOSFET</strong> (IRLZ44N or a MOSFET module) straight from a 3.3 V GPIO — quieter than a relay, and lets you PWM the flow if you want. <strong>Add a flyback diode</strong> (e.g. 1N5822) across the pump: it's an inductive load and the back-EMF will eventually kill an unprotected switch. If you keep the V2 relay instead, note it needs a <strong>5 V coil</strong> and many relay boards don't trigger reliably from 3.3 V — use a "low-level-trigger" optocoupler board or a transistor.</p>
+      <p><strong>INA219 placement + range.</strong> Wire it in series on the pump's 12 V feed (it reads bus voltage up to 26 V, fine). ✏️ <strong>Check clog current:</strong> the common breakout shunt (0.1 Ω) tops out near <strong>3.2 A</strong> — if the pump spikes past that when blinded, the reading saturates and clog-detect goes blind exactly when you need it. Verify stall current, or use a board with a bigger shunt.</p>
+      <p><strong>Turbidity + ADS1115 voltage.</strong> SEN0189 swings 0–4.5 V, which exceeds the ADS1115's input ceiling if the ADC is powered at 3.3 V. ⭐ <strong>Power the ADS1115 at 5 V</strong> (input ceiling rises to ~5 V, the 4.5 V signal fits) and keep the I2C pull-ups at 3.3 V as above. Mount the turbidity probe <strong>inline before the filter</strong> so it reads intake water, not post-filter. (Turbidity is optional for the mechanism test — 🔲 keep it or drop it to cut a variable on day one.)</p>
+      <p><strong>IMU — the one sensor most likely to misbehave.</strong> The MPU-9250's magnetometer is a compass; mounted next to a 12 V pump, thruster motors, and a stainless mesh it'll read garbage (hard-iron). If you run autonomous heading: mount the IMU <strong>as far from the pump/motors/SS as possible</strong>, on a small mast if you can, and run a figure-8 hard/soft-iron calibration. ⭐ <strong>For the first pond run, you don't need it</strong> — drive by RC and let GPS course-over-ground give heading while moving. Re-add IMU heading for true autonomy. (Note: MPU-9250 is discontinued; an ICM-20948 is the modern drop-in if you ever rebuy.)</p>
+      <p><strong>Power architecture — the thing that makes it "work in the field, not just the bench."</strong></p>
+      <ul>
+        <li>One <strong>3S LiPo (≈11.1–12.6 V)</strong> feeds the pump and thrusters directly, and a <strong>12 V→5 V buck</strong> for the 5 V rail (SD, flow, turbidity, ADS1115). The ESP32's onboard 3.3 V regulator runs off that 5 V.</li>
+        <li>⚠️ The pump and thrusters are noisy inductive loads. If the logic buck shares the rail naively, <strong>pump inrush will sag the 12 V and reset the ESP32</strong> mid-mission. Mitigate: dedicated buck for logic with fat input capacitance (≥470 µF bulk), keep pump/motor wiring away from signal wiring, and — cleanest — a <strong>separate small battery/BEC for electronics</strong>.</li>
+        <li><strong>Common ground everywhere</strong> (12 V, 5 V, 3.3 V domains tied) or the INA219 shunt reading, the MOSFET gate reference, and the flow-sensor signal won't make sense.</li>
+      </ul>
+
+      <h3>Starter pin map (ESP32 WROOM — adjust as needed)</h3>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Signal</th>
+            <th>Pin</th>
+            <th>Notes</th>
+          </tr>
+          <tr>
+            <td>I2C SDA / SCL</td>
+            <td>GPIO21 / GPIO22</td>
+            <td>INA219, ADS1115, MPU-9250</td>
+          </tr>
+          <tr>
+            <td>GPS RX / TX</td>
+            <td>GPIO16 / GPIO17 (UART2)</td>
+            <td><strong>WROVER users:</strong> 16/17 are PSRAM — use UART1 / other pins</td>
+          </tr>
+          <tr>
+            <td>SD (SPI)</td>
+            <td>GPIO5 CS, 18 SCK, 23 MOSI, 19 MISO</td>
+            <td>VSPI default</td>
+          </tr>
+          <tr>
+            <td>Flow pulse (IRQ)</td>
+            <td>GPIO27</td>
+            <td><strong>through level shifter</strong></td>
+          </tr>
+          <tr>
+            <td>Pump MOSFET gate</td>
+            <td>GPIO26</td>
+            <td>PWM-capable</td>
+          </tr>
+          <tr>
+            <td>Thruster L / R</td>
+            <td>GPIO25 / GPIO33</td>
+            <td>PWM-capable; avoid input-only 34–39</td>
+          </tr>
+        </table>
+      </div>
+      <ul>
+        <li>✏️ <strong>Fill in — power budget.</strong> Measure pump A and thruster A at 12 V, sum, add margin, pick LiPo mAh for runtime across the grid.</li>
+      </ul>
+
+      <hr />
+
+      <h2>6 · Navigation &amp; control (pond)</h2>
+      <ul>
+        <li>⭐ <strong>RC-drive the first pond run.</strong> It isolates the one thing we're testing (the pump-filter loop) from autonomy bugs. GPS still logs position + timestamp at each waypoint. Add autonomous waypoint nav (GPS + IMU heading) on a later pond day.</li>
+        <li><strong>Stop-and-sample state machine:</strong> <code>transit → arrive at waypoint → hold position → pump for ✏️ ___ s (or until ✏️ ___ L on the flow sensor) → confirm volume logged → pull cartridge → next waypoint → return</code>.</li>
+        <li>✏️ <strong>Station-keeping while pumping:</strong> calm water makes this easy — ⭐ low-throttle hold or brief drift. Note which.</li>
+      </ul>
+
+      <hr />
+
+      <h2>7 · Lab + data pipeline (Jeznach lab methods kept)</h2>
+      <ul>
+        <li><strong>Per-site concentration:</strong> <code>Concentration = Particle Count ÷ (Pumped Volume × Recovery Efficiency)</code> → particles/L at each waypoint.</li>
+        <li><strong>Lab method (Jeznach-aligned):</strong> <strong>KOH</strong> digest of organics → Nile Red stain <em>(lab only — illegal to discharge in the field, fine in the lab)</em> → microscope count → <strong>hot-needle test</strong> to confirm plastic. Expect <strong>mostly fibers</strong>. ✏️ confirm what we can actually run.</li>
+        <li>✏️ <strong>Fill in — microscope + lab access</strong> (school lab? magnification? who counts?).</li>
+        <li>☐ Per-site CSV: site ID, GPS, pumped volume, current trace, (turbidity), timestamp.</li>
+      </ul>
+
+      <hr />
+
+      <h2>8 · Recovery efficiency (do this <em>before</em> the pond)</h2>
+      <ul>
+        <li>☐ Spike-and-recover in a tub: drop a <strong>known count</strong> of reference particles spanning 300 µm–5 mm — <strong>include fibers</strong> — into a measured volume, run the full pump-filter loop, count what the analytical mesh caught.</li>
+        <li>✏️ <strong>Fill in — reference particle source</strong> (cut/sieved known plastics, or a purchased microplastic reference set).</li>
+        <li>Feeds the Recovery Efficiency term in §7 and the success criterion in §0.</li>
+      </ul>
+
+      <hr />
+
+      <h2>9 · Timeline — backward from July 18</h2>
+      <ul>
+        <li>☐ <strong>By ~Jun 27 — design freeze.</strong> Confirm analytical mesh size (§3) + flow-sensor model (§5). Architecture's already locked.</li>
+        <li>☐ <strong>By ~Jun 30 — BOM ordered</strong> (§11). Mesh + buck + MOSFET + level shifter first; shipping is the long pole.</li>
+        <li>☐ <strong>Jul 1–9 — build + bench test.</strong> Wire the suite, prove I2C + flow + SD log together, prove the pump switches <strong>without browning out the ESP32</strong> (the §5 power test).</li>
+        <li>☐ <strong>Jul 9–12 — recovery-efficiency trial</strong> (§8) in a tub.</li>
+        <li>☐ <strong>Jul 12–15 — full dry run</strong> (single waypoint, pond edge or tub).</li>
+        <li>☐ <strong>Jul 16–17 — buffer / fix.</strong></li>
+        <li>☐ <strong>Jul 18 — pond deployment.</strong></li>
+      </ul>
+
+      <hr />
+
+      <h2>10 · Still open (everything 🔲, in one place)</h2>
+      <p>Resolved this revision: ✅ architecture = pump + filter, ✅ not copying river methodology, ✅ INA219 clog-recovery kept, ⭐ RC-first nav.</p>
+      <ol>
+        <li><strong>Analytical mesh size:</strong> confirm ⭐ 300 µm, or pick another.</li>
+        <li><strong>Filter stages:</strong> ⭐ 3-stage for raw pond water, or 2-stage?</li>
+        <li><strong>Flow sensor:</strong> YF-S201, or YF-S401 if our pump flow is &lt;1 L/min?</li>
+        <li><strong>Pump switch:</strong> ⭐ MOSFET, or keep the V2 relay?</li>
+        <li><strong>Turbidity sensor:</strong> keep for per-site data, or drop to cut a variable on day one?</li>
+        <li><strong>Target pumped volume + pump-time per waypoint</strong> (§0/§6).</li>
+        <li><strong>Pond waypoints + GPS</strong> (§2) and <strong>power budget numbers</strong> (§5).</li>
+      </ol>
+
+      <hr />
+
+      <h2>11 · BOM / procurement</h2>
+      <div class="table-wrap">
+        <table>
+          <tr>
+            <th>Part</th>
+            <th>Spec</th>
+            <th>Status</th>
+            <th>Source</th>
+          </tr>
+          <tr>
+            <td>Analytical mesh</td>
+            <td>⭐ 300 µm, 316 SS / PET</td>
+            <td>🔲 confirm size</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Pre-filter mesh</td>
+            <td>~800 µm–1 mm, 316 SS / PET</td>
+            <td>🔲</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Intake screen</td>
+            <td>~2 mm 316 SS</td>
+            <td>reuse V2?</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Cartridge housing</td>
+            <td>inline holder / printed body</td>
+            <td>✏️</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Logic-level MOSFET</td>
+            <td>IRLZ44N (or module)</td>
+            <td>➕ new</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Flyback diode</td>
+            <td>1N5822 (or similar)</td>
+            <td>➕ new</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Level shifter</td>
+            <td>for 5 V flow pulse → 3.3 V</td>
+            <td>➕ new</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>12 V→5 V buck</td>
+            <td>sized for 5 V rail</td>
+            <td>➕ new</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>3S LiPo + charger</td>
+            <td>✏️ mAh per power budget</td>
+            <td>➕ new</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>2× thrusters + drivers</td>
+            <td>12 V bilge-pump thrusters or motors+ESC</td>
+            <td>➕ new</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>(reuse from V2)</td>
+            <td>ESP32, SD, GPS, YF-S201, INA219, SEN0189, ADS1115, MPU-9250, pump</td>
+            <td>✅ have</td>
+            <td></td>
+          </tr>
+        </table>
+      </div>
+
+      <hr />
+
+      <h2>12 · Risks / watch-items</h2>
+      <ul>
+        <li><strong>Pump-inrush brownout</strong> — the #1 "worked on the bench, died on the pond" failure. Isolate logic power (§5).</li>
+        <li><strong>Frying the ESP32</strong> — 5 V flow pulse / 4.5 V turbidity into 3.3 V pins. Level-shift / divide (§5).</li>
+        <li><strong>Magnetometer interference</strong> — IMU heading garbage next to the pump/motors/SS mesh (§5). RC-first sidesteps it.</li>
+        <li><strong>Clog-current saturation</strong> — INA219 default shunt blinds above ~3.2 A right when the filter blinds (§5).</li>
+        <li><strong>Filter blinding</strong> — raw pond water on a fine mesh; the cascade + clog-recovery exist for this (§3).</li>
+        <li><strong>Fiber contamination</strong> — fiber-dominated samples + any nylon/airborne fiber inflate counts. Nitrile gloves, cotton garments, field + procedural blanks (§4/§7).</li>
+        <li><strong>Cross-contamination between waypoints</strong> (§4).</li>
+        <li><strong>Time/power budget</strong> — waypoints × (transit + hold + pump) must fit one charge (§5).</li>
+      </ul>
+    </article>
+
+    <footer class="doc-footer">
+      <a href="../kymarion.html" class="to-project">← Project Kymarion project</a>
+      <a href="../kymarion.html#documents" class="to-library">All documents</a>
+    </footer>
+
+  </main>
+
+  <script src="../script.js?v=9"></script>
+  <script src="../interactions.js?v=2" defer></script>
+</body>
+</html>

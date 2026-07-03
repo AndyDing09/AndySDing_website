@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chassis Design — Andy S. Ding</title>
+  <meta name="description" content="Part list for the Kymarion trimaran ASV chassis: aluminum extrusion frame, HDPE pontoon hulls, marine sealant, and an IP67 electronics enclosure." />
+  <link rel="canonical" href="https://www.andysding.com/docs/kymarion-chassis-design.html" />
+  <meta name="theme-color" content="#3f5b50" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌊%3C/text%3E%3C/svg%3E" />
+  <meta property="og:title" content="Chassis Design — Andy S. Ding" />
+  <meta property="og:description" content="Part list for the Kymarion trimaran ASV chassis: aluminum extrusion frame, HDPE pontoon hulls, marine sealant, and an IP67 electronics enclosure." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.andysding.com/docs/kymarion-chassis-design.html" />
+  <meta property="og:image" content="https://www.andysding.com/photo.jpg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://www.andysding.com/photo.jpg" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css?v=19" />
+  <link rel="stylesheet" href="doc.css?v=1" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav id="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-leaf">🌊</span> Andy S. Ding
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#home"      class="nav-link">Home</a></li>
+      <li><a href="../index.html#about"     class="nav-link">About</a></li>
+      <li><a href="../index.html#blog"      class="nav-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="nav-link active">Research</a></li>
+      <li><a href="../index.html#resume"    class="nav-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="nav-link">Interests</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── Mobile drawer ─── -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <ul>
+      <li><a href="../index.html#home"      class="drawer-link">Home</a></li>
+      <li><a href="../index.html#about"     class="drawer-link">About</a></li>
+      <li><a href="../index.html#blog"      class="drawer-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="drawer-link">Research</a></li>
+      <li><a href="../index.html#resume"    class="drawer-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="drawer-link">Interests</a></li>
+    </ul>
+  </div>
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <main class="doc-page" id="main">
+
+    <a href="../kymarion.html" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 3L5 8l5 5"/>
+      </svg>
+      Back to Project Kymarion
+    </a>
+
+    <header class="doc-header">
+      <span class="doc-project-chip">🌊 Project Kymarion</span>
+      <h1 class="doc-title">Chassis Design</h1>
+      <div class="doc-meta">
+        <span class="doc-type">Design doc</span>
+        <span>June 2026</span>
+        <span>2 min read</span>
+      </div>
+    </header>
+
+    <article class="doc-body">
+<h2>Part List</h2>
+
+<h3>20mm Aluminum Extrusion (~4–5 meters)</h3>
+<p>The structural skeleton of the entire ASV. Two long rails run fore-to-aft forming the spine of each outer pontoon, and two shorter cross-members connect them laterally to form the deck frame. This is what holds the whole vehicle's shape rigid and gives you mounting points for everything else.</p>
+
+<h3>Aluminum Brackets/Connectors</h3>
+<p>Join the extrusion pieces together at 90-degree angles — specifically where the cross-members meet the pontoon rails. Without these the frame would flex and rack under wave loading.</p>
+
+<h3>HDPE Sheet (6mm)</h3>
+<p>Forms the actual hull panels of your two outer pontoons — bottom face, two side faces, two end caps, and top face of each hollow pontoon box. Also forms the flat deck panel that spans between the two hulls where your electronics enclosure and pump assembly mount. This is the material that actually contacts the water.</p>
+
+<h3>Marine Silicone Sealant</h3>
+<p>Applied to every interior and exterior seam on the HDPE pontoon boxes to make them watertight. If any joint leaks, the hollow pontoon floods and your buoyancy changes mid-mission.</p>
+
+<h3>Inspection Port Caps (x2)</h3>
+<p>One screwed into the top face of each pontoon. Before every deployment you unscrew these, check for any water accumulation inside, drain if needed, and reseal. Your only way to catch a slow leak before it becomes a mission-ending problem.</p>
+
+<h3>Stainless Steel Bolts, Nuts and Washers</h3>
+<p>All fasteners need to be stainless — regular steel corrodes in saltwater within weeks. Used to bolt the HDPE panels to the aluminum extrusion frame and to mount the electronics enclosure and pump assembly to the deck.</p>
+
+<h3>Center Intake Fairing (HDPE)</h3>
+<p>A narrow hydrodynamic shroud cut from leftover HDPE sheet and formed around your intake pipe assembly in the center channel. This is what makes it a proper trimaran rather than just a pipe hanging in the water — it gives the center element a clean shape that cuts through water rather than dragging through it and creating turbulence near your intake.</p>
+
+<h3>IP67 Waterproof Electronics Enclosure</h3>
+<p>Mounts on the deck between the two pontoons. Houses your ESP32, relay module, ADS1115, INA219, and SD card module — everything that absolutely cannot get wet. The IP67 rating means it's dust-tight and can handle water immersion, which matters when spray comes over the deck in chop.</p>
+
+<h3>Marine-Grade Epoxy (optional but recommended)</h3>
+<p>For bonding the HDPE panels at corners before the silicone goes on, giving the joints structural strength rather than relying on silicone alone. HDPE is notoriously difficult to bond chemically — you'd need to flame-treat or plasma-treat the surface first, so this is optional depending on whether you want the extra structural reinforcement or are relying purely on the aluminum frame for rigidity.</p>
+    </article>
+
+    <footer class="doc-footer">
+      <a href="../kymarion.html" class="to-project">← Project Kymarion project</a>
+      <a href="../kymarion.html#documents" class="to-library">All documents</a>
+    </footer>
+
+  </main>
+
+  <script src="../script.js?v=9"></script>
+  <script src="../interactions.js?v=2" defer></script>
+</body>
+</html>

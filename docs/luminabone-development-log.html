@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Development Log — Andy S. Ding</title>
+  <meta name="description" content="Dated development log for LuminaBone: photometric-stereo depth results, LED jig design, endoscope calibration, and spine-model data collection plans." />
+  <link rel="canonical" href="https://www.andysding.com/docs/luminabone-development-log.html" />
+  <meta name="theme-color" content="#3f5b50" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🦴%3C/text%3E%3C/svg%3E" />
+  <meta property="og:title" content="Development Log — Andy S. Ding" />
+  <meta property="og:description" content="Dated development log for LuminaBone: photometric-stereo depth results, LED jig design, endoscope calibration, and spine-model data collection plans." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.andysding.com/docs/luminabone-development-log.html" />
+  <meta property="og:image" content="https://www.andysding.com/photo.jpg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://www.andysding.com/photo.jpg" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css?v=19" />
+  <link rel="stylesheet" href="doc.css?v=1" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav id="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-leaf">🌊</span> Andy S. Ding
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#home"      class="nav-link">Home</a></li>
+      <li><a href="../index.html#about"     class="nav-link">About</a></li>
+      <li><a href="../index.html#blog"      class="nav-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="nav-link active">Research</a></li>
+      <li><a href="../index.html#resume"    class="nav-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="nav-link">Interests</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── Mobile drawer ─── -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <ul>
+      <li><a href="../index.html#home"      class="drawer-link">Home</a></li>
+      <li><a href="../index.html#about"     class="drawer-link">About</a></li>
+      <li><a href="../index.html#blog"      class="drawer-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="drawer-link">Research</a></li>
+      <li><a href="../index.html#resume"    class="drawer-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="drawer-link">Interests</a></li>
+    </ul>
+  </div>
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <main class="doc-page" id="main">
+
+    <a href="../luminabone.html" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 3L5 8l5 5"/>
+      </svg>
+      Back to LuminaBone
+    </a>
+
+    <header class="doc-header">
+      <span class="doc-project-chip">🦴 LuminaBone</span>
+      <h1 class="doc-title">Development Log</h1>
+      <div class="doc-meta">
+        <span class="doc-type">Lab notebook</span>
+        <span>May–July 2026</span>
+        <span>2 min read</span>
+      </div>
+    </header>
+
+    <article class="doc-body">
+      <h2>July 1, 2026</h2>
+      <ol>
+        <li>Work on registering the point cloud to the 3D model
+          <ol>
+            <li>Probably not able to generate a 3D model through the point cloud / .ply</li>
+          </ol>
+        </li>
+      </ol>
+
+      <h2>June 6, 2026</h2>
+      <p>Background research: dive deep into the field and understand the problem and the challenges.</p>
+      <ol>
+        <li>Design and print mechanical parts to install the camera and LED together. (Andy)</li>
+        <li>Use OpenCV to calibrate endoscope orientation. (Andy)</li>
+        <li>Will humans detect LEDs turning on/off at high frequency?</li>
+        <li>Write a protocol to collect 2D endoscope data for study: <a href="luminabone-data-collection-protocol.html">DataCollectionProtocol</a> — done</li>
+      </ol>
+
+      <h2>May 18, 2026</h2>
+      <p><strong>LuminaBone Project</strong></p>
+      <ul>
+        <li>Draft a paper for publication.</li>
+        <li>Find a conference to submit.</li>
+      </ul>
+
+      <h2>May 17, 2026</h2>
+      <p><strong>Action Items</strong></p>
+      <ul>
+        <li>Utilize a photometric stereo algorithm to calculate object surface normals and generate depth images, including 3D point cloud data. Implementation code has been uploaded to GitHub. Refer to the <a href="luminabone-photometric-stereo.html">Photometric Stereo Depth Reconstruction</a> report for technical details. (Andy Ding) — done</li>
+        <li>Define the application for the LuminaBone project. While the current photometric accuracy (2–3 mm) is insufficient for high-precision bone registration or motion tracking, it is suitable for instrument orientation guidance and environmental awareness to assist surgical navigation. (Jayson Ding) — done
+          <ul>
+            <li>Limitations: wet bone surfaces may impact model reflection accuracy (1–3 mm range). However, this level of accuracy remains a significant improvement for clinical navigation compared to current non-navigated procedures.</li>
+            <li>Supporting documentation: <a href="luminabone-cavityscan-protocol.html">CavityScan_Technical_Protocol_v0.1</a>, <a href="luminabone-spine-depth-assessment.html">Depth_Technology_Assessment_Spine_Endoscopy</a>, and <a href="luminabone-depth-display-ux.html">How to Present the Depth Map to the Surgeon</a></li>
+          </ul>
+        </li>
+        <li>Acquire a series of stereo images using spine bone models for further testing. (Jayson Ding)
+          <ul>
+            <li>I will need JK’s support to record this video. The data can be collected under the spine navigation setup environment. One endoscope will be attached to a probe, and three LEDs will be installed on the endoscope — on the left, right, and top. These LEDs need to be turned on and off as required. Once the setup is ready, the video should be recorded for post-processing.</li>
+            <li>Data collection: endoscope spatial position, bone location; sequentially turn on the three LEDs and take 3 static images for processing.</li>
+          </ul>
+        </li>
+        <li>Design a jig to attach three LEDs and the endoscope together. The endoscope we ordered comes with an LED; you just need to design a jig to hold 4 endoscope cameras — one is used for the camera, the other will be used as a light source. We are using the endoscope ordered from Taobao, similar to this one but with two cameras, straight and 90-degree angles. (Andy Ding)
+          <div class="doc-figure-note">The source links a reference drawing here — V1000 camera Drawing v2 (PDF) — not mirrored on this page.</div>
+        </li>
+      </ul>
+
+      <h2>May 16, 2026</h2>
+      <p>Traditional bone registration is often time-consuming and error-prone due to the manual selection of optical markers and CT fiducials. The Lumina Bone project addresses this by utilizing sensor-generated depth maps to register with pre-operative CT images, facilitating efficient registration and real-time navigation.</p>
+      <p>Generating depth imaging via the photometric stereo approach.</p>
+      <div class="doc-figure-note">The source includes concept images here illustrating the photometric-stereo depth imaging setup, not mirrored on this page.</div>
+      <p>Project Proposal: <a href="luminabone-proposal.html">2026-summer-intern_project_proposal</a></p>
+    </article>
+
+    <footer class="doc-footer">
+      <a href="../luminabone.html" class="to-project">← LuminaBone project</a>
+      <a href="../luminabone.html#documents" class="to-library">All documents</a>
+    </footer>
+
+  </main>
+
+  <script src="../script.js?v=9"></script>
+  <script src="../interactions.js?v=2" defer></script>
+</body>
+</html>

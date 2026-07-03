@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Collection Protocol — Andy S. Ding</title>
+  <meta name="description" content="Bench protocol for capturing photometric-stereo image sets of a spine sawbone using a four-endoscope rig, three sequential LEDs, and a black-box setup." />
+  <link rel="canonical" href="https://www.andysding.com/docs/luminabone-data-collection-protocol.html" />
+  <meta name="theme-color" content="#3f5b50" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🦴%3C/text%3E%3C/svg%3E" />
+  <meta property="og:title" content="Data Collection Protocol — Andy S. Ding" />
+  <meta property="og:description" content="Bench protocol for capturing photometric-stereo image sets of a spine sawbone using a four-endoscope rig, three sequential LEDs, and a black-box setup." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.andysding.com/docs/luminabone-data-collection-protocol.html" />
+  <meta property="og:image" content="https://www.andysding.com/photo.jpg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://www.andysding.com/photo.jpg" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css?v=19" />
+  <link rel="stylesheet" href="doc.css?v=1" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav id="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-leaf">🌊</span> Andy S. Ding
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#home"      class="nav-link">Home</a></li>
+      <li><a href="../index.html#about"     class="nav-link">About</a></li>
+      <li><a href="../index.html#blog"      class="nav-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="nav-link active">Research</a></li>
+      <li><a href="../index.html#resume"    class="nav-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="nav-link">Interests</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── Mobile drawer ─── -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <ul>
+      <li><a href="../index.html#home"      class="drawer-link">Home</a></li>
+      <li><a href="../index.html#about"     class="drawer-link">About</a></li>
+      <li><a href="../index.html#blog"      class="drawer-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="drawer-link">Research</a></li>
+      <li><a href="../index.html#resume"    class="drawer-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="drawer-link">Interests</a></li>
+    </ul>
+  </div>
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <main class="doc-page" id="main">
+
+    <a href="../luminabone.html" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 3L5 8l5 5"/>
+      </svg>
+      Back to LuminaBone
+    </a>
+
+    <header class="doc-header">
+      <span class="doc-project-chip">🦴 LuminaBone</span>
+      <h1 class="doc-title">Data Collection Protocol</h1>
+      <div class="doc-meta">
+        <span class="doc-type">Protocol</span>
+        <span>June 2026</span>
+        <span>1 min read</span>
+      </div>
+    </header>
+
+    <article class="doc-body">
+<p>The primary objective of this experiment is to establish a controlled testing environment for the collection of raw data. This data will be utilized to evaluate the depth accuracy achieved via the LuminaBone photometric approach.</p>
+
+<h2>Experimental Setup</h2>
+
+<p>A specialized camera holder is configured with four endoscope cameras. One unit functions as the primary imaging sensor, while the remaining three serve as LED light sources to simulate varied lighting conditions through sequential activation.</p>
+
+<p>The procedure utilizes a spine sawbone model. At each designated pose, the three LEDs are toggled sequentially to capture a series of images before moving to the subsequent pose for the next data group. We will also capture one photo that has all LED lights up; this data will be used to calculate the accuracy based on the algorithm that the CMU paper uses.</p>
+
+<p>The ground truth for this evaluation is derived from a high-fidelity 3D spine model.</p>
+
+<p>To ensure optimal image quality and minimize ambient interference, the data collection must be conducted within a strictly controlled black-box environment.</p>
+
+<h2>Software Development</h2>
+
+<ul>
+  <li>Capture endoscope images. OpenCV&rsquo;s example code can be used to capture the image.</li>
+  <li>Turn on/off LED.</li>
+</ul>
+
+<div class="doc-note">This protocol is an early working draft — the software section is a brief task list rather than finished tooling documentation.</div>
+    </article>
+
+    <footer class="doc-footer">
+      <a href="../luminabone.html" class="to-project">← LuminaBone project</a>
+      <a href="../luminabone.html#documents" class="to-library">All documents</a>
+    </footer>
+
+  </main>
+
+  <script src="../script.js?v=9"></script>
+  <script src="../interactions.js?v=2" defer></script>
+</body>
+</html>

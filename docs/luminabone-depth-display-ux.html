@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>How to Present the Depth Map to the Surgeon — Andy S. Ding</title>
+  <meta name="description" content="Four paradigms for showing endoscopic depth to a spine surgeon — colour overlay, isocontours, relighting, 3D view — and a two-mode recommendation." />
+  <link rel="canonical" href="https://www.andysding.com/docs/luminabone-depth-display-ux.html" />
+  <meta name="theme-color" content="#3f5b50" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🦴%3C/text%3E%3C/svg%3E" />
+  <meta property="og:title" content="How to Present the Depth Map to the Surgeon — Andy S. Ding" />
+  <meta property="og:description" content="Four paradigms for showing endoscopic depth to a spine surgeon — colour overlay, isocontours, relighting, 3D view — and a two-mode recommendation." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.andysding.com/docs/luminabone-depth-display-ux.html" />
+  <meta property="og:image" content="https://www.andysding.com/photo.jpg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://www.andysding.com/photo.jpg" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css?v=19" />
+  <link rel="stylesheet" href="doc.css?v=1" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav id="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-leaf">🌊</span> Andy S. Ding
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#home"      class="nav-link">Home</a></li>
+      <li><a href="../index.html#about"     class="nav-link">About</a></li>
+      <li><a href="../index.html#blog"      class="nav-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="nav-link active">Research</a></li>
+      <li><a href="../index.html#resume"    class="nav-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="nav-link">Interests</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── Mobile drawer ─── -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <ul>
+      <li><a href="../index.html#home"      class="drawer-link">Home</a></li>
+      <li><a href="../index.html#about"     class="drawer-link">About</a></li>
+      <li><a href="../index.html#blog"      class="drawer-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="drawer-link">Research</a></li>
+      <li><a href="../index.html#resume"    class="drawer-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="drawer-link">Interests</a></li>
+    </ul>
+  </div>
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <main class="doc-page" id="main">
+
+    <a href="../luminabone.html" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 3L5 8l5 5"/>
+      </svg>
+      Back to LuminaBone
+    </a>
+
+    <header class="doc-header">
+      <span class="doc-project-chip">🦴 LuminaBone</span>
+      <h1 class="doc-title">How to Present the Depth Map to the Surgeon</h1>
+      <div class="doc-meta">
+        <span class="doc-type">Design study</span>
+        <span>May 2026</span>
+        <span>6 min read</span>
+      </div>
+    </header>
+
+    <article class="doc-body">
+      <p>The question matters enormously. A perfect depth map shown in the wrong way at the wrong time is useless — or worse, distracting during a critical manoeuvre. There are four distinct presentation paradigms, each with different tradeoffs, and the right choice depends on exactly what surgical task is being supported.</p>
+
+      <h2>The Four Display Paradigms</h2>
+
+      <h3>1. Pseudo-colour depth overlay (the most direct option)</h3>
+      <p>The depth map is converted to a colour scale (typically cool-to-warm: blue = far, red = close) and blended semi-transparently over the live endoscope video image. The surgeon sees the normal video with a colour tint that conveys depth — brighter red zones are closer to the endoscope, blue zones are further away.</p>
+      <p><strong>Pros:</strong> Requires no new display hardware — it runs on the existing OR monitor the surgeon is already looking at. No learning curve for the display medium. Intuitive once calibrated. Consistent with how the Lumina-bone heatmap output is already rendered.</p>
+      <p><strong>Cons:</strong> Adding colour over the video can obscure tissue detail if opacity is too high. Requires careful tuning of the colour scale and transparency. The surgeon must mentally fuse the depth colour with the video image — a modest but real cognitive demand. Colour perception can be affected by OR lighting and monitor calibration.</p>
+      <p><strong>Best for:</strong> Spatial orientation — understanding the general topography of the bone surface in view. Shows ridges, valleys, the step between lamina and ligamentum flavum, pedicle wall curvature.</p>
+
+      <h3>2. Contour lines / depth isocontours overlay</h3>
+      <p>Rather than colouring the whole image, draw 1–2 mm depth isocontour lines over the video — like topographic map contours on the bone surface. The surgeon sees the normal video with thin coloured lines showing &quot;this ring is 5 mm from the endoscope, this ring is 8 mm.&quot;</p>
+      <p><strong>Pros:</strong> Much less visually disruptive than a full colour overlay — the video is largely unobstructed. Provides precise metric depth reference at specific levels. Surgeons already understand topographic maps conceptually.</p>
+      <p><strong>Cons:</strong> Contour lines can be hard to read on a curved moving surface. Dense contours in steeply curved zones become cluttered. Requires the absolute depth calibration (not just relative shape) to be reliable.</p>
+      <p><strong>Best for:</strong> Instrument-to-bone distance during drilling — the surgeon can see exactly which depth contour their instrument is approaching.</p>
+
+      <h3>3. Synthetic shading / relighting (the most natural option)</h3>
+      <p>Instead of overlaying depth as colour, use the recovered surface normals to re-render the bone surface with a simulated directional light from a fixed known direction — regardless of where the actual LED illumination comes from. The result is a naturally-shaded 3D-looking image of the bone that has strong, consistent shading gradients everywhere, giving the brain's visual system powerful depth cues without any added colour or annotation.</p>
+      <p>This is sometimes called &quot;shape enhancement&quot; — the Durr/JHU MLE paper used this approach in the colonoscopy context, showing the photometric stereo height map rendered as a 3D surface with a simulated overhead light to enhance the visual perception of mucosal topography.</p>
+      <p><strong>Pros:</strong> Leverages the brain's evolved 3D perception from shading — no training required. Looks like a more &quot;3D&quot; version of the existing image rather than a separate overlay. Cognitively minimal — the surgeon doesn't need to learn a new code.</p>
+      <p><strong>Cons:</strong> The rendered appearance changes with surface orientation in ways the surgeon may not be used to. Sharp ridges can appear exaggerated. If the underlying normal map has artefacts, the rendering makes them visually prominent.</p>
+      <p><strong>Best for:</strong> General intraoperative spatial awareness — making the bone surface &quot;look 3D&quot; throughout the procedure. This is the most surgeon-intuitive presentation.</p>
+
+      <h3>4. Side-by-side or picture-in-picture 3D surface view</h3>
+      <p>Display the live endoscope video on the main monitor and add a second window showing a 3D rendered point cloud or mesh of the reconstructed bone surface — either side by side or as a small inset. The 3D view can be rotated to help the surgeon understand the anatomy from a different perspective.</p>
+      <p><strong>Pros:</strong> The 3D model is separate from the video, so the primary surgical view is unobstructed. Allows the surgeon to virtually &quot;look around&quot; the anatomy. Can be registered with preoperative CT for a complete anatomical picture.</p>
+      <p><strong>Cons:</strong> The surgeon must look away from the primary surgical field to read the 3D view — a significant attention cost during active dissection. Requires the most real-estate on the monitor stack. Registration with the preoperative CT is an additional technical step.</p>
+      <p><strong>Best for:</strong> Pause moments — before making a key cut, the surgeon briefly checks the 3D view to confirm orientation, then returns to the live video. Not suitable for continuous use during active instrument manipulation.</p>
+
+      <h2>The Cognitive Load Question</h2>
+      <p>Recent work introducing mixed reality head-mounted displays in biportal endoscopic spine surgery found that MR technology did not increase the operating surgeon's perceived cognitive workload as measured by the SURG-TLX tool — but the study used the technology for display of the standard endoscope video, not as an additional information overlay. This matters: adding any depth information layer carries a cognitive cost, and the display mode that minimises that cost for a given clinical benefit is the right one to use.</p>
+      <p>The hierarchy, from lowest to highest cognitive load:</p>
+      <ol>
+        <li><strong>Synthetic relighting</strong> — no decoding required; looks naturally 3D</li>
+        <li><strong>Pseudo-colour overlay</strong> — requires learning the colour code; fast to read once learned</li>
+        <li><strong>Contour line overlay</strong> — requires reading spatial lines against a background video</li>
+        <li><strong>Separate 3D view</strong> — requires attention switching between two displays</li>
+      </ol>
+
+      <h2>What the Literature Shows Actually Works</h2>
+      <p>Autostereoscopic displays and AR overlays for MIS have been extensively studied — the key finding is that colocating depth information with the primary surgical view (rather than on a separate monitor) consistently reduces cognitive load and improves spatial accuracy, but only when the overlay is rendered at low opacity and does not obscure tissue detail.</p>
+      <p>For spine specifically, overlay visualisation in endoscopic ENT surgery — a closely analogous application — has demonstrated that superimposing navigation information on the endoscopic image allows the use of guiding lines for distance visualisation, with accuracy verified in cadaver studies and promising results in clinical paranasal sinus interventions.</p>
+
+      <h2>The Practical Recommendation for Lumina-Bone</h2>
+      <p>Given the surgical workflow and the specific tasks in spine endoscopy, the most practical approach is a two-mode display system:</p>
+
+      <h3>Mode 1 — Always-on synthetic relighting (low transparency, background running)</h3>
+      <p>The live video is continuously enhanced by re-rendering with consistent synthetic shading from the recovered surface normals. This gives the surgeon a naturally &quot;more 3D&quot; view throughout the procedure without any explicit depth readout or annotation. Cognitive cost is minimal. This is the baseline spatial awareness mode.</p>
+
+      <h3>Mode 2 — On-demand pseudo-colour depth overlay with metric labels</h3>
+      <p>Triggered by a foot pedal or voice command, the surgeon activates the depth overlay for 2–3 seconds to check depth at a specific moment — before making a key cut, when approaching the pedicle wall, when verifying decompression extent. The colour overlay with millimetre labels appears briefly, the surgeon reads it, and returns to the clean video. This is the metric guidance mode.</p>
+
+      <p>This two-mode design borrows directly from how MLE (Durr/JHU) handles the toggle between clinical white light and research imaging modes — less than 1 second to switch, surgical workflow uninterrupted.</p>
+
+      <h2>Connection to CT Registration — The Longer-Term Picture</h2>
+      <p>Once the photometric stereo pipeline produces a reliable 3D surface map of the bone in the endoscope's field of view, that surface can be registered to the preoperative CT using ICP — exactly the next milestone listed in the <a href="luminabone-development-log.html">Lumina-bone development notes</a>. This registration enables the most powerful display mode of all: overlaying the preoperative CT anatomy (spinal canal boundary, pedicle walls, nerve root trajectories, intended screw path) directly onto the live endoscope video in the correct spatial position.</p>
+      <p>This is the full AR navigation pipeline: photometric stereo provides the intraoperative surface → ICP registers it to CT → CT anatomy is overlaid on live video. The depth map is not just displayed to the surgeon; it becomes the registration anchor that makes all subsequent AR guidance possible. That's the strategic value of Lumina-bone beyond just &quot;showing depth&quot; — it provides the markerless, radiation-free registration that current spine navigation systems lack.</p>
+    </article>
+
+    <footer class="doc-footer">
+      <a href="../luminabone.html" class="to-project">← LuminaBone project</a>
+      <a href="../luminabone.html#documents" class="to-library">All documents</a>
+    </footer>
+
+  </main>
+
+  <script src="../script.js?v=9"></script>
+  <script src="../interactions.js?v=2" defer></script>
+</body>
+</html>

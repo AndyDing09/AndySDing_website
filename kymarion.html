@@ -26,6 +26,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=19" />
+  <link rel="stylesheet" href="docs/doc.css?v=1" />
   <style>
     /* ── Page-level overrides for the project detail layout ── */
     .project-page {
@@ -359,9 +360,11 @@
 
     <!-- ── Current status ── -->
     <div class="status-note">
-      <strong>Status:</strong> Active development — ASV hardware complete, field trials underway along the
-      Massachusetts coast. Statistical analysis in progress. Paper draft in progress, targeting the
-      2026–27 ISEF cycle with submission in summer 2027.
+      <strong>Status:</strong> Build and bench phase. The vehicle has moved to an on-boat
+      <strong>pump-and-filter</strong> architecture (design V2.1), and the near-term goal is a calm-water
+      mechanism shakedown on a local pond — navigate to waypoints, pump a measured volume, filter, and
+      recover a lab-countable sample with flow, current, and GPS all logging together. The
+      convergence-zone coastal study follows once the mechanism is proven, targeting the 2026–27 ISEF cycle.
     </div>
 
     <!-- ── The Problem ── -->
@@ -375,10 +378,12 @@
         capture station deployment rather than expensive, spray-and-pray ocean cleanup.
       </p>
       <p>
-        Existing research on coastal microplastic distribution relies on manual trawl sampling,
+        Existing research on coastal microplastic distribution relies on manual trawl and grab sampling,
         which is too sparse to characterize convergence-zone dynamics. We needed a cheap, repeatable,
-        GPS-accurate survey platform that could run 15–20 waypoints per deployment without requiring
-        a crew.
+        GPS-accurate survey platform that pumps a measured volume of water and filters it at each stop —
+        so concentration comes out as particles per litre, not a jar you hope is representative. The study
+        design pairs sites: <strong>3 convergence zones against 3 distance-matched controls</strong>,
+        compared with a matched-pair test.
       </p>
     </div>
 
@@ -386,32 +391,64 @@
     <div class="project-section">
       <h2 class="section-heading">The Vehicle</h2>
       <p>
-        Kymarion is a low-cost catamaran-hull ASV built around open-source autopilot firmware.
-        Each hull houses a bilge pump thruster; a Raspberry Pi flight controller runs ArduPilot
-        in GUIDED mode to execute GPS waypoint missions autonomously. A custom sensor payload
-        samples water during transit.
+        Kymarion is a low-cost trimaran ASV: two sealed HDPE pontoons on a 20&nbsp;mm aluminum-extrusion
+        frame, with a central, faired intake element that feeds the sampler. An ESP32 runs the whole
+        boat — reading the sensors, driving the pump, and logging every reading to an SD card with a GPS
+        timestamp. It's RC-driven for the first pond runs (isolating the pump-and-filter loop from
+        autonomy bugs), with GPS + IMU waypoint navigation to follow.
       </p>
       <table class="spec-table">
-        <tr><td>Hull</td><td>Twin PVC catamaran, ~90 cm LOA</td></tr>
-        <tr><td>Propulsion</td><td>2× bilge pump thrusters, differential steering</td></tr>
-        <tr><td>Autopilot</td><td>ArduPilot (Rover) on Raspberry Pi</td></tr>
-        <tr><td>Navigation</td><td>GPS + compass, waypoint missions via MAVLink</td></tr>
-        <tr><td>Sensor payload</td><td>Niskin-style water sampler, turbidity + conductivity probes</td></tr>
-        <tr><td>Power</td><td>3S LiPo, ~2 hr endurance per charge</td></tr>
-        <tr><td>Mission profile</td><td>15–20 GPS waypoints, ~500 m survey transect</td></tr>
-        <tr><td>Cost</td><td>&lt; $400 total build</td></tr>
+        <tr><td>Configuration</td><td>Trimaran — 2× HDPE pontoons + central intake fairing on a 20 mm aluminum-extrusion frame</td></tr>
+        <tr><td>Hull</td><td>6 mm HDPE panels, marine-silicone sealed, stainless fasteners, IP67 electronics enclosure</td></tr>
+        <tr><td>Controller</td><td>ESP32 (WROOM), SD-card CSV logging</td></tr>
+        <tr><td>Navigation</td><td>NEO-M8N GPS + MPU-9250 9-axis IMU; RC first, autonomous waypoints later</td></tr>
+        <tr><td>Propulsion</td><td>2× 12 V thrusters, differential thrust (no rudder)</td></tr>
+        <tr><td>Sampler</td><td>12 V diaphragm pump + YF-S201 flow sensor (measured volume per site)</td></tr>
+        <tr><td>Clog fail-safe</td><td>INA219 pump-current monitor → stop-settle-relocate recovery</td></tr>
+        <tr><td>Other sensors</td><td>SEN0189 turbidity via ADS1115 16-bit ADC</td></tr>
+        <tr><td>Power</td><td>3S LiPo (11.1 V) + 12 V→5 V buck for the logic rail</td></tr>
+        <tr><td>Mission profile</td><td>6 waypoints per deployment — 3 convergence + 3 matched controls</td></tr>
       </table>
+    </div>
+
+    <!-- ── Sampling & Filtration ── -->
+    <div class="project-section">
+      <h2 class="section-heading">Sampling &amp; Filtration</h2>
+      <p>
+        Rather than dosing the water with dyes in the field — which is both fragile and illegal to
+        discharge — Kymarion is a mechanical harvester. At each waypoint it pumps a measured volume of
+        surface water through a staged mesh cascade, then the analytical mesh is pulled and counted in a
+        lab. The staged cascade keeps the fine mesh from blinding on algae and organics:
+      </p>
+      <ul>
+        <li><strong>Stage 1 — intake screen (~2 mm, 316 stainless):</strong> sheds leaves, twigs, and wildlife before water enters the pump.</li>
+        <li><strong>Stage 2 — pre-filter (~800 µm–1 mm):</strong> catches coarse algae, duckweed, and sediment.</li>
+        <li><strong>Stage 3 — analytical mesh (300 µm, 316 SS / PET):</strong> the count mesh, swapped one cartridge per site and sealed in a non-plastic container. Never nylon — nylon sheds its own fibers into a fiber-dominated count.</li>
+      </ul>
+      <p>
+        An INA219 watches the pump's current draw; when a clogging mesh makes the pump work harder, the
+        ESP32 stops the pump and thrusters, lets the debris settle off the mesh, relocates a few metres,
+        and resumes — without ever reversing flow across the captured sample. Concentration is normalized
+        against the pumped volume:
+      </p>
+      <pre>Concentration (particles/L) = Particle Count ÷ (Pumped Volume × Recovery Efficiency)</pre>
+      <p>
+        Back in the lab, organics are digested (KOH / wet-peroxide) and particles are counted under a
+        microscope, with a hot-needle check and FTIR / Raman spectroscopy to confirm which particles are
+        actually plastic. Field and procedural blanks control for airborne fiber contamination.
+      </p>
     </div>
 
     <!-- ── Methodology ── -->
     <div class="project-section">
-      <h2 class="section-heading">Methodology</h2>
+      <h2 class="section-heading">Study Design</h2>
       <ul>
-        <li>Identify candidate convergence zones along the Massachusetts coast using NOAA current charts and satellite SST data.</li>
-        <li>Deploy Kymarion on repeated survey transects at each site; collect GPS-tagged water samples and in-situ sensor data.</li>
-        <li>Quantify microplastic concentration from samples via microscopy and spectroscopy (FTIR).</li>
-        <li>Compute a convergence-strength metric for each site from current velocity field data.</li>
-        <li>Run ANOVA across site categories and regression of microplastic concentration against convergence strength to test the hypothesis.</li>
+        <li>Identify candidate convergence zones along the study coastline from public current, tidal, and bathymetric data plus direct observation of drift and debris accumulation.</li>
+        <li>Prove the pump-and-filter mechanism first on a calm local pond, then take the same mechanism to the coast.</li>
+        <li>Sample 6 waypoints per deployment as 3 matched pairs — each convergence site against a distance-matched control — across multiple tidal states.</li>
+        <li>Quantify microplastic concentration per site by lab microscopy, confirmed with FTIR / Raman.</li>
+        <li>Compute a convergence-strength metric for each site from local current-field data.</li>
+        <li>Test the hypothesis with a matched-pair comparison and regression of concentration against convergence strength, and map any confirmed accumulation hotspots.</li>
       </ul>
     </div>
 
@@ -419,16 +456,17 @@
     <div class="project-section">
       <h2 class="section-heading">Tech &amp; Tools</h2>
       <div class="tech-grid">
-        <span class="tech-tag">ArduPilot / MAVLink</span>
-        <span class="tech-tag">Raspberry Pi</span>
+        <span class="tech-tag">ESP32 (Arduino/C++)</span>
         <span class="tech-tag">GPS / GNSS</span>
-        <span class="tech-tag">Python</span>
-        <span class="tech-tag">R (statistics)</span>
-        <span class="tech-tag">NOAA current data</span>
-        <span class="tech-tag">FTIR spectroscopy</span>
-        <span class="tech-tag">Mission Planner</span>
-        <span class="tech-tag">OpenCV (sample imaging)</span>
-        <span class="tech-tag">3D printing (PLA/PETG)</span>
+        <span class="tech-tag">I2C sensor bus</span>
+        <span class="tech-tag">INA219 current sensing</span>
+        <span class="tech-tag">Flow metering (YF-S201)</span>
+        <span class="tech-tag">Python (data pipeline)</span>
+        <span class="tech-tag">GeoPandas / Folium heatmaps</span>
+        <span class="tech-tag">Matched-pair stats &amp; ANOVA</span>
+        <span class="tech-tag">FTIR / Raman spectroscopy</span>
+        <span class="tech-tag">HDPE &amp; aluminum-extrusion fabrication</span>
+        <span class="tech-tag">3D printing</span>
       </div>
     </div>
 
@@ -437,40 +475,121 @@
       <h2 class="section-heading">Timeline</h2>
       <div class="timeline">
         <div class="timeline-item">
-          <div class="timeline-date">Fall 2024</div>
-          <div class="timeline-title">Concept &amp; Proposal</div>
-          <div class="timeline-desc">Hypothesis formulated, ISEF project proposal submitted, site survey begun.</div>
+          <div class="timeline-date">Spring 2026</div>
+          <div class="timeline-title">Concept &amp; Master Plan</div>
+          <div class="timeline-desc">Hypothesis formulated; a 20-week ISEF master plan drafted covering coursework, build, calibration, and the paper.</div>
         </div>
         <div class="timeline-item">
-          <div class="timeline-date">Winter 2024–25</div>
-          <div class="timeline-title">ASV Design &amp; Build</div>
-          <div class="timeline-desc">Hull fabricated, electronics integrated, ArduPilot firmware tuned in pool trials.</div>
+          <div class="timeline-date">May–Jun 2026</div>
+          <div class="timeline-title">Architecture Shift → Pump &amp; Filter</div>
+          <div class="timeline-desc">Sensor design iterated V1 → V2 → V2.1; moved from in-situ optical chemistry to a mechanical pump-and-filter harvester. Trimaran chassis and sensor suite specified.</div>
         </div>
         <div class="timeline-item">
-          <div class="timeline-date">Spring 2025</div>
-          <div class="timeline-title">First Field Deployments</div>
-          <div class="timeline-desc">Initial coastal surveys at two candidate convergence sites; sensor calibration refined.</div>
+          <div class="timeline-date">Jun 2026</div>
+          <div class="timeline-title">Mentor Input &amp; Method Lock</div>
+          <div class="timeline-desc">Meeting with Prof. Jeznach informed filter sizing and lab contamination control; analytical mesh coarsened to 300 µm; matched-pair (3 convergence + 3 control) design set.</div>
         </div>
         <div class="timeline-item">
-          <div class="timeline-date">Summer–Fall 2025</div>
-          <div class="timeline-title">Full Survey Campaign</div>
-          <div class="timeline-desc">15+ deployments across all target sites; sample processing and data collection ongoing.</div>
+          <div class="timeline-date">Jul 2026</div>
+          <div class="timeline-title">Build, Bench &amp; Pond Shakedown</div>
+          <div class="timeline-desc">Wire the sensor suite, prove pump switching without brownout, run a recovery-efficiency trial, then a calm-water pond mechanism test.</div>
         </div>
         <div class="timeline-item">
-          <div class="timeline-date">Summer 2026 – Summer 2027</div>
-          <div class="timeline-title">Extended Study &amp; ISEF Submission</div>
-          <div class="timeline-desc">Continued data collection and analysis; full research paper and ISEF submission targeting summer 2027.</div>
+          <div class="timeline-date">2026–27 →</div>
+          <div class="timeline-title">Coastal Study &amp; ISEF Submission</div>
+          <div class="timeline-desc">Take the proven mechanism to nearshore convergence zones, build the concentration map, run the statistics, and write the paper for the 2026–27 ISEF cycle.</div>
         </div>
       </div>
     </div>
 
-    <!-- ── Links ── -->
-    <div class="project-section">
-      <h2 class="section-heading">Resources</h2>
-      <p>Paper and full build guide will be posted here as the project matures. Check back closer to the ISEF submission window.</p>
+    <!-- ── Documents ── -->
+    <div class="project-section" id="documents">
+      <h2 class="section-heading">Documents</h2>
+      <p>
+        The project's working documents — the overview, the ISEF master plan, and the full design
+        history from first sensor sketch to the current pump-and-filter build — are mirrored below as
+        readable pages.
+      </p>
+
+      <div class="doc-lib-group">
+        <h3>Overview &amp; Plan</h3>
+        <div class="doc-grid">
+          <a class="doc-card" href="docs/kymarion-project-overview.html">
+            <div class="doc-card-kicker"><span>Overview</span><span class="doc-card-date">Jun 2026</span></div>
+            <div class="doc-card-title">Project Overview</div>
+            <div class="doc-card-desc">The research question, hypothesis, three-part approach, and the deliverables — the convergence-zone microplastic study in full.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+          <a class="doc-card" href="docs/kymarion-master-plan.html">
+            <div class="doc-card-kicker"><span>Plan</span><span class="doc-card-date">2026</span></div>
+            <div class="doc-card-title">ISEF Master Plan</div>
+            <div class="doc-card-desc">The 20-week plan: phased coursework, hardware build order, a ~$186 parts list, milestones, and professor-outreach strategy.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="doc-lib-group">
+        <h3>Vehicle Design</h3>
+        <div class="doc-grid">
+          <a class="doc-card" href="docs/kymarion-sensor-design-v2-1.html">
+            <div class="doc-card-kicker"><span>Design · latest</span><span class="doc-card-date">Jun 2026</span></div>
+            <div class="doc-card-title">Sensor Design V2.1</div>
+            <div class="doc-card-desc">The current build-and-test plan: pump-and-filter architecture locked, full electronics suite, pin map, power isolation, and the road to a July pond test.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+          <a class="doc-card" href="docs/kymarion-sensor-design-v2.html">
+            <div class="doc-card-kicker"><span>Design</span><span class="doc-card-date">Jun 2026</span></div>
+            <div class="doc-card-title">Sensor Design V2</div>
+            <div class="doc-card-desc">The architecture shift to autonomous filtration: continuous-flow sampling, the three-stage cascade, the INA219 clog fail-safe, and the ex-situ lab pipeline.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+          <a class="doc-card" href="docs/kymarion-sensor-design-v1.html">
+            <div class="doc-card-kicker"><span>Design</span><span class="doc-card-date">May 2026</span></div>
+            <div class="doc-card-title">Sensor Design V1</div>
+            <div class="doc-card-desc">The first sensor-payload concept, before the move to a purely mechanical harvesting method.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+          <a class="doc-card" href="docs/kymarion-chassis-design.html">
+            <div class="doc-card-kicker"><span>Design</span><span class="doc-card-date">Jun 2026</span></div>
+            <div class="doc-card-title">Chassis Design</div>
+            <div class="doc-card-desc">The trimaran hull: aluminum-extrusion frame, sealed HDPE pontoons, IP67 enclosure, and the central intake fairing — with the reasoning behind each part.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+          <a class="doc-card" href="docs/kymarion-cad-design-alpha.html">
+            <div class="doc-card-kicker"><span>Design</span><span class="doc-card-date">Jun 2026</span></div>
+            <div class="doc-card-title">CAD Design — Version Alpha</div>
+            <div class="doc-card-desc">The first CAD pass at the vehicle geometry.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+          <a class="doc-card" href="docs/kymarion-research-v1-chassis.html">
+            <div class="doc-card-kicker"><span>Research</span><span class="doc-card-date">Jun 2026</span></div>
+            <div class="doc-card-title">Research — V1 Chassis</div>
+            <div class="doc-card-desc">Background research feeding the hull and platform decisions.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="doc-lib-group">
+        <h3>Planning &amp; Mentorship</h3>
+        <div class="doc-grid">
+          <a class="doc-card" href="docs/kymarion-jeznach-meeting.html">
+            <div class="doc-card-kicker"><span>Meeting notes</span><span class="doc-card-date">Jun 2026</span></div>
+            <div class="doc-card-title">Professor Jeznach Meeting</div>
+            <div class="doc-card-desc">Questions and takeaways from the mentor meeting — what transferred from her river methodology and what didn't.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+          <a class="doc-card" href="docs/kymarion-next-steps.html">
+            <div class="doc-card-kicker"><span>Status</span><span class="doc-card-date">Jun 2026</span></div>
+            <div class="doc-card-title">Next Steps</div>
+            <div class="doc-card-desc">The live to-do list: meeting prep, open statistical-design questions, and the initial summer plan.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+        </div>
+      </div>
+
       <div class="cta-row">
-        <span class="cta-btn disabled" aria-disabled="true">Paper — Coming Soon</span>
-        <span class="cta-btn disabled" aria-disabled="true">Build Guide — Coming Soon</span>
         <a href="index.html#research" class="cta-btn secondary">← All Projects</a>
       </div>
     </div>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CavityScan — Technical Protocol v0.1 — Andy S. Ding</title>
+  <meta name="description" content="Draft protocol LB-EXT-001 for CavityScan, a Lumina-Bone extension using photometric stereo to 3D-map reamed bone cavities and predict implant contact." />
+  <link rel="canonical" href="https://www.andysding.com/docs/luminabone-cavityscan-protocol.html" />
+  <meta name="theme-color" content="#3f5b50" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🦴%3C/text%3E%3C/svg%3E" />
+  <meta property="og:title" content="CavityScan — Technical Protocol v0.1 — Andy S. Ding" />
+  <meta property="og:description" content="Draft protocol LB-EXT-001 for CavityScan, a Lumina-Bone extension using photometric stereo to 3D-map reamed bone cavities and predict implant contact." />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content="https://www.andysding.com/docs/luminabone-cavityscan-protocol.html" />
+  <meta property="og:image" content="https://www.andysding.com/photo.jpg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:image" content="https://www.andysding.com/photo.jpg" />
+  <script>
+    (function () {
+      var t = localStorage.getItem('asd-theme');
+      if (!t) t = 'light';
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../style.css?v=19" />
+  <link rel="stylesheet" href="doc.css?v=1" />
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <nav id="navbar">
+    <a href="../index.html" class="nav-logo">
+      <span class="logo-leaf">🌊</span> Andy S. Ding
+    </a>
+    <ul class="nav-links">
+      <li><a href="../index.html#home"      class="nav-link">Home</a></li>
+      <li><a href="../index.html#about"     class="nav-link">About</a></li>
+      <li><a href="../index.html#blog"      class="nav-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="nav-link active">Research</a></li>
+      <li><a href="../index.html#resume"    class="nav-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="nav-link">Interests</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── Mobile drawer ─── -->
+  <div class="mobile-drawer" id="mobile-drawer">
+    <ul>
+      <li><a href="../index.html#home"      class="drawer-link">Home</a></li>
+      <li><a href="../index.html#about"     class="drawer-link">About</a></li>
+      <li><a href="../index.html#blog"      class="drawer-link">Blog</a></li>
+      <li><a href="../index.html#research"  class="drawer-link">Research</a></li>
+      <li><a href="../index.html#resume"    class="drawer-link">Résumé</a></li>
+      <li><a href="../index.html#interests" class="drawer-link">Interests</a></li>
+    </ul>
+  </div>
+  <div class="drawer-overlay" id="drawer-overlay"></div>
+
+  <main class="doc-page" id="main">
+
+    <a href="../luminabone.html" class="back-link">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 3L5 8l5 5"/>
+      </svg>
+      Back to LuminaBone
+    </a>
+
+    <header class="doc-header">
+      <span class="doc-project-chip">🦴 LuminaBone</span>
+      <h1 class="doc-title">CavityScan — Technical Protocol v0.1</h1>
+      <div class="doc-meta">
+        <span class="doc-type">Protocol proposal</span>
+        <span>May 2026</span>
+        <span>10 min read</span>
+      </div>
+    </header>
+
+    <article class="doc-body">
+<p><strong>Technical Protocol Proposal — Lumina-Bone Project, Extension Module.</strong> CavityScan: photometric stereo 3D mapping of reamed bone cavities for pre-implantation contact prediction.</p>
+
+<div class="table-wrap">
+<table>
+<tbody>
+<tr><th>Protocol ID</th><td>LB-EXT-001</td></tr>
+<tr><th>Version</th><td>0.1 — Draft</td></tr>
+<tr><th>Project</th><td>Lumina-Bone (Extension)</td></tr>
+<tr><th>Date</th><td>May 2026</td></tr>
+<tr><th>Duration</th><td>10–12 weeks</td></tr>
+<tr><th>Budget</th><td>&lt; $800 (parts)</td></tr>
+<tr><th>Status</th><td>Concept / Pre-prototype</td></tr>
+<tr><th>Regulatory</th><td>Research only — no patient use</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="doc-note"><strong>Research only — no patient use.</strong> Regulatory status of protocol LB-EXT-001 (v0.1, draft): concept / pre-prototype. Nothing described here is cleared or intended for clinical or patient use.</div>
+
+<h2>1. Background and Clinical Motivation</h2>
+
+<h3>1.1 The Press-Fit Problem</h3>
+<p>Cementless orthopedic implants — acetabular cups, femoral stems, tibial baseplates — depend entirely on intimate bone-implant contact to achieve the primary mechanical stability that allows bone ingrowth (osseointegration). The physics is well established: gaps larger than 50 µm at the bone-implant interface prevent bone ingrowth and lead instead to fibrous tissue formation, progressive micromotion, and ultimately aseptic loosening — the leading cause of implant revision surgery.</p>
+<p>The reaming step is where this gap problem originates. Surgeons ream the bone cavity to a nominally ideal geometry (hemisphere, taper, or flat tray) to match the implant. In practice, however:</p>
+<ul>
+<li>Reaming accuracy is imperfect: cavities deviate from ideal geometry by 0.1–0.5 mm across the surface.</li>
+<li>Bone density is spatially heterogeneous: dense cortical zones resist the reamer while cancellous regions remove faster, leaving uneven topography.</li>
+<li>Minimally invasive approaches restrict direct visual inspection of the reamed cavity.</li>
+<li>No quantitative intraoperative tool exists to map the actual cavity surface before the implant is committed.</li>
+</ul>
+<p>The result: surgeons rely solely on tactile and auditory feedback during impaction to judge fixation quality. This is inherently subjective, non-reproducible, and provides no spatial information about which zones of the interface are in contact and which have gaps.</p>
+
+<h3>1.2 The Unmet Need</h3>
+<p>A review of the competitive landscape confirms that no commercial or research device provides spatial, real-time, intraoperative mapping of the bone cavity geometry before implant placement:</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Technology</th><th>What It Measures</th><th>Bone-Cavity Geometry?</th><th>Spatial Map?</th></tr>
+</thead>
+<tbody>
+<tr><td>VERASENSE (OrthoSensor)</td><td>Medial/lateral joint pressure (soft tissue balance)</td><td>No</td><td>No</td></tr>
+<tr><td>RFA / ISQ (Osstell)</td><td>Single global implant stability number</td><td>No</td><td>No</td></tr>
+<tr><td>Impact / acoustic analysis</td><td>Insertion endpoint signal (global)</td><td>No</td><td>No</td></tr>
+<tr><td>Pressure-sensitive film (Fujifilm Prescale)</td><td>Contact pressure map — ex vivo only</td><td>Indirectly</td><td>Yes — lab only</td></tr>
+<tr><td>CavityScan (this proposal)</td><td>Dense 3D map of reamed cavity geometry</td><td>YES</td><td>YES</td></tr>
+</tbody>
+</table>
+</div>
+<p>CavityScan directly addresses this gap. By inserting the Lumina-bone photometric stereo endoscope into the reamed cavity after preparation but before implant insertion, a dense 3D surface map of the actual bone cavity geometry is acquired in under 30 seconds. This map is then compared computationally to the nominal implant geometry to produce a predicted contact distribution map — identifying high-contact zones, partial-contact zones, and regions with clinically significant gaps — before any final implant is committed.</p>
+
+<h3>1.3 Relationship to Lumina-Bone</h3>
+<p>CavityScan is a direct extension of the Lumina-bone project. It uses the same hardware (6 mm photometric stereo endoscope with sequential off-axis LEDs), the same core algorithm (near-light Lambertian + inverse-square photometric stereo), and the same software pipeline (Python + OpenCV/PyTorch, Poisson depth integration). The extension contributions are:</p>
+<ul>
+<li>A cavity-adapted scanning protocol for working inside enclosed bone cavities rather than scanning exposed bone surfaces.</li>
+<li>A shape-matching module that computes the predicted implant-bone contact distribution from the reconstructed cavity point cloud and a reference implant CAD model.</li>
+<li>A contact quality visualization overlay for intraoperative display.</li>
+</ul>
+
+<h2>2. Project Objectives</h2>
+<p>The primary objective of CavityScan is to demonstrate that the Lumina-bone photometric stereo pipeline can accurately reconstruct the 3D geometry of a reamed bone cavity from within the cavity, and that this geometry can be used to predict the spatial distribution of bone-implant contact before implant placement.</p>
+<p>Specific objectives:</p>
+<ul>
+<li>Adapt the Lumina-bone endoscope for inside-cavity scanning: resolve field-of-view, working-distance, and multi-view stitching requirements for an enclosed hemispherical geometry.</li>
+<li>Reconstruct a dense 3D point cloud of the cavity surface from sequential photometric stereo frames acquired across multiple endoscope positions within the cavity.</li>
+<li>Register the reconstructed cavity surface to a reference implant CAD model (acetabular cup, tibial baseplate, or femoral stem) to compute the predicted bone-implant gap map.</li>
+<li>Validate reconstruction accuracy against ground-truth cavity geometry (laser scanner or CT) on bone phantoms across three implant types.</li>
+<li>Demonstrate clinical workflow integration: complete scan-to-contact-map in under 60 seconds without disrupting standard surgical sequence.</li>
+</ul>
+
+<h2>3. Technical Approach</h2>
+
+<h3>3.1 Physical and Algorithmic Basis</h3>
+<p>CavityScan inherits the core physical model from Lumina-bone.</p>
+<p>Image irradiance model: <code>I(p) = ρ · (n · L̂) / r²</code> where ρ = surface albedo, n = surface normal, L̂ = unit light direction, r = source-to-point distance.</p>
+<p>With two or more sequentially illuminated images from known LED positions, the photometric stereo system yields per-pixel surface normals algebraically. Integration of the normal field via weighted Poisson reconstruction recovers the depth map (surface height). Lumina-bone has already validated this pipeline on a synthetic sphere with 2.75% mean depth error — within the range of the in-vivo colonoscopy benchmark (7%, Batlle et al. 2022).</p>
+<p>The cavity scanning problem introduces two adaptations relative to the open-surface Lumina-bone application:</p>
+<ul>
+<li><strong>Enclosed geometry:</strong> the endoscope views the surface from inside a concave cavity rather than observing a convex surface from outside. The image formation model is unchanged; the scanning strategy requires coverage of the full cavity interior from multiple endoscope positions.</li>
+<li><strong>Multi-view stitching:</strong> individual photometric stereo frames cover a limited field of view (FOV ~60–80°). A multi-view registration step — adapted from the ICP framework of Wu et al. (2010) — stitches partial depth maps into a single coherent cavity reconstruction.</li>
+</ul>
+
+<h3>3.2 Contact Prediction Module</h3>
+<p>Once the cavity surface is reconstructed as a point cloud C, the predicted implant-bone contact is computed as follows:</p>
+<ol>
+<li>Load the nominal implant surface mesh M (from implant CAD or manufacturer mesh).</li>
+<li>Align M to C using the known reaming depth and axis (from navigation system or manual input).</li>
+<li>For each point on M, compute the nearest distance d to C. Points with d &lt; threshold τ (default τ = 50 µm, the clinically accepted osseointegration gap limit) are classified as contact zones; points with d &gt; τ are classified as gap zones.</li>
+<li>Render a color-coded contact map on the implant surface: green (d &lt; 50 µm, good contact), yellow (50–150 µm, marginal), red (&gt; 150 µm, gap — osseointegration unlikely).</li>
+</ol>
+<p>The threshold values are grounded in established biomechanical evidence: micromotion above 30–50 µm causes only partial ingrowth; micromotion above 150 µm completely inhibits bone ingrowth (Szmukler-Moncler et al. 1998; Pilliar et al. 1986). These thresholds are configurable by the user.</p>
+
+<h3>3.3 Hardware Configuration</h3>
+<p>The CavityScan prototype uses the Lumina-bone 6 mm endoscope with the following adaptations:</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Component</th><th>Specification / Adaptation</th></tr>
+</thead>
+<tbody>
+<tr><td>Camera</td><td>1.5–2 mm CMOS, same as Lumina-bone baseline; short focal length for near-field focus at 5–20 mm WD</td></tr>
+<tr><td>LEDs</td><td>2× off-axis micro-LEDs at 1.8–2.5 mm radial offset; PWM-sequenced; same as Lumina-bone baseline</td></tr>
+<tr><td>Distal tip OD</td><td>6 mm — fits reaming canals of all standard total hip, knee, and shoulder systems</td></tr>
+<tr><td>Shaft length</td><td>150–200 mm rigid shaft to reach acetabular cavity depth through standard MIS approaches</td></tr>
+<tr><td>Scanning motion</td><td>Manual or motorized axial rotation (360°) plus 2–3 axial positions; total of 6–8 endoscope poses per cavity</td></tr>
+<tr><td>Tracking</td><td>Passive optical marker on shaft for pose estimation relative to cavity axis (optional: use navigation system integration)</td></tr>
+<tr><td>Total scan time</td><td>Target: &lt; 30 s image acquisition; &lt; 30 s reconstruction and display (&lt; 60 s total)</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>3.4 Software Architecture</h3>
+<p>The software pipeline extends Lumina-bone's existing <code>photometric_stereo_sphere.py</code> with three additional modules:</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Module</th><th>Function</th><th>Technology</th></tr>
+</thead>
+<tbody>
+<tr><td><code>cavity_scan.py</code></td><td>Orchestrates multi-pose image acquisition; triggers LED sequencing; stores pose metadata</td><td>Python + OpenCV</td></tr>
+<tr><td><code>cavity_stitch.py</code></td><td>Registers partial depth maps from each endoscope pose into a unified cavity point cloud using ICP</td><td>Open3D / PCL</td></tr>
+<tr><td><code>contact_predict.py</code></td><td>Loads implant CAD mesh; aligns to reconstructed cavity; computes per-point gap distances; outputs color-coded contact map</td><td>trimesh / NumPy</td></tr>
+<tr><td><code>cavity_display.py</code></td><td>Real-time visualization of contact map overlaid on implant geometry; surgeon-facing GUI with traffic-light color coding</td><td>Open3D / PyQt</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>4. Validation Protocol</h2>
+
+<h3>4.1 Phantom Preparation</h3>
+
+<h4>4.1.1 Cavity Phantoms</h4>
+<p>Three cavity geometry types will be fabricated, corresponding to the most common cementless implant interfaces:</p>
+<ul>
+<li><strong>Acetabular cup cavity:</strong> hemispherical cavities of 48, 52, and 56 mm diameter, machined in polyurethane foam bone substitute (20 and 40 PCF density, Sawbones) to simulate cancellous and cortical bone resistance. Intentional geometric defects (ridges of 100, 200, 300 µm height; flat zones of 5 mm diameter) will be machined to simulate imperfect reaming.</li>
+<li><strong>Tibial baseplate cavity:</strong> flat rectangular recess (80 × 60 mm) with intentional tilt of 1°, 2°, and 3° to simulate mal-reaming.</li>
+<li><strong>Femoral stem canal:</strong> tapered cylindrical canal (proximal 25 mm diameter tapering to 12 mm) in composite bone substitute (Sawbones 4th generation composite femur).</li>
+</ul>
+<p>Ground-truth cavity geometry for each phantom will be acquired by: (a) high-precision laser scanning (Faro Focus or equivalent, accuracy ≤ 0.1 mm) before and after intentional defect machining, and (b) micro-CT at 100 µm resolution for the foam phantoms.</p>
+
+<h4>4.1.2 Implant Reference Models</h4>
+<p>Nominal implant CAD meshes will be obtained from open-source orthopedic implant libraries (e.g., OrthoLoad, manufacturer-provided meshes for standard implant sizes used in the phantoms). One acetabular cup (48 mm), one tibial baseplate (size M), and one femoral stem (size 3) will serve as reference models.</p>
+
+<h3>4.2 Data Acquisition Protocol</h3>
+<p>For each cavity phantom:</p>
+<ol>
+<li>Insert CavityScan endoscope to defined depth markers on the shaft.</li>
+<li>Acquire 2-LED sequential images at 0°, 60°, 120°, 180°, 240°, 300° rotation (6 angular positions per axial depth).</li>
+<li>Repeat at 2–3 axial depth positions within the cavity (proximal, mid, distal zones).</li>
+<li>Record endoscope pose at each position (optical tracker or fiducial-based).</li>
+<li>Process: run photometric stereo per frame → stitch → compute contact map.</li>
+<li>Repeat acquisition 5 times per phantom for intra-session repeatability assessment.</li>
+</ol>
+<p>Three operators will each perform the acquisition independently on the same phantom to assess inter-operator variability.</p>
+
+<h3>4.3 Primary Outcome Metrics</h3>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Metric</th><th>Definition</th><th>Acceptance Criterion</th></tr>
+</thead>
+<tbody>
+<tr><td>Cavity reconstruction accuracy — MAE</td><td>Mean absolute depth error vs. laser scan ground truth</td><td>MAE &lt; 200 µm</td></tr>
+<tr><td>Cavity reconstruction accuracy — RMSE</td><td>Root mean square depth error vs. ground truth</td><td>RMSE &lt; 300 µm</td></tr>
+<tr><td>Defect detection rate</td><td>% of intentional defects (100, 200, 300 µm ridges) correctly identified in contact map</td><td>≥ 90% for ≥ 200 µm defects</td></tr>
+<tr><td>Contact zone agreement</td><td>Dice coefficient between CavityScan predicted contact map and ground-truth contact map (from laser scan + implant mesh overlap)</td><td>Dice ≥ 0.80</td></tr>
+<tr><td>Intra-session repeatability</td><td>Standard deviation of MAE across 5 repeated acquisitions of same phantom</td><td>σ &lt; 100 µm</td></tr>
+<tr><td>Inter-operator variability</td><td>Range of MAE across 3 operators</td><td>Range &lt; 150 µm</td></tr>
+<tr><td>Total workflow time</td><td>Time from endoscope insertion to contact map displayed on screen</td><td>&lt; 60 seconds</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>4.4 Secondary Analyses</h3>
+<ul>
+<li><strong>Effect of bone density on reconstruction accuracy:</strong> compare MAE between 20 PCF and 40 PCF phantoms.</li>
+<li><strong>Defect depth sensitivity:</strong> measure smallest detectable gap depth across the three defect sizes (100, 200, 300 µm).</li>
+<li><strong>Implant type comparison:</strong> compare Dice agreement across acetabular, tibial, and femoral geometries.</li>
+<li><strong>Ablation:</strong> reconstruction with vs. without multi-view stitching (single-pose vs. 6-pose acquisition) to quantify coverage gain.</li>
+</ul>
+
+<h2>5. Project Timeline</h2>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Phase</th><th>Weeks</th><th>Activities</th></tr>
+</thead>
+<tbody>
+<tr><td>Phase 1</td><td>1–2</td><td>System design &amp; procurement: cavity scanning geometry analysis; shaft length specification; phantom machining plan; parts ordering (bone substitute blocks, optical tracker markers, shaft hardware)</td></tr>
+<tr><td>Phase 2</td><td>3–4</td><td>Phantom fabrication &amp; ground truth: machine hemispherical cavities with intentional defects; laser scan all phantoms; acquire micro-CT; establish ground-truth contact maps for each phantom + implant combination</td></tr>
+<tr><td>Phase 3</td><td>5–6</td><td>Cavity scanning adaptation: adapt Lumina-bone endoscope shaft for cavity insertion; develop <code>cavity_scan.py</code> pose-acquisition loop; calibrate LED positions for enclosed-cavity geometry; validate photometric stereo on single-pose cavity images</td></tr>
+<tr><td>Phase 4</td><td>7–8</td><td>Multi-view stitching &amp; contact prediction: implement <code>cavity_stitch.py</code> ICP registration; implement <code>contact_predict.py</code> gap computation; develop color-coded contact map visualization; end-to-end pipeline integration test</td></tr>
+<tr><td>Phase 5</td><td>9–10</td><td>Validation experiments: systematic phantom testing per Section 4 protocol; 3-operator inter-variability study; timing benchmarks; quantitative metric computation vs. ground truth</td></tr>
+<tr><td>Phase 6</td><td>11–12</td><td>Analysis, reporting &amp; dissemination: statistical analysis; ablation studies; figures; technical report; demo video; open-source code release (GitHub); conference abstract submission</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>6. Resources and Budget</h2>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Item</th><th>Est. Cost (USD)</th><th>Notes</th></tr>
+</thead>
+<tbody>
+<tr><td>Polyurethane foam bone substitute blocks (Sawbones)</td><td>$120</td><td>20 PCF + 40 PCF; ×3 geometry types</td></tr>
+<tr><td>Composite bone femur phantom (Sawbones 4th gen)</td><td>$180</td><td>For femoral stem canal testing</td></tr>
+<tr><td>CNC machining of intentional defects in phantoms</td><td>$80</td><td>In-house or machine shop</td></tr>
+<tr><td>Optical tracker markers / fiducials</td><td>$60</td><td>Passive reflective markers</td></tr>
+<tr><td>Extended shaft hardware (aluminium tube, connectors)</td><td>$50</td><td>150–200 mm rigid shaft</td></tr>
+<tr><td>3D printing materials (ABS/PETG for tip adapters)</td><td>$30</td><td>Cavity entry guides, tip jigs</td></tr>
+<tr><td>Implant CAD meshes (open-source / manufacturer)</td><td>$0</td><td>OrthoLoad library / free DXF files</td></tr>
+<tr><td>Miscellaneous (cables, adhesives, spare LEDs)</td><td>$50</td><td>Consumables</td></tr>
+<tr><td><strong>TOTAL (parts only)</strong></td><td><strong>~$570</strong></td><td>GPU workstation &amp; laser scanner: existing lab assets</td></tr>
+</tbody>
+</table>
+</div>
+<p>Existing Lumina-bone assets reused without additional cost: 6 mm endoscope prototype; PWM LED driver electronics; GPU workstation; Python + OpenCV/PyTorch software stack; photometric stereo pipeline (<code>photometric_stereo_sphere.py</code> and associated modules).</p>
+
+<h2>7. Expected Deliverables</h2>
+<ul>
+<li><strong>CavityScan extended endoscope prototype:</strong> 6 mm tip + 150–200 mm rigid shaft adapted for inside-cavity scanning.</li>
+<li><strong><code>cavity_scan.py</code>:</strong> multi-pose image acquisition module with pose recording and LED sequencing.</li>
+<li><strong><code>cavity_stitch.py</code>:</strong> ICP-based multi-view stitching module producing unified cavity point cloud.</li>
+<li><strong><code>contact_predict.py</code>:</strong> gap distance computation and color-coded contact map generation module.</li>
+<li><strong>Validated phantom dataset:</strong> CavityScan reconstructions + ground-truth laser scans for 3 implant types × 3 defect conditions × 5 repeats × 3 operators.</li>
+<li><strong>Quantitative validation report:</strong> MAE, RMSE, Dice scores, repeatability, inter-operator variability, timing benchmarks against acceptance criteria.</li>
+<li><strong>Open-source GitHub repository:</strong> full code, calibration scripts, sample data, and reproduction instructions.</li>
+<li><strong>Demo video:</strong> end-to-end scan-to-contact-map workflow on acetabular cup phantom (&lt; 3 min).</li>
+<li><strong>Technical report and conference abstract:</strong> results formatted for biomechanics or medical robotics venue.</li>
+</ul>
+
+<h2>8. Risks and Mitigations</h2>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Risk</th><th>Likelihood</th><th>Mitigation</th></tr>
+</thead>
+<tbody>
+<tr><td>Insufficient photometric stereo accuracy at short WD inside curved cavity (reflection geometry differs from open-surface)</td><td>Medium</td><td>Re-calibrate LED positions for inside-cavity geometry; add 3rd LED if 2-light solution is underdetermined; fall back to SFS if required</td></tr>
+<tr><td>Specular reflections from damp bone surface degrading normal estimation</td><td>Medium</td><td>Apply existing Lumina-bone specular masking pre-step; test on dry vs. irrigated phantoms; use bone phantoms coated with matte sealant for initial validation</td></tr>
+<tr><td>ICP stitching fails due to insufficient overlap between adjacent endoscope poses</td><td>Low–Medium</td><td>Design acquisition protocol with ≥ 30% overlap between adjacent poses; use cavity axis as common reference for initial pose estimate before ICP</td></tr>
+<tr><td>Reconstruction accuracy insufficient for 100 µm defect detection</td><td>Medium</td><td>Acceptance criterion scoped to ≥ 200 µm defects (clinical threshold for osseointegration); 100 µm remains a stretch goal</td></tr>
+<tr><td>Workflow time exceeds 60-second target</td><td>Low</td><td>GPU acceleration of Poisson solver (cuSPARSE); reduce pose count to 4 if accuracy permits; pre-load implant mesh before scan</td></tr>
+<tr><td>Implant CAD mesh not available for target sizes</td><td>Low</td><td>Generate synthetic meshes from measured implant geometry using structured light scanner (available in lab)</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>9. Future Directions</h2>
+<p>Successful completion of this protocol establishes the technical foundation for the following downstream developments:</p>
+<ul>
+<li><strong>Ex vivo cadaveric validation:</strong> repeat the protocol on cadaveric acetabular and femoral preparations to characterize performance on real bone with variable cortical density, trabecular geometry, and blood/irrigation contamination.</li>
+<li><strong>Intraoperative form factor:</strong> miniaturize the scanning assembly to a sterile-drape-compatible tool that integrates into the standard arthroplasty tray without adding to operative time.</li>
+<li><strong>Navigation system integration:</strong> output the reconstructed cavity surface directly to a surgical navigation system for real-time overlay on preoperative CT, enabling automated implant size recommendation and seating depth guidance.</li>
+<li><strong>Adaptive reaming guidance:</strong> use the contact map prediction to guide a second reaming pass targeting specific zones with gap distances exceeding the osseointegration threshold, before final implant insertion.</li>
+<li><strong>Regulatory pathway:</strong> as a non-implanted intraoperative measurement tool used during the surgical workflow (analogous to VERASENSE), CavityScan is likely to qualify for FDA 510(k) clearance as a Class II device, with VERASENSE as a predicate for the intraoperative surgical aid category.</li>
+</ul>
+
+<h2>10. References</h2>
+<ol>
+<li>C. Wu, S. G. Narasimhan, and B. Jaramaz, "A multi-image shape-from-shading framework for near-lighting perspective endoscopes," Int. J. Comput. Vis., vol. 86, no. 2-3, pp. 211-228, 2010, doi: 10.1007/s11263-009-0207-3.</li>
+<li>V. Parot, D. Lim, G. Gonzalez, N. S. Nishioka, B. J. Vakoc, and N. J. Durr, "Photometric stereo endoscopy," J. Biomed. Opt., vol. 18, no. 7, p. 076017, 2013, doi: 10.1117/1.JBO.18.7.076017.</li>
+<li>V. M. Batlle, J. M. M. Montiel, and J. D. Tardos, "Photometric single-view dense 3D reconstruction in endoscopy," in Proc. IEEE/RSJ Int. Conf. Intelligent Robots Systems (IROS), 2022, doi: 10.1109/IROS47612.2022.9981742.</li>
+<li>R. M. Pilliar, J. M. Lee, and C. Maniatopoulos, "Observations on the effect of movement on bone ingrowth into porous-surfaced implants," Clin. Orthop. Relat. Res., vol. 208, pp. 108-113, 1986.</li>
+<li>S. Szmukler-Moncler, H. Salama, Y. Reingewirtz, and J. H. Dubruille, "Timing of loading and effect of micromotion on bone-dental implant interface: review of experimental literature," J. Biomed. Mater. Res., vol. 43, no. 2, pp. 192-203, 1998.</li>
+<li>MedicalTek, "MonoStereo 3D endoscopic imaging system (MS-301/MS-302)," MedicalTek Co., Ltd., Taiwan, 2024-2025 [Online]. Available: <a href="https://medicaltek.biz">medicaltek.biz</a>.</li>
+<li>W. Yuan, S. Dong, and E. H. Adelson, "GelSight: High-resolution robot tactile sensors for estimating geometry and force," Sensors, vol. 17, no. 12, p. 2762, 2017, doi: 10.3390/s17122762.</li>
+<li>T. L. Bobrow et al., "Multi-contrast laser endoscopy for in vivo gastrointestinal imaging," npj Imaging, 2025, doi: 10.1038/s44303-026-00161-y.</li>
+<li>N. J. Durr et al., "System for clinical photometric stereo endoscopy," Proc. SPIE 8935, Advanced Biomedical and Clinical Diagnostic Systems XII, 89351F, 2014.</li>
+<li>"Quantitative assessment of prosthesis press-fit fixation," U.S. Patent 11,974,876, 2024.</li>
+</ol>
+    </article>
+
+    <footer class="doc-footer">
+      <a href="../luminabone.html" class="to-project">← LuminaBone project</a>
+      <a href="../luminabone.html#documents" class="to-library">All documents</a>
+    </footer>
+
+  </main>
+
+  <script src="../script.js?v=9"></script>
+  <script src="../interactions.js?v=2" defer></script>
+</body>
+</html>

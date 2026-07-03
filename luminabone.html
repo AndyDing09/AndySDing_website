@@ -26,6 +26,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css?v=19" />
+  <link rel="stylesheet" href="docs/doc.css?v=1" />
   <style>
     /* ── Page-level overrides for the project detail layout ── */
     .project-page {
@@ -355,9 +356,11 @@
 
     <!-- ── Current status ── -->
     <div class="status-note">
-      <strong>Status:</strong> Active development — optical design and reconstruction pipeline
-      in progress as part of a Summer 2026 medical imaging internship. Bone-phantom validation against
-      laser scans planned for the 2026–27 cycle.
+      <strong>Status:</strong> Active development. The photometric-stereo reconstruction pipeline is
+      working end-to-end, and a first bench study has been captured on real bone models — 17 surface
+      locations, each imaged under a multi-LED rig, reconstructed into per-location depth maps
+      (≈2.5&nbsp;mm relative surface relief). Current work: registering the recovered point clouds to a
+      ground-truth 3D bone model and pushing toward real-time performance.
     </div>
 
     <!-- ── The Problem ── -->
@@ -411,6 +414,32 @@
       </table>
     </div>
 
+    <!-- ── Results ── -->
+    <div class="project-section" id="results">
+      <h2 class="section-heading">Bench Results</h2>
+      <p>
+        A first validation run captured 17 surface locations on real bone models. Each location was
+        photographed four times by a multi-LED rig — one uniform reference frame plus three single-LED
+        frames lit from the right, top, and left. Woodham photometric stereo recovers per-pixel surface
+        normals from the three lit frames, and a Frankot–Chellappa FFT integrator turns those normals
+        into a depth map.
+      </p>
+      <figure class="proj-figure">
+        <img src="assets/luminabone-overview.jpg" alt="Grid of 17 bone locations, each showing the endoscope photo beside its recovered depth heatmap (blue = near, red = far)." loading="lazy" />
+        <figcaption>
+          <strong>Photo vs. recovered depth for all 17 locations.</strong> Left of each pair is the raw
+          capture; right is the reconstructed depth (blue = near, red = far).
+        </figcaption>
+      </figure>
+      <p>
+        Across the 17 locations, recovered surface relief averaged ≈2.5&nbsp;mm (range 2.0–3.0&nbsp;mm)
+        under a 30&nbsp;mm field-of-view assumption. Plain photometric stereo recovers <em>shape</em> up
+        to an unknown offset and scale, so these depths are relative — the surface structure and relative
+        heights are meaningful; absolute millimeters await coaxial-light calibration. Full per-location
+        numbers are in the <a href="docs/luminabone-bench-results.html">bench results write-up</a>.
+      </p>
+    </div>
+
     <!-- ── Tech Stack ── -->
     <div class="project-section">
       <h2 class="section-heading">Tech &amp; Tools</h2>
@@ -432,39 +461,119 @@
       <h2 class="section-heading">Timeline</h2>
       <div class="timeline">
         <div class="timeline-item">
-          <div class="timeline-date">Spring 2026</div>
+          <div class="timeline-date">Apr–May 2026</div>
           <div class="timeline-title">Proposal &amp; Background</div>
-          <div class="timeline-desc">Literature review of photometric stereo in endoscopy; project proposal developed.</div>
+          <div class="timeline-desc">Literature review of near-light photometric stereo in endoscopy; project proposal written for an 8–12 week build.</div>
         </div>
         <div class="timeline-item">
-          <div class="timeline-date">Summer 2026</div>
-          <div class="timeline-title">Internship — Prototype &amp; Pipeline</div>
-          <div class="timeline-desc">Optical bench prototype with off-axis LEDs; implementation of the near-light Lambertian reconstruction pipeline.</div>
+          <div class="timeline-date">May 2026</div>
+          <div class="timeline-title">Reconstruction Pipeline</div>
+          <div class="timeline-desc">Woodham photometric-stereo solver + Poisson depth integration working on synthetic and sample images; code published to GitHub. Application scoped to ~2–3 mm surgical navigation guidance.</div>
         </div>
         <div class="timeline-item">
-          <div class="timeline-date">Fall 2026</div>
-          <div class="timeline-title">Real-Time Optimization</div>
-          <div class="timeline-desc">Pipeline optimization toward the ≥15 fps target; PWM frame-synchronization refinement.</div>
+          <div class="timeline-date">May 2026</div>
+          <div class="timeline-title">Clinical Extensions Scoped</div>
+          <div class="timeline-desc">Two extension protocols drafted — a uniportal spine-endoscopy depth assessment and <em>CavityScan</em> for pre-implantation bone-cavity mapping.</div>
         </div>
         <div class="timeline-item">
-          <div class="timeline-date">Winter–Spring 2027</div>
-          <div class="timeline-title">Phantom Validation</div>
-          <div class="timeline-desc">Accuracy evaluation on bone phantoms against high-precision laser scans; error characterization.</div>
+          <div class="timeline-date">Jun 2026</div>
+          <div class="timeline-title">Multi-LED Rig &amp; Bench Capture</div>
+          <div class="timeline-desc">Data-collection protocol finalized; 17-location bone dataset captured on the multi-LED rig and reconstructed into per-location depth maps.</div>
         </div>
         <div class="timeline-item">
-          <div class="timeline-date">Summer 2027</div>
-          <div class="timeline-title">Report &amp; Write-Up</div>
-          <div class="timeline-desc">Medical imaging internship report and project write-up for orthopedic &amp; ENT applications.</div>
+          <div class="timeline-date">Jul 2026 →</div>
+          <div class="timeline-title">Registration &amp; Real-Time</div>
+          <div class="timeline-desc">Registering recovered point clouds to a ground-truth 3D bone model; optimizing toward the ≥15 fps real-time target.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Ahead</div>
+          <div class="timeline-title">Accuracy Validation &amp; Write-Up</div>
+          <div class="timeline-desc">Quantitative accuracy against laser/CT ground truth, coaxial-light absolute-scale calibration, and a technical paper.</div>
         </div>
       </div>
     </div>
 
-    <!-- ── Links ── -->
-    <div class="project-section">
-      <h2 class="section-heading">Resources</h2>
-      <p>The internship report and technical write-up will be posted here as the project matures.</p>
+    <!-- ── Documents ── -->
+    <div class="project-section" id="documents">
+      <h2 class="section-heading">Documents</h2>
+      <p>
+        The project's working documents — proposal, method notes, protocols, and results — are mirrored
+        below as readable pages. They capture the project as it actually developed, not a polished summary.
+      </p>
+
+      <div class="doc-lib-group">
+        <h3>Proposal &amp; Vision</h3>
+        <div class="doc-grid">
+          <a class="doc-card" href="docs/luminabone-proposal.html">
+            <div class="doc-card-kicker"><span>Proposal</span><span class="doc-card-date">Apr–May 2026</span></div>
+            <div class="doc-card-title">Project Proposal</div>
+            <div class="doc-card-desc">The full proposal: a 6 mm off-axis dual-LED endoscope, the near-light photometric stereo pipeline, hardware plan, and a phantom-validation protocol.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+          <a class="doc-card" href="docs/luminabone-intro-deck.html">
+            <div class="doc-card-kicker"><span>Presentation</span><span class="doc-card-date">May 2026</span></div>
+            <div class="doc-card-title">Intro Deck</div>
+            <div class="doc-card-desc">The pitch deck — research interests, the dual-LED photometric-stereo approach, deliverables, and where it sits against other depth-sensing methods.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="doc-lib-group">
+        <h3>Method &amp; Results</h3>
+        <div class="doc-grid">
+          <a class="doc-card" href="docs/luminabone-photometric-stereo.html">
+            <div class="doc-card-kicker"><span>Technical notes</span><span class="doc-card-date">May 2026</span></div>
+            <div class="doc-card-title">Photometric Stereo Depth Reconstruction</div>
+            <div class="doc-card-desc">The physics and the pipeline: Lambertian reflectance, inverse-square falloff, the Woodham solve, and normal-to-depth integration — worked through in full.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+          <a class="doc-card" href="docs/luminabone-bench-results.html">
+            <div class="doc-card-kicker"><span>Results</span><span class="doc-card-date">Jun 2026</span></div>
+            <div class="doc-card-title">Bench Results — 17-Sample Study</div>
+            <div class="doc-card-desc">Per-location depth reconstructions from 17 real bone surfaces, with the full estimates table (≈2.5 mm mean relief) and the relative-depth caveat.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+          <a class="doc-card" href="docs/luminabone-development-log.html">
+            <div class="doc-card-kicker"><span>Lab notebook</span><span class="doc-card-date">May–Jul 2026</span></div>
+            <div class="doc-card-title">Development Log</div>
+            <div class="doc-card-desc">Dated running log of decisions, action items, and open questions — from first algorithm to point-cloud registration.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+          <a class="doc-card" href="docs/luminabone-data-collection-protocol.html">
+            <div class="doc-card-kicker"><span>Protocol</span><span class="doc-card-date">Jun 2026</span></div>
+            <div class="doc-card-title">Data Collection Protocol</div>
+            <div class="doc-card-desc">The controlled black-box capture setup: a four-camera holder, sequential LED activation, and a spine sawbone model for ground truth.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+          <a class="doc-card" href="docs/luminabone-depth-display-ux.html">
+            <div class="doc-card-kicker"><span>Design study</span><span class="doc-card-date">May 2026</span></div>
+            <div class="doc-card-title">Presenting Depth to the Surgeon</div>
+            <div class="doc-card-desc">Four ways to show a depth map intra-operatively — colour overlay, isocontours, synthetic relighting, side-by-side 3D — and when each one helps.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="doc-lib-group">
+        <h3>Clinical Extensions</h3>
+        <div class="doc-grid">
+          <a class="doc-card" href="docs/luminabone-spine-depth-assessment.html">
+            <div class="doc-card-kicker"><span>Assessment</span><span class="doc-card-date">May 2026</span></div>
+            <div class="doc-card-title">Depth Tech for Uniportal Spine Endoscopy</div>
+            <div class="doc-card-desc">Report LB-RPT-002: why the uniportal working channel rules out stereo, structured light, and ToF — and leaves near-light photometric stereo the best fit.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+          <a class="doc-card" href="docs/luminabone-cavityscan-protocol.html">
+            <div class="doc-card-kicker"><span>Protocol</span><span class="doc-card-date">May 2026</span></div>
+            <div class="doc-card-title">CavityScan — Pre-Implant Cavity Mapping</div>
+            <div class="doc-card-desc">Protocol LB-EXT-001: reuse the same endoscope to map a reamed bone cavity and predict implant-bone contact before the implant is committed.</div>
+            <span class="doc-card-read">Read →</span>
+          </a>
+        </div>
+      </div>
+
       <div class="cta-row">
-        <span class="cta-btn disabled" aria-disabled="true">Report — Coming Soon</span>
         <a href="index.html#research" class="cta-btn secondary">← All Projects</a>
       </div>
     </div>
