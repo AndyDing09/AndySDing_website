@@ -106,14 +106,15 @@
 .doc-body li { line-height: 1.7; font-size: 0.95rem; }
 .doc-body ul { list-style: none; padding-left: 0; }
 .doc-body ul > li {
-  display: flex;
-  gap: 10px;
+  position: relative;
+  padding-left: 26px;
 }
 .doc-body ul > li::before {
   content: '→';
   color: var(--green);
-  flex-shrink: 0;
-  margin-top: 1px;
+  position: absolute;
+  left: 0;
+  top: 1px;
 }
 .doc-body ul ul { margin: 8px 0 0; }
 .doc-body ul ul > li::before { content: '·'; }
