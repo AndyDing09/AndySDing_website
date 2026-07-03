@@ -1,45 +1,48 @@
 /* ═══════════════════════════════════════════════
    ANDY S. DING — PERSONAL WEBSITE
-   Design: "Soundings" — sea-glass / abyss, sonar teal + buoy amber
+   Design: "Chart № 1" — a working survey chart.
+   Cool chart paper, sounding-ink blue, survey teal,
+   and nautical magenta (the color charts reserve for
+   aids to navigation) as the one signal accent.
 ═══════════════════════════════════════════════ */
 
-/* ── Tokens — "Soundings" design system (research instrument / nautical chart)
+/* ── Tokens — "Chart № 1" design system.
    Token NAMES are kept stable so the whole site re-skins via these values:
-   --green = sonar teal (primary), --clay = buoy amber (signal accent). ── */
+   --green = survey teal (primary actions), --clay = nautical magenta (signals). ── */
 :root {
-  /* Warm editorial palette — premium, neutral, ONE restrained accent */
-  --paper:      #f5f2ec;   /* warm paper */
-  --paper-2:    #efe9df;
-  --paper-3:    #e7dfd2;
-  --ink:        #16181a;   /* near-black, warm */
-  --ink-2:      #4a4f4c;
-  --ink-3:      #6b716c;   /* muted — AA on paper */
-  --green:      #3f5b50;   /* muted evergreen — the single accent (links/actions) */
-  --green-deep: #2c4339;
-  --green-soft: rgba(63, 91, 80, 0.10);
-  --clay:       #8a6f53;   /* quiet warm secondary — used sparingly */
-  --clay-soft:  rgba(138, 111, 83, 0.12);
-  --card:       #fbf9f4;
-  --border:     rgba(22, 24, 26, 0.12);
-  --border-strong: rgba(22, 24, 26, 0.22);
+  /* Chart-paper palette — cool whites, deep sounding ink, one magenta signal */
+  --paper:      #eff4f1;   /* chart paper with a drop of aqua */
+  --paper-2:    #e2ebe6;   /* shallow-water tint */
+  --paper-3:    #d3e0d9;
+  --ink:        #12262c;   /* sounding ink — deep blue-slate */
+  --ink-2:      #3f565c;
+  --ink-3:      #61767b;   /* muted — AA on paper */
+  --green:      #146c74;   /* survey teal — primary accent (links/actions) */
+  --green-deep: #0c4a50;
+  --green-soft: rgba(20, 108, 116, 0.09);
+  --clay:       #a82c6a;   /* nautical magenta — signals, sparingly */
+  --clay-soft:  rgba(168, 44, 106, 0.10);
+  --card:       #fafcfa;
+  --border:     rgba(18, 38, 44, 0.14);
+  --border-strong: rgba(18, 38, 44, 0.28);
   --nav-h:      66px;
-  --radius:     10px;
-  --radius-sm:  6px;
+  --radius:     8px;
+  --radius-sm:  5px;
   --transition: 0.25s ease;
-  --shadow:     0 1px 2px rgba(22, 24, 26, 0.04), 0 8px 24px rgba(22, 24, 26, 0.05);
-  --shadow-lg:  0 18px 48px rgba(22, 24, 26, 0.10);
-  --font-body:  'Inter', system-ui, sans-serif;
-  --font-display: 'Inter', system-ui, sans-serif;   /* light grotesque for upright headlines */
-  --font-accent: 'Fraunces', Georgia, 'Times New Roman', serif; /* serif italic for emphasis words */
+  --shadow:     0 1px 2px rgba(18, 38, 44, 0.04), 0 8px 24px rgba(18, 38, 44, 0.05);
+  --shadow-lg:  0 18px 48px rgba(18, 38, 44, 0.10);
+  --font-body:  'Public Sans', system-ui, sans-serif;
+  --font-display: 'Archivo', system-ui, sans-serif;   /* chart-titling sans */
+  --font-accent: 'Source Serif 4', Georgia, 'Times New Roman', serif; /* italic serif = water features */
   --font-mono:  'IBM Plex Mono', ui-monospace, 'SFMono-Regular', monospace;
-  --nav-bg:     rgba(245, 242, 236, 0.80);
+  --nav-bg:     rgba(239, 244, 241, 0.82);
   /* Spacing scale (4/8px base) */
   --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 24px;
   --s-6: 32px; --s-7: 48px; --s-8: 64px; --s-9: 96px; --s-10: 128px;
   /* Modular type scale */
   --text-xs: 0.75rem; --text-sm: 0.875rem; --text-base: 1rem;
   --text-lg: 1.125rem; --text-xl: 1.375rem; --text-2xl: 1.85rem;
-  --text-3xl: 2.6rem; --text-4xl: 3.6rem; --text-hero: clamp(2.6rem, 7vw, 5.5rem);
+  --text-3xl: 2.6rem; --text-4xl: 3.6rem; --text-hero: clamp(2.4rem, 5.4vw, 4.2rem);
   --measure: 68ch;
   color-scheme: light;
 }
@@ -60,16 +63,18 @@ ul { list-style: none; }
 img { max-width: 100%; }
 button { font-family: inherit; }
 
-/* Soft natural background wash */
+/* Chart wash: a faint survey graticule over cool paper */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(ellipse 60% 50% at 8% 0%,   rgba(63, 91, 80, 0.045), transparent 70%),
-    radial-gradient(ellipse 46% 42% at 100% 92%, rgba(138, 111, 83, 0.03), transparent 70%),
+    linear-gradient(to right, rgba(18, 38, 44, 0.028) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(18, 38, 44, 0.028) 1px, transparent 1px),
+    radial-gradient(ellipse 60% 50% at 10% 0%, rgba(20, 108, 116, 0.045), transparent 70%),
     var(--paper);
+  background-size: 88px 88px, 88px 88px, auto, auto;
 }
 
 /* ═══════════════════════════════════════════════
@@ -92,14 +97,19 @@ body::before {
 
 .nav-logo {
   font-family: var(--font-display);
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: 1.05rem;
+  font-weight: 620;
+  letter-spacing: -0.01em;
   color: var(--ink);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 9px;
 }
-.logo-leaf { font-size: 1rem; }
+.logo-leaf {
+  font-size: 0.72rem;
+  color: var(--clay);
+  transform: translateY(-1px);
+}
 
 .nav-links { display: flex; gap: 2px; align-items: center; }
 .nav-link {
@@ -444,7 +454,7 @@ body::before {
   color: var(--green-deep);
   background: var(--green-soft);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(63, 91, 80, 0.15);
+  box-shadow: 0 4px 12px rgba(20, 108, 116, 0.15);
 }
 
 .about-bio {
@@ -478,7 +488,7 @@ body::before {
   padding: 5px 13px;
   border-radius: 999px;
   background: var(--green-soft);
-  border: 1px solid rgba(63, 91, 80, 0.2);
+  border: 1px solid rgba(20, 108, 116, 0.2);
   color: var(--green-deep);
   font-size: 0.82rem;
   font-weight: 500;
@@ -645,7 +655,7 @@ body::before {
 .post-body a {
   color: var(--green-deep);
   text-decoration: underline;
-  text-decoration-color: rgba(63, 91, 80, 0.4);
+  text-decoration-color: rgba(20, 108, 116, 0.4);
   text-underline-offset: 3px;
 }
 .post-body a:hover { text-decoration-color: var(--green); }
@@ -948,7 +958,7 @@ body::before {
 .reply-form-wrap textarea:focus {
   border-color: var(--green);
   background: var(--card);
-  box-shadow: 0 0 0 3px rgba(63, 91, 80,0.08);
+  box-shadow: 0 0 0 3px rgba(20, 108, 116,0.08);
 }
 .comment-form textarea,
 .reply-form-wrap textarea { min-height: 80px; resize: vertical; }
@@ -1299,7 +1309,7 @@ body::before {
 ::-webkit-scrollbar-track { background: var(--paper); }
 ::-webkit-scrollbar-thumb { background: var(--paper-3); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--green); }
-::selection { background: rgba(63, 91, 80, 0.2); }
+::selection { background: rgba(20, 108, 116, 0.2); }
 
 
 /* -----------------------------------------------
@@ -1414,7 +1424,7 @@ body::before {
 .post-body a {
   color: var(--green-deep);
   text-decoration: underline;
-  text-decoration-color: rgba(63, 91, 80, 0.4);
+  text-decoration-color: rgba(20, 108, 116, 0.4);
   text-underline-offset: 3px;
 }
 .post-body a:hover { text-decoration-color: var(--green); }
@@ -1430,7 +1440,7 @@ body::before {
 .editing .post-title:hover, .editing .post-body:hover { background: var(--paper-2); }
 .editing .post-title:focus, .editing .post-body:focus {
   background: var(--card);
-  box-shadow: 0 0 0 1.5px rgba(63, 91, 80, 0.35);
+  box-shadow: 0 0 0 1.5px rgba(20, 108, 116, 0.35);
 }
 
 /* Placeholders for empty editable areas */
@@ -1466,40 +1476,32 @@ body::before {
    DARK MODE
 ═══════════════════════════════════════════════ */
 [data-theme="dark"] {
-  --paper:      #0b0b0c;   /* moody near-black (dashcreative-style) */
-  --paper-2:    #131315;
-  --paper-3:    #070708;
-  --ink:        #f4f1ea;   /* warm off-white */
-  --ink-2:      #aeaaa2;
-  --ink-3:      #87837b;   /* muted — AA on near-black */
-  --green:      #9ec2b1;   /* evergreen, lightened for AA on dark */
-  --green-deep: #bcd6c9;
-  --green-soft: rgba(158, 194, 177, 0.12);
-  --clay:       #c8a884;   /* quiet warm secondary */
-  --clay-soft:  rgba(200, 168, 132, 0.14);
-  --card:       #161618;   /* elevated surface */
-  --nav-bg:     rgba(11, 11, 12, 0.78);
-  --border:     rgba(230, 224, 212, 0.12);
-  --border-strong: rgba(230, 224, 212, 0.22);
+  --paper:      #0a161a;   /* night passage — deep water */
+  --paper-2:    #101f24;
+  --paper-3:    #060d10;
+  --ink:        #e8f0ec;
+  --ink-2:      #a8bdb9;
+  --ink-3:      #7c928e;   /* muted — AA on deep water */
+  --green:      #58b7ae;   /* phosphor teal, lifted for AA on dark */
+  --green-deep: #8ad4c9;
+  --green-soft: rgba(88, 183, 174, 0.12);
+  --clay:       #e1739f;   /* magenta signal, lifted */
+  --clay-soft:  rgba(225, 115, 159, 0.14);
+  --card:       #13242a;   /* elevated surface */
+  --nav-bg:     rgba(10, 22, 26, 0.80);
+  --border:     rgba(214, 234, 226, 0.13);
+  --border-strong: rgba(214, 234, 226, 0.24);
   --shadow:     0 2px 12px rgba(0, 0, 0, 0.40);
   --shadow-lg:  0 18px 48px rgba(0, 0, 0, 0.55);
 }
 
 [data-theme="dark"] body::before {
   background:
-    radial-gradient(ellipse 50% 40% at 12% 4%, rgba(158, 194, 177, 0.05), transparent 70%),
-    radial-gradient(ellipse 46% 40% at 96% 96%, rgba(200, 140, 70, 0.045), transparent 70%),
+    linear-gradient(to right, rgba(214, 234, 226, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(214, 234, 226, 0.03) 1px, transparent 1px),
+    radial-gradient(ellipse 50% 40% at 12% 4%, rgba(88, 183, 174, 0.06), transparent 70%),
     var(--paper);
-}
-/* Hero ambient glow on dark — echoes dashcreative's warm light blob (CSS only) */
-[data-theme="dark"] #home::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: radial-gradient(38% 46% at var(--mx, 70%) var(--my, 42%), rgba(214, 120, 52, 0.18), rgba(158,194,177,0.05) 45%, transparent 72%);
-  filter: blur(6px);
+  background-size: 88px 88px, 88px 88px, auto, auto;
 }
 
 [data-theme="dark"] .nav-logo,
@@ -1549,12 +1551,12 @@ body::before {
 
 [data-theme="dark"] ::-webkit-scrollbar-track { background: var(--paper); }
 [data-theme="dark"] ::-webkit-scrollbar-thumb { background: var(--paper-3); }
-[data-theme="dark"] ::selection { background: rgba(54, 197, 214, 0.25); }
+[data-theme="dark"] ::selection { background: rgba(88, 183, 174, 0.25); }
 
 [data-theme="dark"] .editing .post-title:focus,
 [data-theme="dark"] .editing .post-body:focus {
   background: var(--paper-2);
-  box-shadow: 0 0 0 1.5px rgba(54, 197, 214, 0.35);
+  box-shadow: 0 0 0 1.5px rgba(88, 183, 174, 0.35);
 }
 
 [data-theme="dark"] .editor-toolbar {
@@ -1593,7 +1595,7 @@ body::before {
 .theme-toggle:hover {
   border-color: var(--green);
   transform: rotate(15deg) scale(1.08);
-  box-shadow: 0 2px 10px rgba(63, 91, 80, 0.15);
+  box-shadow: 0 2px 10px rgba(20, 108, 116, 0.15);
 }
 
 /* ═══════════════════════════════════════════════
@@ -1640,7 +1642,7 @@ body::before {
 .wave-front { fill: var(--green-soft); z-index: 2; }
 .wave-back  { fill: var(--paper-2); opacity: 0.5; z-index: 1; }
 
-[data-theme="dark"] .wave-front { fill: rgba(54, 197, 214, 0.06); }
+[data-theme="dark"] .wave-front { fill: rgba(88, 183, 174, 0.06); }
 [data-theme="dark"] .wave-back  { fill: rgba(255, 255, 255, 0.02); }
 
 /* ═══════════════════════════════════════════════
@@ -1672,9 +1674,9 @@ body::before {
   transform: translateY(-1px);
 }
 .engage-btn.liked {
-  border-color: #e85d75;
-  color: #e85d75;
-  background: rgba(232, 93, 117, 0.08);
+  border-color: var(--clay);
+  color: var(--clay);
+  background: rgba(168, 44, 106, 0.08);
 }
 
 /* ═══════════════════════════════════════════════
@@ -1700,7 +1702,7 @@ body::before {
   font-size: 1.45rem;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 20px rgba(63, 91, 80, 0.38);
+  box-shadow: 0 4px 20px rgba(20, 108, 116, 0.38);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
@@ -1709,7 +1711,7 @@ body::before {
 }
 .chat-fab:hover {
   transform: scale(1.1) rotate(-6deg);
-  box-shadow: 0 6px 28px rgba(63, 91, 80, 0.5);
+  box-shadow: 0 6px 28px rgba(20, 108, 116, 0.5);
 }
 .chat-fab.bounce {
   animation: fabBounce 0.5s ease;
@@ -2017,17 +2019,12 @@ body::before {
 }
 .hero-eyebrow::before {
   content: '';
-  width: 7px; height: 7px; border-radius: 50%;
-  background: var(--green);
-  box-shadow: 0 0 0 0 var(--green);
-  animation: heroPing 2.6s ease-out infinite;
+  width: 7px; height: 7px;
+  background: var(--clay);
+  transform: rotate(45deg);
+  flex-shrink: 0;
 }
-@keyframes heroPing {
-  0%   { box-shadow: 0 0 0 0 rgba(63,91,80,0.45); }
-  70%  { box-shadow: 0 0 0 7px rgba(63,91,80,0); }
-  100% { box-shadow: 0 0 0 0 rgba(63,91,80,0); }
-}
-[data-theme="dark"] .hero-eyebrow::before { background: var(--green); }
+[data-theme="dark"] .hero-eyebrow::before { background: var(--clay); }
 
 .hero-name {
   font-family: var(--font-display);
@@ -2065,6 +2062,9 @@ body::before {
 }
 /* Small phones: keep the hero headline + mono eyebrow from overflowing
    (the page clips horizontal overflow, so oversized text gets cut at the edge). */
+@media (max-width: 720px) {
+  .hero-name br { display: none; }
+}
 @media (max-width: 480px) {
   .hero-name { font-size: clamp(1.7rem, 8.2vw, 2.35rem); }
   .hero-eyebrow {
@@ -2180,16 +2180,18 @@ body::before {
 }
 
 /* ═══════════════════════════════════════════════
-   DASHCREATIVE-STYLE TYPE PAIRING (v18)
-   Upright headlines = light grotesque (Inter 300);
-   emphasis words = high-contrast serif italic (Fraunces).
+   CHART № 1 TYPE PAIRING
+   Headlines = Archivo (chart titling, firm weight);
+   emphasis words = italic serif — on real charts,
+   water features are labeled in italic.
 ════════════════════════════════════════════════ */
-.hero-name { font-weight: 300; letter-spacing: -0.03em; }
-.section-title { font-weight: 300; letter-spacing: -0.025em; }
-.project-card-title, .blog-card-title { font-weight: 350; letter-spacing: -0.02em; }
-.interest-title { font-weight: 400; letter-spacing: -0.01em; }
-.sa-dash-title, .sa-panel-head h4, .db-title, .db-section { font-weight: 400; }
-.section-heading, .project-title { font-weight: 350 !important; letter-spacing: -0.02em; }
+.hero-name { font-weight: 640; letter-spacing: -0.028em; font-stretch: 97%; }
+.section-title { font-weight: 620; letter-spacing: -0.022em; }
+.project-card-title, .blog-card-title { font-weight: 590; letter-spacing: -0.018em; }
+.interest-title { font-weight: 560; letter-spacing: -0.01em; }
+.sa-dash-title, .sa-panel-head h4, .db-title, .db-section { font-weight: 560; }
+.section-heading, .project-title { font-weight: 600 !important; letter-spacing: -0.018em; }
+.doc-title { font-weight: 620 !important; letter-spacing: -0.02em; }
 
 .hero-name em,
 .section-title em,
@@ -2198,6 +2200,85 @@ body::before {
 h1 em, h2 em, h3 em {
   font-family: var(--font-accent);
   font-style: italic;
-  font-weight: 400;
+  font-weight: 480;
+  font-size: 0.98em;
   letter-spacing: 0;
 }
+
+/* Slightly expanded caps on every eyebrow — the chart-titling voice */
+.section-number, .hero-eyebrow, .db-eyebrow { font-stretch: 112%; }
+
+/* Data labels read as instrument output */
+.hero-coord, .hero-readout, .project-specs li { font-variant-numeric: tabular-nums; }
+
+/* Eyebrows carry a magenta chart mark — the "aid to navigation" */
+.section-number::before {
+  content: '◆';
+  color: var(--clay);
+  font-size: 0.72em;
+  margin-right: 9px;
+  vertical-align: 8%;
+}
+
+/* Chart neatline around the hero — thin double rule with corner registration */
+.hero-frame::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--nav-h) + 14px) clamp(14px, 3.5vw, 40px) 18px;
+  border: 1px solid var(--border-strong);
+  outline: 1px solid var(--border);
+  outline-offset: 3px;
+  border-radius: 2px;
+  pointer-events: none;
+}
+.hero-coord.tl { top: calc(var(--nav-h) + 26px); left: clamp(26px, 4.5vw, 56px); }
+.hero-coord.tr { top: calc(var(--nav-h) + 26px); right: clamp(26px, 4.5vw, 56px); }
+.hero-coord.bl { bottom: 30px; left: clamp(26px, 4.5vw, 56px); }
+.hero-coord.br { bottom: 30px; right: clamp(26px, 4.5vw, 56px); }
+.hero-coord {
+  background: var(--paper);
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+@media (max-width: 720px) {
+  .hero-frame::before { display: none; }
+  .hero-coord { background: transparent; }
+}
+
+/* Crisp instrument geometry: rectangles, not pills */
+.btn {
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-weight: 560;
+  letter-spacing: 0.015em;
+}
+.tag, .project-specs li, .blog-tag, .project-badge, .comments-title-count,
+.topic-chip, .comment-flair {
+  border-radius: var(--radius-sm);
+}
+.social-link, .engage-btn, .chat-chip, .sort-btn { border-radius: var(--radius); }
+.fab-resume { border-radius: var(--radius); }
+
+/* Signals wear magenta: status badges + the blog's Journal tag */
+.project-badge.ongoing { background: var(--clay-soft); color: var(--clay); }
+.blog-tag { background: var(--clay-soft); color: var(--clay); }
+
+/* Footer as chart margin: double rule + edition note */
+#site-footer { border-top: 3px double var(--border-strong); }
+.footer-copy { font-family: var(--font-mono); font-size: 0.76rem; letter-spacing: 0.04em; }
+
+/* Chart № 1 — instrument labels replacing emoji icons */
+.fact { align-items: baseline; }
+.fact-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+  min-width: 64px;
+  flex-shrink: 0;
+}
+.achievement-item::before { content: '›'; color: var(--green); flex-shrink: 0; }
+.footer-logo { display: inline-flex; align-items: center; gap: 8px; }
+.footer-logo .logo-leaf { font-size: 0.68rem; color: var(--clay); }
