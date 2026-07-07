@@ -13,7 +13,6 @@ Design rules:
 from __future__ import annotations
 
 import logging
-import os
 from datetime import datetime, timezone
 
 from ..config import Config
@@ -39,9 +38,11 @@ class AlpacaClients:
     """Lazy holder for the alpaca-py clients used across the app."""
 
     def __init__(self, cfg: Config):
+        from .secrets import require_alpaca_keys
         self.cfg = cfg
-        self.key = os.environ.get("ALPACA_API_KEY", "")
-        self.secret = os.environ.get("ALPACA_SECRET_KEY", "")
+        # Loads from env / .env / secrets.local.ps1; exits with instructions if
+        # absent — never lets alpaca-py throw its cryptic auth ValueError.
+        self.key, self.secret = require_alpaca_keys()
         self._trading = None
         self._market = None
 
@@ -82,9 +83,7 @@ def make_stream(cfg: Config):
     """
     from alpaca.data.live import StockDataStream
     from alpaca.data.enums import DataFeed
+    from .secrets import require_alpaca_keys
+    key, secret = require_alpaca_keys()
     feed = DataFeed.SIP if cfg.data.feed == "sip" else DataFeed.IEX
-    return StockDataStream(
-        os.environ.get("ALPACA_API_KEY", ""),
-        os.environ.get("ALPACA_SECRET_KEY", ""),
-        feed=feed,
-    )
+    return StockDataStream(key, secret, feed=feed)
