@@ -36,6 +36,23 @@ End of day (automatic): 15:55 time-stop flatten → EOD HTML report (auto-opens)
 `analyze_eod` + `validate_report` checkpoints, Friday `stats_weekly`, and a
 parquet export of the session for replay.
 
+## Automate the daily run (Windows)
+
+One-time setup so the agent runs itself every market weekday:
+
+```powershell
+cd warrior-desk-v2
+copy secrets.local.ps1.example secrets.local.ps1     # then edit in your PAPER keys
+powershell -ExecutionPolicy Bypass -File scripts\windows\install_tasks.ps1
+```
+
+Installs two Task Scheduler jobs: **Premarket** (weekdays 6:55 AM local/ET) and
+**Session** (9:23 AM). Logs go to `logs\task_<mode>_<date>.log`; remove with the
+same script plus `-Uninstall`. The PC must be on — or asleep with wake timers
+allowed — at those times; the tasks are set to wake the machine and to run on
+battery. Set `alerts.ntfy_topic` in `config.yaml` for phone pings on fills,
+breakers, and data incidents so you can tell it ran without opening the laptop.
+
 ## Replay any captured day
 
 ```bash
