@@ -33,5 +33,6 @@ jobs:
             .claude/**
             tests/**
             warrior-desk/**
+            warrior-desk-v2/**
             playwright.config.ts
             **/*.md

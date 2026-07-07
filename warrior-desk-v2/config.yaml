@@ -1,0 +1,115 @@
+# Warrior Desk v2 — every threshold lives here (validated by pydantic at startup).
+# Defaults are starting points, not gospel. Changing any value requires the weekly
+# statistical report as justification (see CLAUDE.md parameter-tuning rule).
+
+data:
+  # Trading endpoint is validated in code: anything but the Alpaca PAPER host is
+  # rejected at startup. There is no live toggle.
+  trading_base_url: "https://paper-api.alpaca.markets"
+  feed: iex                 # iex (free slice) | sip (full tape). IEX prints a startup warning.
+  scrub_sigma: 10.0         # drop trades > N std devs from the 1-min rolling mean
+  scrub_min_size: 1         # drop zero/negative-size prints
+  stale_symbol_seconds: 5.0 # no tick for N s while SPY ticks -> symbol STALE
+  stale_stream_seconds: 10.0 # whole stream quiet N s -> reconnect w/ backoff, log gap
+  clock_max_skew_seconds: 2.0
+  reconcile_interval_seconds: 300
+  float_disagreement_pct: 0.25   # two vendors differ by more -> float_unverified
+  db_path: "data/warrior.duckdb"
+  replay_dir: "replay/data"
+
+universe:
+  price_min: 2.00
+  price_max: 20.00
+  rvol_min: 5.0
+  float_max: 20_000_000
+  float_aplus: 10_000_000
+  pct_change_min: 0.10          # +10% on day / pre-market gap
+  catalyst_required: true
+  catalyst_max_age_hours: 18
+  exchanges: ["NASDAQ", "NYSE", "AMEX"]   # no OTC / pink sheets / crypto / options
+
+scanners:
+  premarket_start: "07:00"
+  premarket_refresh_seconds: 60
+  watchlist_freeze: "09:15"
+  freeze_top_n_min: 3
+  freeze_top_n_max: 5
+  gapper_min_gap_pct: 0.04      # scan floor; A-grade gap >= universe.pct_change_min
+  top_table_rows: 20
+  hod_realert_window_seconds: 180   # repeats inside this window annotate "fast mover"
+
+setups:
+  gap_and_go:
+    window: ["09:30", "10:15"]
+    min_gap_pct: 0.04
+    a_grade_gap_pct: 0.10
+  bull_flag:
+    window: ["09:30", "11:30"]
+    min_pole_candles: 3
+    max_retrace: 0.50
+  vwap_breakout:
+    window: ["09:45", "15:30"]
+    min_consolidation_minutes: 10
+    breakout_volume_mult: 2.0
+    atr_period: 14
+  hod_continuation:
+    window: ["09:30", "15:30"]
+
+risk:
+  account_equity_fallback: 5000.0   # used until the account endpoint answers
+  risk_pct_of_equity: 0.01          # risk_per_trade recomputed daily as % of equity
+  risk_per_trade_usd: 50.0          # floor/override; the smaller of the two applies
+  min_reward_risk: 2.0              # THE unconditional gate
+  max_position_pct: 0.25            # thin floats can't absorb size
+  max_spread_pct: 0.01              # reject if spread > 1% of price at signal time
+  daily_max_loss_r: 3.0             # realized day P&L <= -3R halts new entries
+  max_consecutive_losses: 3
+  no_new_entries_after: "11:30"     # ET; midday chop is how good mornings die
+  halt_resume_quiet_minutes: 2      # no signals until 2 full minutes after a halt resumes
+
+exits:
+  breakeven_at_r: 1.0               # +1R -> stop to breakeven
+  trail_ema_at_r: 2.0               # +2R -> trail 9-EMA on 1-min
+  ema_period: 9
+  time_stop: "15:55"                # flatten everything; no overnight holds, ever
+
+slippage:
+  ticks: 1                          # entry at ask + N ticks; stops at bid - 1 tick
+  tick_size: 0.01
+  wide_spread_extra_ticks: 1        # add per full multiple of max_spread_pct in the spread
+
+score:
+  # weighted 0-100; gates sizing: < skip_below -> skip, < full_size_at -> half size
+  skip_below: 60
+  full_size_at: 80
+  dilution_cap: 59                  # dilution risk caps the score (auto half/skip)
+  weights:
+    rvol_percentile: 0.22
+    float_tightness: 0.18
+    catalyst_strength: 0.20
+    pullback_cleanliness: 0.15
+    dist_to_9ema: 0.10
+    spread: 0.05
+    obviousness: 0.10
+
+regime:
+  symbol: "SPY"
+  timeframe_minutes: 5
+  ema_period: 9
+  chop_score_bump: 10               # in chop, required setup score rises by this
+
+journal:
+  rolling_expectancy_trades: 20
+  min_sample_n: 30                  # below this: "insufficient sample — do not conclude"
+
+alerts:
+  terminal_bell: true
+  desktop: true
+  discord_webhook: ""               # optional
+  ntfy_topic: ""                    # optional phone push via ntfy.sh
+
+reports:
+  dir: "reports"
+  live_dir: "reports/live"
+  eod_open_at: "16:05"
+  morning_brief_at: "09:20"

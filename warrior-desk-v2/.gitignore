@@ -1,0 +1,16 @@
+# Runtime artifacts (anchored so they never swallow source dirs)
+/data/
+/reports/
+/replay/data/
+*.duckdb
+*.duckdb.wal
+
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.hypothesis/
+*.egg-info/
