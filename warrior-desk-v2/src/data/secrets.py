@@ -19,7 +19,10 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-_PS1_LINE = re.compile(r'^\s*\$env:([A-Za-z_][A-Za-z0-9_]*)\s*=\s*"([^"]*)"', re.MULTILINE)
+# Accept $env:NAME = "value", 'value', or bare value — operators hand-edit this file.
+_PS1_LINE = re.compile(
+    r"""^\s*\$env:([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s#'"]+))""",
+    re.MULTILINE)
 
 
 def _parse_env_file(text: str) -> dict[str, str]:
@@ -34,7 +37,11 @@ def _parse_env_file(text: str) -> dict[str, str]:
 
 
 def _parse_ps1(text: str) -> dict[str, str]:
-    return {m.group(1): m.group(2) for m in _PS1_LINE.finditer(text)}
+    out: dict[str, str] = {}
+    for m in _PS1_LINE.finditer(text):
+        value = next((g for g in m.groups()[1:] if g is not None), "")
+        out[m.group(1)] = value
+    return out
 
 
 def load_secrets_into_env(root: Path = REPO_ROOT) -> None:
@@ -66,6 +73,20 @@ def require_alpaca_keys(root: Path = REPO_ROOT) -> tuple[str, str]:
             "  (copy secrets.local.ps1.example and fill in both lines)\n"
             f"or in {root / '.env'} as ALPACA_API_KEY=... / ALPACA_SECRET_KEY=...\n"
             "or set them as environment variables in this window.\n"
-            "Paper key IDs start with PK. This system only accepts the paper endpoint."
+            "Paper key IDs start with PK. This system only accepts the paper endpoint.\n"
+            "Self-check any time with:  python -m src.data.secrets"
         )
     return key, secret
+
+
+if __name__ == "__main__":
+    # Self-check: `python -m src.data.secrets` says what was found and from where.
+    checked = [REPO_ROOT / "secrets.local.ps1", REPO_ROOT / ".env"]
+    print("Looking for keys in: real environment, then " +
+          ", ".join(str(p) for p in checked))
+    for p in checked:
+        print(f"  {p.name}: {'FOUND' if p.exists() else 'not present'}")
+    k, s = require_alpaca_keys()
+    print(f"OK — key {k[:4]}…{k[-2:]} (len {len(k)}), secret present (len {len(s)}).")
+    if not k.startswith("PK"):
+        print("WARNING: key does not start with PK — that is not a PAPER key ID.")

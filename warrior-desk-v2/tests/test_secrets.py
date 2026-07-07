@@ -35,6 +35,15 @@ def test_parse_ps1():
     assert d["ALPACA_SECRET_KEY"] == "topsecret"
 
 
+def test_parse_ps1_tolerates_single_quotes_and_bare_values():
+    # Operators hand-edit this file; accept the quoting they actually type.
+    text = ("$env:ALPACA_API_KEY = 'PKSINGLE'\n"
+            "$env:ALPACA_SECRET_KEY = barevalue123\n")
+    d = _parse_ps1(text)
+    assert d["ALPACA_API_KEY"] == "PKSINGLE"
+    assert d["ALPACA_SECRET_KEY"] == "barevalue123"
+
+
 def test_manual_run_reads_secrets_local_ps1(tmp_path):
     (tmp_path / "secrets.local.ps1").write_text(
         '$env:ALPACA_API_KEY = "PKCCC"\n$env:ALPACA_SECRET_KEY = "sss"\n',
