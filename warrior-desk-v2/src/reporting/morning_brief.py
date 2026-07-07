@@ -63,9 +63,9 @@ def write_brief(watchlist: list[Candidate], regime: RegimeCall, now: datetime,
     out = Path(reports_dir)
     out.mkdir(parents=True, exist_ok=True)
     dest = out / f"brief_{now.date().isoformat()}.txt"
-    dest.write_text(build_brief(watchlist, regime, now))
+    dest.write_text(build_brief(watchlist, regime, now), encoding="utf-8")
     (out / f"brief_{now.date().isoformat()}.json").write_text(json.dumps(
         {"schema": 1, "generated_at": now.isoformat(),
          "regime": regime.regime.value,
-         "plans": [plan_for(c) for c in watchlist]}, indent=2))
+         "plans": [plan_for(c) for c in watchlist]}, indent=2), encoding="utf-8")
     return dest

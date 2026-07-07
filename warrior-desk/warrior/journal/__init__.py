@@ -139,7 +139,7 @@ class JournalManager:
         if not path.exists():
             return []
         try:
-            with path.open(newline="") as fh:
+            with path.open(newline="", encoding="utf-8") as fh:
                 return list(csv.DictReader(fh))
         except Exception as exc:
             log.warning("could not read %s: %s", path, exc)

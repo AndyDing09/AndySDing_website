@@ -214,7 +214,7 @@ class Config(BaseModel):
 
 def load_config(path: str | Path = "config.yaml") -> Config:
     p = Path(path)
-    raw = yaml.safe_load(p.read_text()) if p.exists() else {}
+    raw = yaml.safe_load(p.read_text(encoding="utf-8")) if p.exists() else {}
     return Config.model_validate(raw or {})
 
 

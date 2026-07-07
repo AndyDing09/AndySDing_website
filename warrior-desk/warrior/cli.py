@@ -238,7 +238,7 @@ def cmd_publish(args) -> int:
     else:
         out = Path(cfg.journal_dir) / "snapshot.json"
         out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(json.dumps(snap, indent=2))
+        out.write_text(json.dumps(snap, indent=2), encoding="utf-8")
         print(f"No WARRIOR_PUBLISH_URL set — wrote snapshot to {out} "
               f"({len(proposals)} proposals). Set the URL to push it to your site.")
     print(DISCLAIMER_SHORT)

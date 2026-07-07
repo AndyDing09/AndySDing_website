@@ -152,7 +152,7 @@ def write_watchlist_json(cands: list[Candidate], now: datetime, out_dir: str | P
     dest.write_text(json.dumps(
         {"schema": 1, "generated_at": now.isoformat(),
          "rows": [c.model_dump() for c in cands]},
-        indent=2, default=str))
+        indent=2, default=str), encoding="utf-8")
     return dest
 
 

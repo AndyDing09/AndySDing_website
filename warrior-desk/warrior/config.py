@@ -195,7 +195,7 @@ def load_dotenv(path: str | Path = ".env") -> None:
     if not p.exists():
         return
     try:
-        for raw in p.read_text().splitlines():
+        for raw in p.read_text(encoding="utf-8").splitlines():
             line = raw.strip()
             if not line or line.startswith("#") or "=" not in line:
                 continue
@@ -230,7 +230,7 @@ def load_config(path: str | Path = "config.yaml", load_env: bool = True) -> Conf
     p = Path(path)
     if p.exists():
         try:
-            raw = yaml.safe_load(p.read_text()) or {}
+            raw = yaml.safe_load(p.read_text(encoding="utf-8")) or {}
         except Exception as exc:
             log.error("Failed to parse %s (%s); using defaults.", path, exc)
             raw = {}

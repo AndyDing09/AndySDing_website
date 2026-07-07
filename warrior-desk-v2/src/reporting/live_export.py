@@ -18,7 +18,7 @@ from ..models import Candidate, Position, Signal
 def _write(path: Path, payload: dict) -> Path:
     path.parent.mkdir(parents=True, exist_ok=True)
     tmp = path.with_suffix(".tmp")
-    tmp.write_text(json.dumps(payload, indent=2, default=str))
+    tmp.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
     tmp.replace(path)                    # atomic-ish: pollers never see half a file
     return path
 

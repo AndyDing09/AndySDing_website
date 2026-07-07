@@ -49,12 +49,15 @@ class LocalJournal:
             "the skips are where most of the learning is.\n\n"
             f"{GLOSSARY}\n\n---\n"
         )
-        self.md.write_text(header)
+        self.md.write_text(header, encoding="utf-8")
 
     def _append_row(self, path: Path, fields: list[str], row: dict) -> None:
         try:
             new = not path.exists()
-            with path.open("a", newline="") as fh:
+            # utf-8 is explicit: Windows defaults to cp1252, which can't encode
+            # the journal's ✓/✗/emoji — and this guard would swallow the error,
+            # silently losing entries.
+            with path.open("a", newline="", encoding="utf-8") as fh:
                 w = csv.DictWriter(fh, fieldnames=fields, extrasaction="ignore")
                 if new:
                     w.writeheader()
@@ -70,7 +73,7 @@ class LocalJournal:
 
     def append_md(self, text: str) -> None:
         try:
-            with self.md.open("a") as fh:
+            with self.md.open("a", encoding="utf-8") as fh:
                 fh.write("\n" + text.rstrip() + "\n")
         except Exception as exc:
             log.error("journal.md append failed: %s", exc)

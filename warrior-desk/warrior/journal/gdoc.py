@@ -85,7 +85,7 @@ class GoogleDocJournal:
                 else:
                     flow = InstalledAppFlow.from_client_secrets_file(str(cred_path), SCOPES)
                     creds = flow.run_local_server(port=0)
-                tok.write_text(creds.to_json())
+                tok.write_text(creds.to_json(), encoding="utf-8")
             return creds
         except Exception as exc:
             self.reason = f"OAuth flow failed: {exc}"

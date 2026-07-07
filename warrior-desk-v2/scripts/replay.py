@@ -35,7 +35,7 @@ def main() -> int:
         print(f"missing {wl_path} — the pre-market scan writes it; replay needs the "
               f"same candidates the live session saw.", file=sys.stderr)
         return 2
-    rows = json.loads(wl_path.read_text())["rows"]
+    rows = json.loads(wl_path.read_text(encoding="utf-8"))["rows"]
     candidates = {r["symbol"]: Candidate.model_validate(r) for r in rows}
 
     res = run_replay(cfg, bars, candidates, speed=args.speed)

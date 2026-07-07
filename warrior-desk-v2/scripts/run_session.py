@@ -48,7 +48,7 @@ def load_frozen_watchlist(cfg) -> dict[str, Candidate]:
     path = Path(cfg.reports.dir) / f"watchlist_{day}.json"
     if not path.exists():
         raise SystemExit(f"no {path} — run scripts/run_premarket.py first.")
-    rows = json.loads(path.read_text())["rows"]
+    rows = json.loads(path.read_text(encoding="utf-8"))["rows"]
     return {r["symbol"]: Candidate.model_validate(r) for r in rows}
 
 

@@ -80,7 +80,7 @@ class State:
         if not p.exists():
             return cls(path=path)
         try:
-            d = json.loads(p.read_text())
+            d = json.loads(p.read_text(encoding="utf-8"))
         except Exception as exc:
             log.error("Corrupt state file %s (%s); starting fresh but NOT overwriting.", path, exc)
             return cls(path=path)

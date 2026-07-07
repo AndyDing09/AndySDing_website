@@ -35,7 +35,7 @@ def _ack_is_signed(path: str | Path) -> tuple[bool, str]:
     if not p.exists():
         return False, f"acknowledgement file {p} does not exist"
     try:
-        text = p.read_text()
+        text = p.read_text(encoding="utf-8")
     except Exception as exc:
         return False, f"could not read acknowledgement file: {exc}"
 

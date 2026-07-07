@@ -69,7 +69,7 @@ def run(store: Store, day_start: datetime, day_end: datetime,
     out.mkdir(parents=True, exist_ok=True)
     (out / f"validate_report_{day_start.date().isoformat()}.json").write_text(
         json.dumps({"schema": 1, "ok": res.ok, "checks": res.checks,
-                    "failures": res.failures}, indent=2))
+                    "failures": res.failures}, indent=2), encoding="utf-8")
     if not res.ok:
         print(f"WARNING: report validation failed — {len(res.failures)} issue(s).")
     return res

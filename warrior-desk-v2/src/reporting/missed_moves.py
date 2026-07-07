@@ -52,5 +52,5 @@ def run(top_gainers: list[tuple[Snapshot, float]], watchlist: set[str], cfg: Con
         {"schema": 1, "day": now.date().isoformat(),
          "rows": [asdict(m) for m in rows],
          "note": "Evidence for the weekly stats review — not a licence to loosen filters."},
-        indent=2))
+        indent=2), encoding="utf-8")
     return dest

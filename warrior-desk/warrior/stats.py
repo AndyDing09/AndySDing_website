@@ -87,7 +87,7 @@ def read_closed_trades(path: str) -> list[dict]:
     p = Path(path)
     if not p.exists():
         return []
-    with p.open(newline="") as fh:
+    with p.open(newline="", encoding="utf-8") as fh:
         return list(csv.DictReader(fh))
 
 

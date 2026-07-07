@@ -78,5 +78,6 @@ def run(store: Store, now: datetime, reports_dir: str | Path = "reports",
     out = Path(reports_dir)
     out.mkdir(parents=True, exist_ok=True)
     dest = out / f"stats_weekly_{now.strftime('%Y%m%d_%H%M%S')}.json"
-    dest.write_text(json.dumps(weekly_stats(store, min_sample_n), indent=2, default=str))
+    dest.write_text(json.dumps(weekly_stats(store, min_sample_n), indent=2, default=str),
+                    encoding="utf-8")
     return dest

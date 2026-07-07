@@ -42,7 +42,7 @@ class KillSwitch:
         # The lock always engages, even if the broker misbehaved above.
         self.lock_path.parent.mkdir(parents=True, exist_ok=True)
         self.lock_path.write_text(
-            f"{datetime.now(timezone.utc).isoformat()} {reason}\n")
+            f"{datetime.now(timezone.utc).isoformat()} {reason}\n", encoding="utf-8")
         self.breakers.freeze(f"kill_switch:{reason}")
         log.warning("KILL SWITCH: %s — entries locked until resume", reason)
         return report

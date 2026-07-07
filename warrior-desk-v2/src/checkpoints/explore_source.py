@@ -104,5 +104,6 @@ def run(store: Store, table: str, now: datetime,
     out = Path(reports_dir)
     out.mkdir(parents=True, exist_ok=True)
     dest = out / f"explore_{table}_{now.strftime('%Y%m%d_%H%M%S')}.json"
-    dest.write_text(json.dumps(profile_table(store, table), indent=2, default=str))
+    dest.write_text(json.dumps(profile_table(store, table), indent=2, default=str),
+                    encoding="utf-8")
     return dest

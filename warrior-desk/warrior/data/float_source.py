@@ -46,7 +46,7 @@ class StaticFloatSource(FloatSource):
         m: dict[str, float] = {}
         p = Path(path)
         if p.exists():
-            with p.open(newline="") as fh:
+            with p.open(newline="", encoding="utf-8") as fh:
                 for row in csv.reader(fh):
                     if len(row) >= 2 and row[0] and row[0].lower() != "symbol":
                         try:

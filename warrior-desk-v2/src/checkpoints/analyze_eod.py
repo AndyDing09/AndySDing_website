@@ -53,5 +53,5 @@ def run(store: Store, day_start: datetime, day_end: datetime, now: datetime,
     out.mkdir(parents=True, exist_ok=True)
     dest = out / f"analyze_eod_{day_start.date().isoformat()}.json"
     dest.write_text(json.dumps(analyze(store, day_start, day_end, min_sample_n),
-                               indent=2, default=str))
+                               indent=2, default=str), encoding="utf-8")
     return dest

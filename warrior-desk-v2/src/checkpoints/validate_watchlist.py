@@ -96,7 +96,8 @@ def run(cands: list[Candidate], raw: dict[str, Snapshot], now: datetime,
     out = Path(reports_dir)
     out.mkdir(parents=True, exist_ok=True)
     stamp = now.strftime("%Y%m%d_%H%M%S")
-    (out / f"validate_watchlist_{stamp}.json").write_text(json.dumps(res.to_json(), indent=2))
+    (out / f"validate_watchlist_{stamp}.json").write_text(
+        json.dumps(res.to_json(), indent=2), encoding="utf-8")
     if res.banner:
         print(res.banner)
     return res

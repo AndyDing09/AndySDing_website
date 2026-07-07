@@ -128,8 +128,10 @@ def write_eod_report(store: Store, day_start: datetime, day_end: datetime,
     out = Path(reports_dir)
     out.mkdir(parents=True, exist_ok=True)
     dest = out / f"eod_{day_start.date().isoformat()}.html"
+    # encoding is explicit: Windows defaults to cp1252, which cannot encode the
+    # report's unicode (crashed on the operator's machine).
     dest.write_text(build_eod_html(store, day_start, day_end, monitor, skipped,
-                                   carryover, min_sample_n))
+                                   carryover, min_sample_n), encoding="utf-8")
     if auto_open:
         try:
             webbrowser.open(dest.as_uri())
