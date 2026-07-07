@@ -29,17 +29,25 @@ pattern in the data before it gets expensive.
 
 ## Skill checkpoints (mandatory operating loop)
 
-Each checkpoint writes a timestamped artifact to `reports/`. When the `/data:*` skills are
-installed in the session, invoke them; when they are not, run the equivalent built-in job —
-same contract, same output location.
+The four data skills are INSTALLED in this repository at `.claude/skills/`
+(`explore-data`, `analyze`, `statistical-analysis`, `validate-data` — the spec's
+`/data:*` names map to these). Invoke the skill at each checkpoint; the built-in
+job is the automation that runs unattended (EOD/weekly schedulers) and the
+fallback when a session can't invoke skills. Both write timestamped artifacts to
+`reports/` — same contract, same location.
 
-| Checkpoint | Preferred skill | Built-in fallback |
+| Checkpoint | Skill (installed) | Built-in job (automation/fallback) |
 |---|---|---|
-| Onboarding any new data source | `/data:explore-data` | `python -m src.checkpoints.explore_source <table_or_file>` |
-| After the 9:15 watchlist freeze | `/data:validate-data` | `python -m src.checkpoints.validate_watchlist` |
-| End of day | `/data:analyze` | `python -m src.checkpoints.analyze_eod` |
-| Weekly (Friday close) and before ANY threshold change | `/data:statistical-analysis` | `python -m src.checkpoints.stats_weekly` |
-| Before showing any performance report to a human | `/data:validate-data` | `python -m src.checkpoints.validate_report` |
+| Onboarding any new data source | `/explore-data <table>` | `python -m src.checkpoints.explore_source <table>` |
+| After the 9:15 watchlist freeze | `/validate-data` on the frozen watchlist | `python -m src.checkpoints.validate_watchlist` |
+| End of day | `/analyze` on the day's journal | `python -m src.checkpoints.analyze_eod` |
+| Weekly (Friday close) and before ANY threshold change | `/statistical-analysis` (knowledge skill; apply via `/analyze`) | `python -m src.checkpoints.stats_weekly` |
+| Before showing any performance report to a human | `/validate-data` on the report | `python -m src.checkpoints.validate_report` |
+
+When following the skills, honor their core rules here: report mean AND median
+together; Wilson/CI before trusting a win rate; investigate outliers, never
+auto-delete; correlation ≠ causation; complete-period comparisons only; and the
+validate-data pre-delivery checklist before anything reaches the operator.
 
 **Parameter-tuning rule:** never tune a parameter because the last three trades lost. A threshold
 change requires the weekly statistical report as justification, **cited in the commit message**

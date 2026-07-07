@@ -119,13 +119,20 @@ class SessionEngine:
                                 self.broker.account_equity(), bar.ts,
                                 regime=self.regime, score=sc)
             self.signals.append(sig)
-            self.journal.record_signal(sig)          # taken or not — always journaled
             if not outcome.tradeable:
+                self.journal.record_signal(sig)      # journaled with its skip/reject status
                 return                                # one verdict per bar per symbol
             pos = self.broker.submit_bracket(sig, bar.ts, quote)
             if pos is None:
+                sig.status = SignalStatus.REJECTED
+                sig.status_reason = "broker_submit_failed"
+                self.journal.record_signal(sig)
                 return
+            # journal AFTER the submit so the persisted row carries the FINAL
+            # status — the /explore-data checkpoint caught 'proposed' rows for
+            # trades that actually filled.
             sig.status = SignalStatus.FILLED
+            self.journal.record_signal(sig)
             st.position = pos
             st.entry_fill = self.broker.fills[-1] if hasattr(self.broker, "fills") else Fill(
                 ts=bar.ts, symbol=sig.symbol, side="buy", qty=sig.shares,
