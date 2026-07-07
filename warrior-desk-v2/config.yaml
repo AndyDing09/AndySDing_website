@@ -11,7 +11,7 @@ data:
   scrub_min_size: 1         # drop zero/negative-size prints
   stale_symbol_seconds: 5.0 # no tick for N s while SPY ticks -> symbol STALE
   stale_stream_seconds: 10.0 # whole stream quiet N s -> reconnect w/ backoff, log gap
-  clock_max_skew_seconds: 2.0
+  clock_max_skew_seconds: 5.0   # home-PC clocks drift; run w32tm /resync if this trips
   reconcile_interval_seconds: 300
   float_disagreement_pct: 0.25   # two vendors differ by more -> float_unverified
   db_path: "data/warrior.duckdb"

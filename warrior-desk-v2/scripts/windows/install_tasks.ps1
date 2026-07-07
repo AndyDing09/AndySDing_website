@@ -24,7 +24,8 @@ if (-not (Test-Path $Wrapper)) { throw "warrior_task.ps1 not found next to this 
 $Days = @("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
 $Settings = New-ScheduledTaskSettingsSet -WakeToRun -StartWhenAvailable `
     -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries `
-    -ExecutionTimeLimit (New-TimeSpan -Hours 9)
+    -ExecutionTimeLimit (New-TimeSpan -Hours 9) `
+    -RestartCount 3 -RestartInterval (New-TimeSpan -Minutes 2)
 
 $Jobs = @(
     @{ Name = "WarriorDesk Premarket"; Mode = "premarket"; At = "6:55AM" },
@@ -41,4 +42,7 @@ foreach ($j in $Jobs) {
 }
 Write-Host ""
 Write-Host "Done. Logs land in warrior-desk-v2\logs\ ; reports in warrior-desk-v2\reports\ ."
-Write-Host "Reminder: your PC must be on (or asleep with wake allowed) at those times."
+Write-Host "Reminders:"
+Write-Host " - PC on or asleep with wake timers allowed (Power Options > Sleep > Allow wake timers)."
+Write-Host " - Stay LOGGED IN (locked screen is fine): these tasks run in your interactive session."
+Write-Host " - Sync the clock tonight:  w32tm /resync   (the agent aborts on >5s skew)."

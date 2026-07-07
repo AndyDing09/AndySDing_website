@@ -148,6 +148,33 @@ class SessionEngine:
         return float_band(cand.float_shares, self.cfg.universe.float_aplus,
                           self.cfg.universe.float_max)
 
+    # ── out-of-band closes (server-side bracket fill sync, EOD flatten) ──
+    def force_close(self, symbol: str, price: float, reason: str,
+                    now: datetime) -> Optional[TradeRecord]:
+        """Close our books for a position that ended outside the bar loop —
+        a bracket leg that filled server-side, or the shutdown flatten. The
+        price is the best approximation available and the reason says so."""
+        st = self.state.get(symbol)
+        if st is None or st.position is None:
+            return None
+        pos = st.position
+        exit_fill = Fill(ts=now, symbol=symbol, side="sell", qty=pos.qty,
+                         price=round(price, 4), intended_price=pos.target)
+        trade = self.journal.record_close(pos, st.entry_fill, exit_fill,
+                                          st.open_signal, reason, now)
+        self.trades.append(trade)
+        self.breakers.on_trade_closed(trade)
+        if hasattr(self.broker, "drop_local"):
+            self.broker.drop_local(symbol)
+        self.alert("EXIT", f"{symbol} {reason} {trade.realized_r:+.2f}R "
+                           f"({trade.pnl_usd:+.2f} USD)")
+        st.position = st.entry_fill = st.open_signal = None
+        return trade
+
+    def last_close(self, symbol: str) -> float:
+        st = self.state.get(symbol)
+        return st.bars[-1].close if (st and st.bars) else 0.0
+
     # ── determinism receipt (§7.3) ──
     def signals_digest(self) -> str:
         """Stable hash over every signal's decision-relevant fields: identical

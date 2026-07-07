@@ -47,6 +47,11 @@ class Broker(ABC):
     @abstractmethod
     def open_positions(self) -> list[Position]: ...
 
+    def remote_positions(self) -> list[Position]:
+        """The BROKER's independent view, for reconciliation (§4.8). Defaults to
+        the local view for sims; the Alpaca broker queries the API."""
+        return self.open_positions()
+
 
 class SimBroker(Broker):
     """Deterministic fills with the §7.2 slippage model applied on both sides."""
@@ -120,13 +125,17 @@ class AlpacaPaperBroker(Broker):
 
     def submit_bracket(self, signal: Signal, now: datetime,
                        quote: Optional[Quote]) -> Optional[Position]:
-        from alpaca.trading.enums import OrderSide, TimeInForce
+        from alpaca.trading.enums import OrderClass, OrderSide, TimeInForce
         from alpaca.trading.requests import (LimitOrderRequest, StopLossRequest,
                                              TakeProfitRequest)
         assert signal.stop < signal.entry < signal.target, "long bracket structure"
         req = LimitOrderRequest(
             symbol=signal.symbol, qty=signal.shares, side=OrderSide.BUY,
             time_in_force=TimeInForce.DAY, limit_price=round(signal.entry, 2),
+            # order_class must be EXPLICIT: alpaca-py does not infer BRACKET from
+            # the legs, and an entry without its protective stop attached is the
+            # single worst failure mode this system can have.
+            order_class=OrderClass.BRACKET,
             take_profit=TakeProfitRequest(limit_price=round(signal.target, 2)),
             stop_loss=StopLossRequest(stop_price=round(signal.stop, 2)),
         )
@@ -140,29 +149,76 @@ class AlpacaPaperBroker(Broker):
                  signal.target, getattr(order, "id", "?"))
         return pos
 
+    def _cancel_symbol_orders(self, symbol: str) -> None:
+        """Cancel the symbol's open orders (bracket legs) — Alpaca rejects a
+        close while a child order reserves the shares."""
+        from alpaca.trading.enums import QueryOrderStatus
+        from alpaca.trading.requests import GetOrdersRequest
+        try:
+            orders = self.clients.trading.get_orders(
+                GetOrdersRequest(status=QueryOrderStatus.OPEN, symbols=[symbol])) or []
+            for o in orders:
+                try:
+                    self.clients.trading.cancel_order_by_id(o.id)
+                except Exception as exc:
+                    log.warning("cancel leg %s/%s failed: %s", symbol, o.id, exc)
+        except Exception as exc:
+            log.warning("could not list open orders for %s: %s", symbol, exc)
+
     def exit_position(self, pos: Position, reason: str, now: datetime,
                       quote: Optional[Quote]) -> Fill:
-        self.clients.trading.close_position(pos.symbol)
-        self._local.pop(pos.symbol, None)
+        self._cancel_symbol_orders(pos.symbol)
         px = (quote.bid if quote else pos.stop)
+        try:
+            self.clients.trading.close_position(pos.symbol)
+        except Exception as exc:
+            # Common benign case: a bracket leg already filled server-side and
+            # the position is gone. Verify against the broker before treating
+            # the exit as done; re-raise anything else.
+            held = {p.symbol for p in (self.clients.trading.get_all_positions() or [])}
+            if pos.symbol in held:
+                raise
+            log.info("%s already closed server-side (bracket leg filled): %s",
+                     pos.symbol, exc)
+        self._local.pop(pos.symbol, None)
         return Fill(ts=now, symbol=pos.symbol, side="sell", qty=pos.qty, price=px,
                     intended_price=pos.target if reason == "target" else pos.stop)
+
+    def drop_local(self, symbol: str) -> None:
+        """Forget a position our books hold but the broker no longer does."""
+        self._local.pop(symbol, None)
 
     def replace_stop(self, pos: Position, new_stop: float) -> None:
         if new_stop > pos.stop:
             pos.stop = new_stop   # local ratchet; the bracket's stop leg is replaced
-            # alpaca-py: replace the open stop order for this symbol
             try:
+                from alpaca.trading.enums import OrderType, QueryOrderStatus
                 from alpaca.trading.requests import GetOrdersRequest, ReplaceOrderRequest
-                from alpaca.trading.enums import QueryOrderStatus
                 orders = self.clients.trading.get_orders(
-                    GetOrdersRequest(status=QueryOrderStatus.OPEN, symbols=[pos.symbol]))
-                for o in orders:
-                    if str(getattr(o, "type", "")).endswith("stop"):
-                        self.clients.trading.replace_order_by_id(
-                            o.id, ReplaceOrderRequest(stop_price=round(new_stop, 2)))
+                    GetOrdersRequest(status=QueryOrderStatus.OPEN,
+                                     symbols=[pos.symbol], nested=True)) or []
+                # Compare ENUMS: str(OrderType.STOP) is 'OrderType.STOP' on 3.11,
+                # so any endswith('stop') string check silently never matches.
+                stop_legs = [o for o in self._flatten_orders(orders)
+                             if getattr(o, "type", None) in (OrderType.STOP, OrderType.STOP_LIMIT)]
+                if not stop_legs:
+                    log.warning("no open stop leg found for %s — broker-side stop NOT moved",
+                                pos.symbol)
+                for o in stop_legs:
+                    self.clients.trading.replace_order_by_id(
+                        o.id, ReplaceOrderRequest(stop_price=round(new_stop, 2)))
+                    log.info("stop leg %s moved to %.2f", pos.symbol, new_stop)
             except Exception as exc:
                 log.error("stop replace failed for %s: %s", pos.symbol, exc)
+
+    @staticmethod
+    def _flatten_orders(orders) -> list:
+        """Bracket children arrive nested under the parent's .legs."""
+        flat = []
+        for o in orders:
+            flat.append(o)
+            flat.extend(getattr(o, "legs", None) or [])
+        return flat
 
     def cancel_all_orders(self) -> int:
         cancelled = self.clients.trading.cancel_orders()
@@ -178,3 +234,20 @@ class AlpacaPaperBroker(Broker):
 
     def open_positions(self) -> list[Position]:
         return list(self._local.values())
+
+    def remote_positions(self) -> list[Position]:
+        """Query Alpaca for its actual open positions — reconciliation must
+        compare our books against the BROKER's, not our books against themselves."""
+        from datetime import timezone as _tz
+        out: list[Position] = []
+        for p in (self.clients.trading.get_all_positions() or []):
+            local = self._local.get(p.symbol)
+            out.append(Position(
+                symbol=p.symbol, qty=int(float(p.qty)),
+                entry=float(p.avg_entry_price),
+                stop=local.stop if local else 0.0,
+                target=local.target if local else 0.0,
+                opened_at=local.opened_at if local else datetime.now(_tz.utc),
+                signal_ts=local.signal_ts if local else datetime.now(_tz.utc),
+                setup=local.setup if local else SetupName.GAP_AND_GO))
+        return out

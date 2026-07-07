@@ -2,6 +2,13 @@
 #   powershell -File warrior_task.ps1 -Mode premarket   # 6:55 AM ET weekdays
 #   powershell -File warrior_task.ps1 -Mode session     # 9:23 AM ET weekdays
 # Loads keys from secrets.local.ps1 (git-ignored), runs the script, logs to logs\.
+#
+# NOTE on redirection: python is launched via `cmd /c ... >> log 2>&1` ON PURPOSE.
+# Under Windows PowerShell 5.1, piping native stderr (`2>&1 |`) with
+# $ErrorActionPreference = "Stop" turns the FIRST stderr line into a fatal
+# NativeCommandError — and the startup IEX warning guarantees one, killing the
+# task ~1s in. cmd-level redirection also writes python's UTF-8 bytes straight
+# to the file (no OEM mojibake of ✓/emoji in the logs).
 param(
     [Parameter(Mandatory = $true)]
     [ValidateSet("premarket", "session")]
@@ -35,9 +42,9 @@ if (-not (Test-Path $Secrets)) {
 
 $Script = if ($Mode -eq "premarket") { "scripts\run_premarket.py" } else { "scripts\run_session.py" }
 Say "starting $Mode ($Script)"
-# UTF-8 everywhere: the reports/journal contain unicode and Windows defaults to cp1252.
 $env:PYTHONUTF8 = "1"
-& python $Script 2>&1 | Out-File -FilePath $Log -Append -Encoding utf8
+# cmd-level redirection: stderr never touches the PS pipeline (see NOTE above).
+cmd /c "python `"$Script`" >> `"$Log`" 2>&1"
 $Code = $LASTEXITCODE
 Say "$Mode finished with exit code $Code"
 exit $Code

@@ -32,7 +32,7 @@ class DataCfg(BaseModel):
     scrub_min_size: int = 1
     stale_symbol_seconds: float = 5.0
     stale_stream_seconds: float = 10.0
-    clock_max_skew_seconds: float = 2.0
+    clock_max_skew_seconds: float = 5.0
     reconcile_interval_seconds: int = 300
     float_disagreement_pct: float = 0.25
     db_path: str = "data/warrior.duckdb"
