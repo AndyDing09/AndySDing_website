@@ -52,48 +52,47 @@ def rvol_time_of_day(cum_vol_today: float, baseline: float) -> float:
     return (cum_vol_today / baseline) if baseline > 0 else 0.0
 
 
-def evaluate_snapshot(
+def qualify(
     snap: Snapshot,
     cfg: Config,
     floats: CrossValidatedFloat,
     guard: CorpActionsGuard,
     now: datetime,
-) -> Optional[Candidate]:
-    """Apply the §2.1 5-point criteria. Returns a Candidate or None (with the
-    reason logged) — every drop reason is also what the missed-move postmortem
-    reports, so the logic lives in exactly one place."""
+) -> tuple[Optional[Candidate], str]:
+    """Apply the §2.1 5-point criteria. Returns (Candidate, "") on pass or
+    (None, reason) naming the SPECIFIC failing filter — the missed-move
+    postmortem (§7.9) reports these reasons, so the logic lives in exactly one
+    place and the filter set improves with evidence instead of FOMO."""
     u = cfg.universe
 
     if snap.exchange.upper() not in {e.upper() for e in u.exchanges}:
-        return None
+        return None, f"exchange:{snap.exchange or 'unknown'} not in {u.exchanges}"
     if guard.excluded(snap.symbol, now.date()):
-        log.info("%s excluded: corporate action with unknown ratio", snap.symbol)
-        return None
+        return None, "corp_action:unknown split ratio — excluded for the day"
     prior = guard.adjusted_prior_close(snap.symbol, snap.prior_close, now.date())
     if prior is None or prior <= 0:
-        return None
+        return None, "corp_action:no usable prior close"
 
     if not (u.price_min <= snap.last <= u.price_max):
-        return None
+        return None, f"price:{snap.last:.2f} outside [{u.price_min},{u.price_max}]"
 
     gap = (snap.last - prior) / prior
     if gap < u.pct_change_min:
-        return None
+        return None, f"gap:{gap:.1%} below {u.pct_change_min:.0%} floor"
 
     rvol = rvol_time_of_day(snap.premkt_vol, snap.cum_vol_baseline)
     if rvol < u.rvol_min:
-        return None
+        return None, f"rvol:{rvol:.1f}x below {u.rvol_min}x"
 
     fi = floats.get(snap.symbol)
     if fi.shares is not None and fi.shares > u.float_max:
-        return None
+        return None, f"float:{fi.shares/1e6:.0f}M above {u.float_max/1e6:.0f}M cap"
 
     cat, dilution = best_catalyst(snap.news, now, u.catalyst_max_age_hours)
     if dilution:
-        log.info("%s excluded: offering/dilution headline (anti-catalyst)", snap.symbol)
-        return None
+        return None, "dilution:offering headline (anti-catalyst)"
     if u.catalyst_required and cat is None:
-        return None
+        return None, f"catalyst:none fresh within {u.catalyst_max_age_hours:.0f}h"
 
     a_grade = (fi.shares is not None and fi.verified and fi.shares < u.float_aplus)
     return Candidate(
@@ -104,7 +103,20 @@ def evaluate_snapshot(
         catalyst_type=cat.catalyst_type if cat else CatalystType.OTHER,
         dilution_flag=False, premkt_high=snap.premkt_high, premkt_low=snap.premkt_low,
         exchange=snap.exchange, a_grade=a_grade,
-    )
+    ), ""
+
+
+def evaluate_snapshot(
+    snap: Snapshot,
+    cfg: Config,
+    floats: CrossValidatedFloat,
+    guard: CorpActionsGuard,
+    now: datetime,
+) -> Optional[Candidate]:
+    cand, reason = qualify(snap, cfg, floats, guard, now)
+    if cand is None and reason:
+        log.debug("%s excluded: %s", snap.symbol, reason)
+    return cand
 
 
 def rank(cands: list[Candidate]) -> list[Candidate]:
