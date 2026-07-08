@@ -14,8 +14,8 @@ from src.data.secrets import (_parse_env_file, _parse_ps1, load_secrets_into_env
 
 @pytest.fixture(autouse=True)
 def _clean_env(monkeypatch):
-    monkeypatch.delenv("ALPACA_API_KEY", raising=False)
-    monkeypatch.delenv("ALPACA_SECRET_KEY", raising=False)
+    for k in ("ALPACA_API_KEY", "ALPACA_SECRET_KEY", "FMP_API_KEY", "FINNHUB_API_KEY"):
+        monkeypatch.delenv(k, raising=False)
 
 
 def test_parse_env_file():
@@ -83,3 +83,33 @@ def test_missing_keys_fail_fast_with_instructions(tmp_path):
         require_alpaca_keys(root=tmp_path)
     msg = str(e.value)
     assert "secrets.local.ps1" in msg and "PAPER" in msg
+
+
+def test_arbitrary_keys_propagate_to_env(tmp_path):
+    # Float vendors read straight from os.environ; the loader must carry ANY key
+    # in the secrets file, not only the Alpaca pair — otherwise floats stay
+    # unverified and the quality score is stuck ~12 points low.
+    import os
+    (tmp_path / "secrets.local.ps1").write_text(
+        '$env:ALPACA_API_KEY = "PKZZZ"\n$env:ALPACA_SECRET_KEY = "zzz"\n'
+        '$env:FMP_API_KEY = "fmp123"\n$env:FINNHUB_API_KEY = "fh456"\n',
+        encoding="utf-8")
+    try:
+        load_secrets_into_env(root=tmp_path)
+        assert os.environ.get("FMP_API_KEY") == "fmp123"
+        assert os.environ.get("FINNHUB_API_KEY") == "fh456"
+    finally:                                     # don't leak into other tests
+        os.environ.pop("FMP_API_KEY", None)
+        os.environ.pop("FINNHUB_API_KEY", None)
+
+
+def test_available_float_sources_reflects_env(monkeypatch):
+    from src.data.floats import available_float_sources, float_sources_banner
+    # keys absent (fixture cleared them): fmp/finnhub must not appear.
+    assert "fmp" not in available_float_sources()
+    assert "finnhub" not in available_float_sources()
+    monkeypatch.setenv("FMP_API_KEY", "x")
+    monkeypatch.setenv("FINNHUB_API_KEY", "y")
+    active = available_float_sources()
+    assert "fmp" in active and "finnhub" in active
+    assert "cross-validation ON" in float_sources_banner()   # >=2 sources

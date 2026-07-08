@@ -148,3 +148,43 @@ def float_band(shares: Optional[float], aplus: float, fmax: float) -> str:
     if shares <= fmax:
         return "10-20M"
     return ">20M"
+
+
+def available_float_sources() -> list[str]:
+    """Which float providers can actually answer right now.
+
+    FMP/Finnhub need their key in the environment (loaded from secrets.local.ps1
+    or .env by ``src.data.secrets``); yfinance needs its package importable.
+    Cross-validation (§4.4) — and therefore a *verified* float — needs at least
+    two. With fewer, floats are flagged ``float_unverified`` and the quality
+    score is penalized accordingly.
+    """
+    active: list[str] = []
+    if os.environ.get("FMP_API_KEY"):
+        active.append("fmp")
+    if os.environ.get("FINNHUB_API_KEY"):
+        active.append("finnhub")
+    try:
+        import yfinance  # noqa: F401  (lazy; optional dependency)
+        active.append("yfinance")
+    except Exception:
+        pass
+    return active
+
+
+def float_sources_banner() -> str:
+    """One operator-facing line tying float-source availability to the score.
+
+    Missing float data is not cosmetic: it pins the 18%-weight float component
+    near its floor, enough to drop otherwise-strong setups below the score gate
+    (and out of chop days entirely).
+    """
+    active = available_float_sources()
+    if len(active) >= 2:
+        return f"float sources: {', '.join(active)} ({len(active)}) — cross-validation ON"
+    if len(active) == 1:
+        return (f"float sources: {active[0]} only — single-source, floats stay "
+                "UNVERIFIED (0.6x credit); add a 2nd free key for the verified A+ tag")
+    return ("float sources: NONE — every candidate scores float-unverified "
+            "(~12-pt quality penalty; strong setups cap ~65 and are locked out in "
+            "chop). Add free keys — see secrets.local.ps1.example")

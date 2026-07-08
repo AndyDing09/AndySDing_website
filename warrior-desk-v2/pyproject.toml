@@ -13,6 +13,7 @@ dependencies = [
     "duckdb>=0.10",
     "alpaca-py>=0.21",
     "rich>=13.0",
+    "yfinance>=0.2",   # keyless float source for cross-validation (§4.4); imported lazily
 ]
 
 [project.optional-dependencies]

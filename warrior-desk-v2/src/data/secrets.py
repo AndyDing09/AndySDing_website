@@ -90,3 +90,9 @@ if __name__ == "__main__":
     print(f"OK — key {k[:4]}…{k[-2:]} (len {len(k)}), secret present (len {len(s)}).")
     if not k.startswith("PK"):
         print("WARNING: key does not start with PK — that is not a PAPER key ID.")
+    # Float vendors (optional, but they lift the quality score off its floor).
+    from .floats import float_sources_banner    # local import: avoids a load cycle
+    print(float_sources_banner())
+    for label, env in (("FMP", "FMP_API_KEY"), ("Finnhub", "FINNHUB_API_KEY")):
+        v = os.environ.get(env, "")
+        print(f"  {label}: {'set (' + v[:3] + '…)' if v else 'not set'}")

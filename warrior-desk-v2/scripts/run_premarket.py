@@ -28,7 +28,8 @@ from src.data.alpaca_client import AlpacaClients                     # noqa: E40
 from src.data.clock import check_skew, minute_of_session, ny, ny_time, utc_now  # noqa: E402
 from src.data.corp_actions import CorpActionsGuard                   # noqa: E402
 from src.data.floats import (CrossValidatedFloat, FinnhubFloatProvider,  # noqa: E402
-                             FMPFloatProvider, YFinanceFloatProvider)
+                             FMPFloatProvider, YFinanceFloatProvider,
+                             float_sources_banner)
 from src.data.news import classify                                   # noqa: E402
 from src.models import NewsItem, Regime                               # noqa: E402
 from src.reporting.morning_brief import write_brief                  # noqa: E402
@@ -223,6 +224,7 @@ def main() -> int:
     floats = CrossValidatedFloat(
         [FMPFloatProvider(), FinnhubFloatProvider(), YFinanceFloatProvider()],
         cfg.data.float_disagreement_pct)
+    print(float_sources_banner())      # honest: says up front if floats are unverified
     guard = CorpActionsGuard()
 
     while True:
