@@ -53,28 +53,33 @@
   <link rel="stylesheet" href="style.css?v=19" />
   <link rel="stylesheet" href="stocks.css?v=14" />
   <link rel="stylesheet" href="warrior.css?v=1" />
-  <link rel="stylesheet" href="abyss-theme.css?v=1" />
+  <link rel="stylesheet" href="abyss-theme.css?v=2" />
 </head>
 <body>
 
   <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- ─── Navigation ─── -->
+  <!-- ─── Navigation (matches the landing page; Blog + Markets live here, the rest link back to index.html) ─── -->
   <nav id="navbar">
-    <a href="#home" class="nav-logo" data-section="home">
-      <span class="logo-leaf">🌊</span> Andy S. Ding
+    <a href="index.html" class="nav-logo" aria-label="Andy S. Ding — home">
+      <span class="nav-logo-mark" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+          <circle cx="13" cy="13" r="11.5" stroke="var(--green,#35e0c8)" stroke-width="1.4"></circle>
+          <path d="M13 4 L18 17 H8 Z" stroke="#e8f1f2" stroke-width="1.4" fill="none"></path>
+          <circle cx="13" cy="13" r="1.8" fill="var(--green,#35e0c8)"></circle>
+        </svg>
+      </span>
+      <span class="nav-logo-text">Andy S. Ding</span>
     </a>
     <ul class="nav-links" id="nav-links">
-      <li><a href="#home"      class="nav-link active" data-section="home">Home</a></li>
-      <li><a href="#about"     class="nav-link"        data-section="about">About</a></li>
-      <li><a href="#blog"      class="nav-link"        data-section="blog">Blog</a></li>
-      <li><a href="#research"  class="nav-link"        data-section="research">Research</a></li>
-      <li><a href="#resume"    class="nav-link"        data-section="resume">Résumé</a></li>
-      <li><a href="#interests" class="nav-link"        data-section="interests">Interests</a></li>
-      <li><a href="#stocks"    class="nav-link"        data-section="stocks">Stocks</a></li>
+      <li><a href="index.html#about"     class="nav-link">About</a></li>
+      <li><a href="#blog"                class="nav-link" data-section="blog">Field Log</a></li>
+      <li><a href="index.html#research"  class="nav-link">Research</a></li>
+      <li><a href="index.html#resume"    class="nav-link">Résumé</a></li>
+      <li><a href="index.html#interests" class="nav-link">Interests</a></li>
+      <li><a href="#stocks"              class="nav-link" data-section="stocks">Markets</a></li>
     </ul>
     <div class="nav-right">
-      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
       <button class="hamburger" id="hamburger" aria-label="Toggle menu">
         <span></span><span></span><span></span>
       </button>
@@ -84,13 +89,12 @@
   <!-- ─── Mobile drawer ─── -->
   <div class="mobile-drawer" id="mobile-drawer">
     <ul>
-      <li><a href="#home"      class="drawer-link" data-section="home">Home</a></li>
-      <li><a href="#about"     class="drawer-link" data-section="about">About</a></li>
-      <li><a href="#blog"      class="drawer-link" data-section="blog">Blog</a></li>
-      <li><a href="#research"  class="drawer-link" data-section="research">Research</a></li>
-      <li><a href="#resume"    class="drawer-link" data-section="resume">Résumé</a></li>
-      <li><a href="#interests" class="drawer-link" data-section="interests">Interests</a></li>
-      <li><a href="#stocks"    class="drawer-link" data-section="stocks">Stocks</a></li>
+      <li><a href="index.html#about"     class="drawer-link">About</a></li>
+      <li><a href="#blog"                class="drawer-link" data-section="blog">Field Log</a></li>
+      <li><a href="index.html#research"  class="drawer-link">Research</a></li>
+      <li><a href="index.html#resume"    class="drawer-link">Résumé</a></li>
+      <li><a href="index.html#interests" class="drawer-link">Interests</a></li>
+      <li><a href="#stocks"              class="drawer-link" data-section="stocks">Markets</a></li>
     </ul>
   </div>
   <div class="drawer-overlay" id="drawer-overlay"></div>
@@ -679,7 +683,7 @@
   <!-- ─── Footer ─── -->
   <footer id="site-footer">
     <div class="footer-inner">
-      <span class="footer-logo">🌊 Andy S. Ding</span>
+      <span class="footer-logo">Andy S. Ding</span>
       <p class="footer-copy">© 2026 Andy S. Ding</p>
       <div class="footer-links">
         <a href="https://github.com/andyding09" target="_blank" rel="noopener">GitHub</a>

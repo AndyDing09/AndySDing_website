@@ -39,3 +39,48 @@ h1, h2, h3, .section-title, .hero-title, .post-title, .doc-card-title {
 }
 
 ::selection { background: #35e0c8; color: #04121a; }
+
+/* ─────────────────────────────────────────────────────────────
+   CHROME MATCH — make this page's nav identical to the landing
+   (index.html), so moving between the two never looks like a
+   design switch. Structure/JS untouched; presentation only.
+   ───────────────────────────────────────────────────────────── */
+
+/* Brand: mono wordmark + triangle mark, no emoji, no serif */
+.nav-logo { gap: 10px; }
+.nav-logo-mark { display: inline-flex; align-items: center; }
+.nav-logo-mark svg { display: block; }
+.nav-logo-text {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.footer-logo .logo-leaf { display: none; }
+.footer-logo { font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.82rem; }
+
+/* Nav + drawer links: uppercase mono in the landing's palette */
+.nav-link, .drawer-link {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #9fc0c6;
+}
+.nav-link {
+  padding: 7px 10px;
+  border-radius: 3px;
+}
+.nav-link:hover, .drawer-link:hover {
+  color: var(--ink);
+  background: rgba(127, 232, 216, 0.08);
+}
+/* The landing keeps no persistent underline on the active link */
+.nav-link.active { color: var(--ink); font-weight: 600; }
+.nav-link.active::after { display: none; }
+
+/* The landing commits to dark — no light/dark toggle */
+.theme-toggle { display: none !important; }
