@@ -572,7 +572,7 @@ if (hamburger && mobileDrawer && drawerOverlay) {
     if (!total) {
       var empty = document.createElement('p');
       empty.className = 'comments-empty';
-      empty.textContent = '\U0001f33f No comments yet \u2014 start the discussion!';
+      empty.textContent = '\ud83c\udf31 No comments yet \u2014 start the discussion!';
       list.appendChild(empty);
       return;
     }
@@ -601,7 +601,7 @@ if (hamburger && mobileDrawer && drawerOverlay) {
   function loadComments() {
     if (location.protocol === 'file:') {
       render([]);
-      setStatus('\U0001f4ac Comments work on the live site (they need the server).', '');
+      setStatus('💬 Comments work on the live site (they need the server).', '');
       form.classList.add('hidden');
       return;
     }

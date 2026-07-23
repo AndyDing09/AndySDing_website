@@ -84,3 +84,27 @@ h1, h2, h3, .section-title, .hero-title, .post-title, .doc-card-title {
 
 /* The landing commits to dark — no light/dark toggle */
 .theme-toggle { display: none !important; }
+
+/* Nav geometry identical to the landing so the bar never shifts position
+   between pages: same height and same 28px inset on every page.
+   (Classic previously used a 66px-tall bar inset 60px; the bundled pages
+   use a ~54px bar inset 28px — hence the jump when navigating across.) */
+:root,
+[data-theme="light"],
+[data-theme="dark"] { --nav-h: 58px; }
+#navbar {
+  height: auto;
+  min-height: 0;
+  padding: 14px 28px;
+  gap: 16px;
+}
+.nav-links { gap: 4px; }
+.nav-logo { align-items: center; }
+
+/* reveal.js wraps each nav label in a .nav-magnetic clip span (a hover
+   slide the bundled pages don't have). It shifts the labels off the logo's
+   baseline and can clip the accent on "RÉSUMÉ", so neutralize it here for
+   clean, evenly-aligned text. The hover background stays as the affordance. */
+.nav-magnetic { overflow: visible; vertical-align: baseline; display: inline; }
+.nav-magnetic > span { transition: none; transform: none !important; display: inline; }
+.nav-magnetic::after { display: none !important; }
