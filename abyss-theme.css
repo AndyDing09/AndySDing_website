@@ -108,3 +108,8 @@ h1, h2, h3, .section-title, .hero-title, .post-title, .doc-card-title {
 .nav-magnetic { overflow: visible; vertical-align: baseline; display: inline; }
 .nav-magnetic > span { transition: none; transform: none !important; display: inline; }
 .nav-magnetic::after { display: none !important; }
+
+/* Same-origin page changes crossfade instead of hard-cutting (Chrome 126+;
+   other browsers simply ignore this). The landing/kymarion/luminabone pages
+   opt in via their inline styles. */
+@view-transition { navigation: auto; }
