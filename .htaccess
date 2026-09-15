@@ -10,28 +10,28 @@ ErrorDocument 404 /404.html
 </IfModule>
 
 # ═══════════════════════════════════════════════════════════════
-# SITE LOCK — the whole site is private, password required.
+# SITE LOCK — CURRENTLY OFF.
 #
-# To open the site back up to the public, delete this whole block
-# (everything from this banner down) and redeploy.
+# It is switched off because the AuthUserFile path below is still a
+# placeholder. With a bad path the server cannot read any password file,
+# so every login is rejected and the browser re-prompts forever.
 #
-# SETUP (one time, in hPanel → File Manager):
-#   1. Go to the `asd-site-data` folder — the same place as
-#      `app-secret.txt` and `cron-token.txt`, NOT inside public_html.
-#   2. Create a file there named `.htpasswd` and paste in the single
-#      credential line you were given.
-#   3. In the AuthUserFile line below, replace U000000000 with your real
-#      Hostinger account folder. File Manager shows the full path at the
-#      top of the window — it looks like /home/u123456789/domains/...
+# TO TURN THE LOCK ON:
+#   1. Visit  https://www.andysding.com/_path.php  and send me the path
+#      it prints (or read it yourself in hPanel → File Manager).
+#   2. Put that real path into the AuthUserFile line below.
+#   3. Create the .htpasswd file at that path with the credential line
+#      you were given.
+#   4. Delete the four "#" marks at the start of the lines below.
+#   5. Delete _path.php — it exists only to print the path.
 #
-# The password file lives outside public_html on purpose: deploys use
-# clean-slate (they wipe public_html), and this repo is public, so the
-# credentials must never be committed here.
+# Do not uncomment these until steps 1-3 are done, or the login loop
+# comes straight back.
 # ═══════════════════════════════════════════════════════════════
-AuthType Basic
-AuthName "Private site"
-AuthUserFile /home/U000000000/domains/andysding.com/asd-site-data/.htpasswd
-Require valid-user
+#AuthType Basic
+#AuthName "Private site"
+#AuthUserFile /home/U000000000/domains/andysding.com/asd-site-data/.htpasswd
+#Require valid-user
 
 # Never serve the password file itself, wherever it ends up.
 <FilesMatch "^\.ht">
