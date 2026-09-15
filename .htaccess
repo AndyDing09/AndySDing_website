@@ -1,39 +1,42 @@
-# Serve index.html before index.php (bypasses WordPress)
-DirectoryIndex index.html index.php
-
-# Friendly 404 page
-ErrorDocument 404 /404.html
-
-  # Disable WordPress rewrite rules for root
-  <IfModule mod_rewrite.c>
-  RewriteEngine Off
-</IfModule>
-
 # ═══════════════════════════════════════════════════════════════
-# SITE LOCK — CURRENTLY OFF.
+# SITE LOCK — ON.
 #
-# It is switched off because the AuthUserFile path below is still a
-# placeholder. With a bad path the server cannot read any password file,
-# so every login is rejected and the browser re-prompts forever.
+# Every request is routed to gate.php, which serves nothing until the
+# visitor enters the site password. Pages, assets, resume.pdf and the PHP
+# endpoints are all behind it.
 #
-# TO TURN THE LOCK ON:
-#   1. Visit  https://www.andysding.com/_path.php  and send me the path
-#      it prints (or read it yourself in hPanel → File Manager).
-#   2. Put that real path into the AuthUserFile line below.
-#   3. Create the .htpasswd file at that path with the credential line
-#      you were given.
-#   4. Delete the four "#" marks at the start of the lines below.
-#   5. Delete _path.php — it exists only to print the path.
+# The password is ONE line in a text file the server reads:
+#     /home/<you>/domains/andysding.com/asd-site-data/site-password.txt
+# i.e. the asd-site-data folder NEXT TO public_html (so clean-slate deploys
+# never wipe it, and it never lands in the public repo). No absolute paths
+# need to go in this file — gate.php finds it on its own.
 #
-# Do not uncomment these until steps 1-3 are done, or the login loop
-# comes straight back.
+# TO UNLOCK THE SITE AGAIN: delete the RewriteRule block below (or comment
+# out the four rewrite lines). Nothing else here depends on it.
 # ═══════════════════════════════════════════════════════════════
-#AuthType Basic
-#AuthName "Private site"
-#AuthUserFile /home/U000000000/domains/andysding.com/asd-site-data/.htpasswd
-#Require valid-user
 
-# Never serve the password file itself, wherever it ends up.
-<FilesMatch "^\.ht">
+# If the rewrite ever fails to load, "/" still lands on the lock, not the site.
+DirectoryIndex gate.php index.html index.php
+
+# No directory listings, ever.
+Options -Indexes
+
+RewriteEngine On
+RewriteBase /
+
+# robots.txt stays public so crawlers can read "Disallow: /" without hitting
+# a login screen. It gives nothing away.
+RewriteRule ^robots\.txt$ - [L]
+
+# Everything else -> the lock. gate.php re-serves the original path itself
+# once the visitor is through, so URLs keep working exactly as before.
+RewriteCond %{REQUEST_URI} !^/gate\.php$
+RewriteRule ^ /gate.php [L,QSA]
+
+# Never serve the password file or any dotfile, whatever the rewrite does.
+<FilesMatch "^(\.ht|\.git|site-password\.txt)">
   Require all denied
 </FilesMatch>
+
+# Friendly 404 if a request somehow reaches Apache directly.
+ErrorDocument 404 /404.html

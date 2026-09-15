@@ -5,3 +5,6 @@
 
 # Site lock credentials — never commit (lives in asd-site-data/ on the server)
 .htpasswd
+
+# Site lock password — never commit (lives in asd-site-data/ on the server)
+site-password.txt

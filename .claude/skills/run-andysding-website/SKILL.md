@@ -94,3 +94,16 @@ and chat status. Pass a base URL to target somewhere else:
   edit `--virtual-time-budget` in `driver.py` (e.g. to `8000`), or view live via `serve`.
 - `api` shows `[ERR]` lines → you're offline or the live site is down; the
   `shot`/`serve` paths still work fully offline.
+
+## Site lock
+The live site is **password-locked**: `.htaccess` routes every request to
+`gate.php`, which serves the requested path only after the visitor enters the
+password from `asd-site-data/site-password.txt` (outside `public_html`). See
+[SITE_LOCK.md](../../../SITE_LOCK.md).
+
+This does **not** affect local work — `driver.py serve/shot` uses a plain static
+server, so `.htaccess` and `gate.php` are inert and pages load unlocked. It does
+affect `driver.py api`: the live endpoints now answer unauthenticated requests
+with the lock screen (HTML, 401) instead of JSON. To exercise the real backend,
+sign in once in a browser and pass the `asd_lock` cookie, or test against a
+local `php -S` run.
