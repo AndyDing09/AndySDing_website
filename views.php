@@ -6,7 +6,7 @@
  *
  * The client only POSTs once per visitor per day (localStorage guard),
  * and the server also rate-limits by IP hash to keep counts honest.
- * Stored next to the comments, outside public_html when possible.
+ * Stored in the site data dir, outside public_html when possible.
  */
 
 header('Content-Type: application/json; charset=utf-8');

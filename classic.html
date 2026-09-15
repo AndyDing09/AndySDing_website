@@ -239,8 +239,6 @@
             <button class="btn btn-primary" id="card-open" aria-label="Open the latest blog post">See more →</button>
           </div>
         </article>
-
-        <p class="blog-hint">💬 Comments are open on every post — I read all of them.</p>
       </div>
     </section>
 
@@ -265,35 +263,6 @@
           <button class="engage-btn" id="share-btn">🔗 Share</button>
         </div>
         <article class="post-body" id="post-body"></article>
-
-        <!-- ── Comments ── -->
-        <div class="comments-section">
-          <div class="comments-header">
-            <h2 class="comments-title">
-              💬 Discussion
-              <span class="comments-title-count" id="comments-count"></span>
-            </h2>
-            <div class="comments-sort">
-              <span class="comments-sort-label">Sort:</span>
-              <button class="sort-btn active" data-sort="top">Top</button>
-              <button class="sort-btn" data-sort="new">New</button>
-            </div>
-          </div>
-
-          <div class="comments-list" id="comments-list"></div>
-
-          <form class="comment-form" id="comment-form">
-            <p class="comment-form-label">What do you think?</p>
-            <input type="text" id="comment-name" maxlength="60" placeholder="Your name (optional)" autocomplete="name" />
-            <textarea id="comment-text" maxlength="1500" placeholder="Share your thoughts, questions, or feedback…" required></textarea>
-            <input type="text" id="comment-website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />
-            <div class="comment-form-foot">
-              <span class="char-count" id="char-count">0 / 1500</span>
-              <button type="submit" class="btn btn-primary btn-small" id="comment-submit">Post comment</button>
-            </div>
-          </form>
-          <p class="comment-status" id="comment-status"></p>
-        </div>
 
       </div>
     </section>

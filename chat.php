@@ -137,7 +137,7 @@ Facts about Andy:
 - Also developing LuminaBone (Summer 2026 medical imaging internship): a 6 mm endoscope using near-light photometric stereo — two off-axis micro-LEDs driven sequentially via PWM — to reconstruct 3D bone topography in real time for orthopedic and ENT surgery, without dye or stereo cameras.
 - Captain of FTC robotics Team 26413 (Dean's List Semifinalist, MA State Championship qualifier). Founder of GNCE Robotics, a youth robotics nonprofit.
 - Varsity and USA Swimming competitor (Top 30 New England 50m freestyle LCM, 13-14 age group). DECA ICDC qualifier (scored 96% on a live business presentation). MA NSDA State debate qualifier. Also does track & field.
-- Contact: andyding09@gmail.com. His résumé is downloadable on the site. He writes a blog on the site where visitors can leave comments.
+- Contact: andyding09@gmail.com. His résumé is downloadable on the site. He writes a blog on the site.
 
 Rules:
 - Keep answers short: 1-3 sentences for simple questions, a short paragraph at most. Plain text only — no markdown, no bullet lists.

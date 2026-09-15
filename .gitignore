@@ -2,3 +2,6 @@
 .playwright-mcp/
 *.jpeg
 .shots/
+
+# Site lock credentials — never commit (lives in asd-site-data/ on the server)
+.htpasswd

@@ -8,3 +8,32 @@ ErrorDocument 404 /404.html
   <IfModule mod_rewrite.c>
   RewriteEngine Off
 </IfModule>
+
+# ═══════════════════════════════════════════════════════════════
+# SITE LOCK — the whole site is private, password required.
+#
+# To open the site back up to the public, delete this whole block
+# (everything from this banner down) and redeploy.
+#
+# SETUP (one time, in hPanel → File Manager):
+#   1. Go to the `asd-site-data` folder — the same place as
+#      `app-secret.txt` and `cron-token.txt`, NOT inside public_html.
+#   2. Create a file there named `.htpasswd` and paste in the single
+#      credential line you were given.
+#   3. In the AuthUserFile line below, replace U000000000 with your real
+#      Hostinger account folder. File Manager shows the full path at the
+#      top of the window — it looks like /home/u123456789/domains/...
+#
+# The password file lives outside public_html on purpose: deploys use
+# clean-slate (they wipe public_html), and this repo is public, so the
+# credentials must never be committed here.
+# ═══════════════════════════════════════════════════════════════
+AuthType Basic
+AuthName "Private site"
+AuthUserFile /home/U000000000/domains/andysding.com/asd-site-data/.htpasswd
+Require valid-user
+
+# Never serve the password file itself, wherever it ends up.
+<FilesMatch "^\.ht">
+  Require all denied
+</FilesMatch>

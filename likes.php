@@ -4,7 +4,7 @@
  *  GET  -> {"likes": n}
  *  POST {"action":"like"|"unlike"} -> adjusts the count, returns {"likes": n}
  *
- * Stored next to the comments, outside public_html when possible.
+ * Stored in the site data dir, outside public_html when possible.
  */
 
 header('Content-Type: application/json; charset=utf-8');

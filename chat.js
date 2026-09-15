@@ -63,8 +63,8 @@
       a: 'Andy co-develops Project Kymarion with his research partner Ethan Zhang — there\'s a link to Ethan\'s research site in the About section.'
     },
     {
-      kw: { 'blog': 3, 'comment': 2, 'post': 2, 'field log': 3, 'journal': 2 },
-      a: 'Andy writes a blog right here on the site — field notes about Project Kymarion and what he\'s learning. Head to the Blog tab, and feel free to leave a comment; he reads every one! ✏️'
+      kw: { 'blog': 3, 'post': 2, 'field log': 3, 'journal': 2 },
+      a: 'Andy writes a blog right here on the site — field notes about Project Kymarion and what he\'s learning. Head to the Blog tab to read the latest. ✏️'
     },
     {
       kw: { 'who are you': 3, 'what are you': 3, 'are you ai': 3, 'are you a bot': 3, 'are you real': 3, 'your name': 3, 'kym': 3 },
